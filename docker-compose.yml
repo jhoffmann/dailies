@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  dailies:
+    build: .
+    ports:
+      - "9001:8080"
+    volumes:
+      - dailies_data:/data
+    environment:
+      - DB_PATH=/data/dailies.db
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8080/api/periods"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  dailies_data:
+    driver: local

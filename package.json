@@ -1,0 +1,18 @@
+{
+  "name": "dailies",
+  "version": "1.0.0",
+  "description": "Task tracking application with recurring periods",
+  "main": "index.js",
+  "scripts": {
+    "build": "webpack --mode production",
+    "dev": "webpack --mode development --watch",
+    "serve": "go run cmd/server/main.go serve"
+  },
+  "devDependencies": {
+    "webpack": "^5.101.3",
+    "webpack-cli": "^6.0.1"
+  },
+  "dependencies": {
+    "htmx.org": "^2.0.6"
+  }
+}

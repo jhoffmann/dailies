@@ -1,0 +1,64 @@
+[vars]
+project = "dailies"
+
+[tasks.run]
+description = "Run the application"
+run = "go run ."
+
+[tasks.demo]
+description = "Regenerate the demo recording"
+run = "cd demo && vhs demo.tape"
+
+[tasks.clean]
+description = "Clean build and test artifacts"
+run = ["rm -rf build/", "rm -f *.out *.html *.sql", "go clean -testcache"]
+
+[tasks.dev]
+description = "Standard development workflow"
+depends = ["deps", "fmt", "vet", "test"]
+alias = "d"
+
+[tasks.deps]
+description = "Install dependencies"
+hide = true
+run = ["go mod download", "go mod tidy"]
+
+[tasks.fmt]
+description = "Format code"
+hide = true
+run = "go fmt ./..."
+
+[tasks.vet]
+description = "Vet code"
+hide = true
+run = "go vet ./..."
+
+[tasks.test]
+description = "Run tests"
+run = "go test -tags=coverage ./... -cover"
+
+[tasks.build]
+run = ["go build -o build/server cmd/server/*.go"]
+
+[tasks.build-container]
+quiet = true
+run = "podman build -t {{vars.project}}:latest ."
+description = "Build the container image"
+alias = "bc"
+
+[tasks.run-container]
+run = "podman run --rm -p 8080:8080 lets-go"
+description = "Run the container image"
+alias = "rc"
+
+[tasks.cov]
+description = "Run tests with coverage report"
+run = [
+  "go test ./... -coverprofile=coverage.out",
+  "go tool cover -html=coverage.out -o coverage.html",
+  "go tool cover -func=coverage.out",
+]
+
+[tasks.sloc]
+description = "Count lines of code"
+run = "tokei -e '*_test.go'"
