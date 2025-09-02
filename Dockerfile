@@ -1,18 +1,18 @@
-# Build stage for frontend assets
-FROM oven/bun:1-alpine as frontend-builder
-WORKDIR /app
-COPY package.json bun.lockb webpack.config.js ./
-RUN bun install
-COPY web/static/js/main.js ./web/static/js/
-RUN bun run build
-
 # Build stage for Go application
-FROM golang:1.21-alpine as go-builder
+FROM golang:1.24.6-alpine as go-builder
+RUN apk update && \
+  apk upgrade --no-cache && \
+  apk add --no-cache binutils ca-certificates gcc musl-dev sqlite-dev
+
 WORKDIR /app
+
 COPY go.mod go.sum ./
 RUN go mod download
 COPY . .
-RUN CGO_ENABLED=1 GOOS=linux go build -a -installsuffix cgo -o main cmd/server/main.go
+
+ENV CGO_ENABLED=1
+ENV GOOS=linux
+RUN go build -o server cmd/server/main.go
 
 # Production stage
 FROM alpine:latest
@@ -20,10 +20,10 @@ RUN apk --no-cache add ca-certificates sqlite
 WORKDIR /root/
 
 # Copy the built application
-COPY --from=go-builder /app/main .
+COPY --from=go-builder /app/server .
 
 # Copy templates and static files
-COPY --from=frontend-builder /app/web/static/js/bundle.js ./web/static/js/
+COPY web/static/js/bundle.js ./web/static/js/
 COPY web/static/css ./web/static/css/
 COPY web/templates ./web/templates/
 
@@ -37,4 +37,4 @@ EXPOSE 8080
 ENV DB_PATH=/data/dailies.db
 
 # Run the application
-CMD ["./main", "serve", "--address", ":8080"]
+CMD ["./server", "--address", ":8080"]
