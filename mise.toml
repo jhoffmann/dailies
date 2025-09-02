@@ -11,25 +11,28 @@ run = "cd demo && vhs demo.tape"
 
 [tasks.clean]
 description = "Clean build and test artifacts"
-run = ["rm -rf build/", "rm -f *.out *.html *.sql", "go clean -testcache"]
+run = ["rm -rf build/", "rm -f *.out *.html *.sql *.db", "go clean -testcache"]
 
 [tasks.dev]
 description = "Standard development workflow"
-depends = ["deps", "fmt", "vet", "test"]
+depends = ["dependencies", "format", "analysis", "test"]
 alias = "d"
 
-[tasks.deps]
+[tasks.dependencies]
 description = "Install dependencies"
+alias = "deps"
 hide = true
 run = ["go mod download", "go mod tidy"]
 
-[tasks.fmt]
+[tasks.format]
 description = "Format code"
+alias = "fmt"
 hide = true
 run = "go fmt ./..."
 
-[tasks.vet]
-description = "Vet code"
+[tasks.analysis]
+description = "Run a static code analyzer"
+alias = "vet"
 hide = true
 run = "go vet ./..."
 
@@ -51,8 +54,9 @@ run = "podman run --rm -p 8080:8080 lets-go"
 description = "Run the container image"
 alias = "rc"
 
-[tasks.cov]
+[tasks.coverage]
 description = "Run tests with coverage report"
+alias = "cov"
 run = [
   "go test ./... -coverprofile=coverage.out",
   "go tool cover -html=coverage.out -o coverage.html",
