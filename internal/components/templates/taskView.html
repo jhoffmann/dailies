@@ -1,12 +1,15 @@
 <div class="task-item" id="task-{{.ID}}" data-task-id="{{.ID}}">
   <div class="task-content">
     <div class="task-header">
-       <input type="checkbox" class="task-checkbox" {{if .Completed}}checked{{end}}
-              hx-ext="json-enc"
-              hx-put="/tasks/{{.ID}}"
-              hx-vals='js:{"completed": this.checked}'
-              hx-target="#task-{{.ID}}"
-              hx-swap="outerHTML">
+      <div class="checkbox-wrapper">
+        <i class="{{if .Completed}}fas fa-check-circle{{else}}far fa-circle{{end}} checkbox-icon {{if .Completed}}completed{{end}}"
+           hx-ext="json-enc"
+           hx-put="/component/tasks/{{.ID}}"
+           hx-vals='{"completed": {{toggle .Completed}}}'
+           hx-target="#task-{{.ID}}"
+           hx-swap="outerHTML"
+           title="{{if .Completed}}Mark as incomplete{{else}}Mark as complete{{end}}"></i>
+      </div>
       <span class="task-name {{if .Completed}}completed{{end}}">{{.Name}}</span>
     </div>
     <div class="task-meta">
@@ -20,11 +23,17 @@
     <button class="btn-edit"
             hx-get="/component/tasks/{{.ID}}/edit"
             hx-target="#task-{{.ID}}"
-            hx-swap="outerHTML">Edit</button>
+            hx-swap="outerHTML">
+      <i class="fas fa-pencil-alt icon"></i>
+      Edit
+    </button>
     <button class="btn-delete"
             hx-delete="/tasks/{{.ID}}"
             confirm-with-sweet-alert='true'
             hx-target="#task-{{.ID}}"
-            hx-swap="outerHTML">Delete</button>
+            hx-swap="outerHTML">
+      <i class="fas fa-trash-alt icon"></i>
+      Delete
+    </button>
   </div>
 </div>

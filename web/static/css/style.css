@@ -8,7 +8,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     line-height: 1.6;
     color: #333;
-    background-color: #f5f5f5;
+    background-color: #405060;
 }
 
 .container {
@@ -29,4 +29,189 @@ h1 {
     color: #2c3e50;
     margin-bottom: 30px;
     text-align: center;
+}
+
+/* Task Item Styling */
+.task-item {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    margin-bottom: 16px;
+    padding: 20px;
+    transition: all 0.2s ease;
+    border: 1px solid #e1e5e9;
+}
+
+.task-item:hover {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.task-content {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.task-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.checkbox-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+.checkbox-icon {
+    font-size: 16px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    color: #bdc3c7;
+    user-select: none;
+}
+
+.checkbox-icon:hover {
+    color: #3498db;
+    transform: scale(1.2);
+}
+
+.checkbox-icon.completed {
+    color: #27ae60;
+    animation: checkmark 0.4s ease-in-out;
+}
+
+.checkbox-icon.completed:hover {
+    color: #e74c3c;
+    transform: scale(1.2);
+}
+
+@keyframes checkmark {
+    0% {
+        transform: scale(0.8);
+        opacity: 0.7;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.task-name {
+    font-size: 16px;
+    font-weight: 500;
+    color: #2c3e50;
+    flex: 1;
+    transition: color 0.2s ease;
+}
+
+.task-name.completed {
+    text-decoration: line-through;
+    color: #7f8c8d;
+}
+
+.task-meta {
+    font-size: 14px;
+    color: #95a5a6;
+    margin-left: 32px;
+}
+
+.task-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    justify-content: flex-end;
+}
+
+/* Button Styling */
+.btn-edit, .btn-delete {
+    background: none;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.btn-edit {
+    color: #3498db;
+    border-color: #3498db;
+}
+
+.btn-edit:hover {
+    background-color: #3498db;
+    color: white;
+}
+
+.btn-delete {
+    color: #e74c3c;
+    border-color: #e74c3c;
+}
+
+.btn-delete:hover {
+    background-color: #e74c3c;
+    color: white;
+}
+
+/* Icon Styling */
+.icon {
+    font-size: 14px;
+}
+
+/* Form Styling */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.form-group input[type="text"],
+.form-group textarea {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+.form-group input[type="text"]:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+/* Primary Button */
+.btn-primary {
+    background-color: #3498db;
+    color: white;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
 }

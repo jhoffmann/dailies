@@ -66,8 +66,15 @@ func populateCommand(args []string) {
 	log.Printf("Successfully created %d sample tasks", *entries)
 }
 
-// populateWithSampleData creates the specified number of sample tasks in the database.
+// populateWithSampleData clears existing tasks and creates the specified number of sample tasks in the database.
 func populateWithSampleData(db *gorm.DB, count int) error {
+	// Clear existing tasks
+	result := db.Where("1 = 1").Delete(&models.Task{})
+	if result.Error != nil {
+		return fmt.Errorf("failed to clear existing tasks: %w", result.Error)
+	}
+	log.Printf("Cleared %d existing tasks", result.RowsAffected)
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	for i := range count {
