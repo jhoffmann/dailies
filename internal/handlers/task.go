@@ -1,3 +1,4 @@
+// Package handlers implements HTTP handlers for task management
 package handlers
 
 import (
@@ -7,6 +8,7 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jhoffmann/dailies/internal/database"
+	"github.com/jhoffmann/dailies/internal/logger"
 	"github.com/jhoffmann/dailies/internal/models"
 )
 
@@ -27,7 +29,7 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 
 	tasks, err := models.GetTasks(database.GetDB(), completedFilter, nameFilter)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return
 	}
 
@@ -41,14 +43,14 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/tasks/"):]
 	taskID, err := uuid.Parse(id)
 	if err != nil {
-		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		logger.LoggedError(w, "Invalid task ID", http.StatusBadRequest, r)
 		return
 	}
 
 	var task models.Task
 	err = task.LoadByID(database.GetDB(), taskID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
 		return
 	}
 
@@ -62,13 +64,13 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 	var task models.Task
 	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		logger.LoggedError(w, "Invalid JSON", http.StatusBadRequest, r)
 		return
 	}
 
 	err := task.Create(database.GetDB())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
+		logger.LoggedError(w, err.Error(), http.StatusBadRequest, r)
 		return
 	}
 
@@ -84,26 +86,26 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/tasks/"):]
 	taskID, err := uuid.Parse(id)
 	if err != nil {
-		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		logger.LoggedError(w, "Invalid task ID", http.StatusBadRequest, r)
 		return
 	}
 
 	var task models.Task
 	err = task.LoadByID(database.GetDB(), taskID)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
 		return
 	}
 
 	var updateData models.Task
 	if err := json.NewDecoder(r.Body).Decode(&updateData); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+		logger.LoggedError(w, "Invalid JSON", http.StatusBadRequest, r)
 		return
 	}
 
 	err = task.Update(database.GetDB(), &updateData)
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return
 	}
 
@@ -115,7 +117,7 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/tasks/"):]
 	taskID, err := uuid.Parse(id)
 	if err != nil {
-		http.Error(w, "Invalid task ID", http.StatusBadRequest)
+		logger.LoggedError(w, "Invalid task ID", http.StatusBadRequest, r)
 		return
 	}
 
@@ -123,7 +125,7 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	task.ID = taskID
 	err = task.Delete(database.GetDB())
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusNotFound)
+		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
 		return
 	}
 

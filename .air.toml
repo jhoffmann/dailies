@@ -5,7 +5,7 @@ tmp_dir = "build"
 [build]
 args_bin = []
 bin = "./build/server"
-cmd = "mise run build"
+cmd = "go build -o build/server cmd/server/*.go"
 delay = 1000
 exclude_dir = ["assets", "bin", "vendor", "testdata"]
 exclude_file = []
@@ -40,7 +40,7 @@ silent = false
 time = false
 
 [misc]
-clean_on_exit = true
+clean_on_exit = false
 
 [proxy]
 app_port = 0

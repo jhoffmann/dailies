@@ -1,3 +1,4 @@
+// Package models defines the Task model and its database operations
 package models
 
 import (

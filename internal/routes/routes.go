@@ -1,3 +1,4 @@
+// Package routes sets up HTTP routes for the web application
 package routes
 
 import (
@@ -5,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/jhoffmann/dailies/internal/handlers"
+	"github.com/jhoffmann/dailies/internal/logger"
 )
 
 // Setup configures HTTP routes for the application.
@@ -14,28 +16,28 @@ func Setup() {
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static/"))))
 
 	// Root path serves the main HTML template
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path != "/" {
-			http.NotFound(w, r)
+			logger.LoggedError(w, "Not Found", http.StatusNotFound, r)
 			return
 		}
 		handlers.ServeIndex(w, r)
-	})
+	}))
 
-	http.HandleFunc("/tasks", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tasks", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
 			handlers.GetTasks(w, r)
 		case http.MethodPost:
 			handlers.CreateTask(w, r)
 		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
 		}
-	})
+	}))
 
-	http.HandleFunc("/tasks/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/tasks/", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if strings.TrimPrefix(r.URL.Path, "/tasks/") == "" {
-			http.Error(w, "Task ID is required", http.StatusBadRequest)
+			logger.LoggedError(w, "Task ID is required", http.StatusBadRequest, r)
 			return
 		}
 
@@ -47,28 +49,28 @@ func Setup() {
 		case http.MethodDelete:
 			handlers.DeleteTask(w, r)
 		default:
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
 		}
-	})
+	}))
 
 	// Component routes for HTMX HTML snippets
-	http.HandleFunc("/component/tasks", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/component/tasks", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodGet {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
 			return
 		}
 		handlers.GetTasksHTML(w, r)
-	})
+	}))
 
-	http.HandleFunc("/component/tasks/", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("/component/tasks/", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/component/tasks/")
 		if path == "" {
-			http.Error(w, "Task ID is required", http.StatusBadRequest)
+			logger.LoggedError(w, "Task ID is required", http.StatusBadRequest, r)
 			return
 		}
 
 		if r.Method != http.MethodGet {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
 			return
 		}
 
@@ -78,5 +80,5 @@ func Setup() {
 		} else {
 			handlers.GetTaskHTML(w, r)
 		}
-	})
+	}))
 }

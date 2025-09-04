@@ -1,3 +1,4 @@
+// Package components provides functionality to render HTML components using Go's html/template package
 package components
 
 import (
