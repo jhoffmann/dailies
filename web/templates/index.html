@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dailies</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/static/css/style.css">
-    <script src="/static/js/bundle.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.bundle.js"></script>
 </head>
 <body>
     <div class="container">
@@ -41,7 +41,8 @@
                     <button type="button" 
                             class="btn-clear-filters"
                             hx-get="/component/tasks"
-                            hx-target="#task-list">
+                            hx-target="#task-list"
+                            _="on click set #name-filter's value to '' then set #completion-filter's value to ''">
                         <i class="fas fa-times icon"></i>
                     </button>
                 </div>
@@ -52,6 +53,13 @@
                    hx-swap="innerHTML" 
                    hx-trigger="load"></div>
             </div>
+            <button class="btn-create"
+                    hx-get="/component/create/task"
+                    hx-target="body"
+                    hx-swap="beforeend">
+                <i class="fas fa-clone icon"></i>
+                New Task
+            </button>
         </div>
     </div>
 </body>

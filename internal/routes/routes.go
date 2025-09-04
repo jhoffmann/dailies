@@ -13,8 +13,8 @@ import (
 // Setup configures HTTP routes for the application.
 // Registers handlers for static files, root path, and task management API endpoints.
 func Setup() {
-	// Static file server for CSS and JS
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static/"))))
+	// Static file server for bundled assets
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static/dist/"))))
 
 	// Root path serves the main HTML template
 	http.HandleFunc("/", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
@@ -70,6 +70,17 @@ func Setup() {
 			return
 		}
 		web.GetTasksHTML(w, r)
+	}))
+
+	http.HandleFunc("/component/create/task", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			web.GetTaskCreateHTML(w, r)
+		case http.MethodPost:
+			web.CreateTaskHTML(w, r)
+		default:
+			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
+		}
 	}))
 
 	http.HandleFunc("/component/tasks/", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {

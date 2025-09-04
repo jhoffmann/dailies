@@ -1,6 +1,9 @@
 import 'htmx.org';
 import 'htmx-ext-json-enc';
+import _hyperscript from 'hyperscript.org';
 import Swal from 'sweetalert2';
+
+_hyperscript.browserInit();
 
 document.addEventListener('htmx:confirm', function(evt) {
   // Fancy delete confirmation popup
@@ -19,13 +22,4 @@ document.addEventListener('htmx:confirm', function(evt) {
   }
 });
 
-document.addEventListener('click', function(evt) {
-  // Clear filters functionality
-  if (evt.target.closest('.btn-clear-filters')) {
-    const nameFilter = document.getElementById('name-filter');
-    const completionFilter = document.getElementById('completion-filter');
 
-    if (nameFilter) nameFilter.value = '';
-    if (completionFilter) completionFilter.value = '';
-  }
-});

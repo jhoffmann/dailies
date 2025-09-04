@@ -20,6 +20,7 @@ go.work
 
 # Build output
 /build
+/web/static/dist
 coverage.*
 bundle.js
 *.log

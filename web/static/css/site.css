@@ -141,7 +141,7 @@ h1 {
 }
 
 /* Button Styling */
-.btn-edit, .btn-delete {
+.btn-edit, .btn-create, .btn-delete, .btn-cancel {
     background: none;
     border: 1px solid #ddd;
     border-radius: var(--border-radius);;
@@ -154,12 +154,12 @@ h1 {
     gap: 6px;
 }
 
-.btn-edit {
+.btn-edit, .btn-create {
     color: #3498db;
     border-color: #3498db;
 }
 
-.btn-edit:hover {
+.btn-edit:hover, .btn-create:hover {
     background-color: #3498db;
     color: white;
 }
@@ -171,6 +171,16 @@ h1 {
 
 .btn-delete:hover {
     background-color: #e74c3c;
+    color: white;
+}
+
+.btn-cancel {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+.btn-cancel:hover {
+    background-color: #6c757d;
     color: white;
 }
 
@@ -238,6 +248,12 @@ h1 {
 /* Form Styling */
 .form-group {
     margin-bottom: 20px;
+}
+
+.form-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
 }
 
 .form-group label {

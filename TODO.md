@@ -1,6 +1,10 @@
 - ~Add priorities~
 - ~Add a way to edit priorities~
 - ~Add a tags model~
+- ~Create task form~
+- Replace Swal with a custom modal for consistency
+- Move FA into webpack
+- Filter on tags
 - Add a frequency model
-- Create task form
+- Move filters/settings to a collapsible sidebar
 - Update our unit test coverage

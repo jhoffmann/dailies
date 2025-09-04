@@ -191,3 +191,42 @@ func UpdateTaskHTML(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte(html))
 }
+
+// GetTaskCreateHTML returns HTML form for creating a new task.
+func GetTaskCreateHTML(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+
+	html, err := componentRenderer.Render("taskCreate", nil)
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
+		return
+	}
+
+	w.Write([]byte(html))
+}
+
+// CreateTaskHTML handles POST requests to create a new task and return taskView HTML.
+func CreateTaskHTML(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+
+	var task models.Task
+	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
+		logger.LoggedError(w, "Invalid JSON", http.StatusBadRequest, r)
+		return
+	}
+
+	err := task.Create(database.GetDB())
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusBadRequest, r)
+		return
+	}
+
+	html, err := componentRenderer.Render("taskView", task)
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(html))
+}
