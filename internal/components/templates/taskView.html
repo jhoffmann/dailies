@@ -10,7 +10,10 @@
            hx-swap="outerHTML"
            title="{{if .Completed}}Mark as incomplete{{else}}Mark as complete{{end}}"></i>
       </div>
-      <span class="task-name{{if .Completed}} completed{{end}}">{{.Name}}</span>
+      <span class="task-name{{if .Completed}} completed{{end}}"
+        hx-get="/component/tasks/{{.ID}}/edit"
+        hx-target="#task-{{.ID}} .task-name"
+        hx-swap="outerHTML">{{.Name}}</span>
     </div>
     <div class="task-meta">
       <span class="priority-badge priority-{{.Priority}}">{{.Priority}}</span>
@@ -21,12 +24,6 @@
     </div>
   </div>
   <div class="task-actions">
-    <button class="btn-edit"
-            hx-get="/component/tasks/{{.ID}}/edit"
-            hx-target="#task-{{.ID}} .task-name"
-            hx-swap="outerHTML">
-      <i class="fas fa-pencil-alt icon"></i>
-    </button>
     <button class="btn-delete"
             hx-delete="/component/tasks/{{.ID}}"
             confirm-with-sweet-alert='true'

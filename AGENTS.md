@@ -24,5 +24,16 @@
 
 ## No Special Rules
 
-No Cursor rules or Copilot instructions found in this repository.
+- Try to achieve at least 80% code coverage
+- This is an API first application, UI specific methods belong in their respective components
 
+### Stack
+
+- Go (web services)
+  - html/template
+  - embed
+  - sqlite / gorm (database)
+- Bun (package management)
+- htmx (responsive web design)
+- webpack (bundling)
+- Docker (containerization)
