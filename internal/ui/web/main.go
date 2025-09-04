@@ -1,6 +1,8 @@
-package handlers
+// Package web contains HTTP handlers for serving HTML templates and components
+package web
 
 import (
+	"encoding/json"
 	"html/template"
 	"net/http"
 	"path/filepath"
@@ -143,4 +145,46 @@ func DeleteTaskHTML(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(""))
+}
+
+// UpdateTaskHTML handles PUT requests for HTMX task updates.
+// Returns updated taskView HTML snippet.
+func UpdateTaskHTML(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+
+	path := r.URL.Path
+	id := path[len("/component/tasks/"):]
+
+	taskID, err := uuid.Parse(id)
+	if err != nil {
+		logger.LoggedError(w, "Invalid task ID", http.StatusBadRequest, r)
+		return
+	}
+
+	var task models.Task
+	err = task.LoadByID(database.GetDB(), taskID)
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
+		return
+	}
+
+	var updateData models.Task
+	if err := json.NewDecoder(r.Body).Decode(&updateData); err != nil {
+		logger.LoggedError(w, "Invalid JSON", http.StatusBadRequest, r)
+		return
+	}
+
+	err = task.Update(database.GetDB(), &updateData)
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
+		return
+	}
+
+	html, err := componentRenderer.Render("taskView", task)
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
+		return
+	}
+
+	w.Write([]byte(html))
 }

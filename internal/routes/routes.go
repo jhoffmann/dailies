@@ -5,8 +5,9 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/jhoffmann/dailies/internal/handlers"
+	"github.com/jhoffmann/dailies/internal/api"
 	"github.com/jhoffmann/dailies/internal/logger"
+	"github.com/jhoffmann/dailies/internal/ui/web"
 )
 
 // Setup configures HTTP routes for the application.
@@ -21,15 +22,15 @@ func Setup() {
 			logger.LoggedError(w, "Not Found", http.StatusNotFound, r)
 			return
 		}
-		handlers.ServeIndex(w, r)
+		web.ServeIndex(w, r)
 	}))
 
 	http.HandleFunc("/tasks", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:
-			handlers.GetTasks(w, r)
+			api.GetTasks(w, r)
 		case http.MethodPost:
-			handlers.CreateTask(w, r)
+			api.CreateTask(w, r)
 		default:
 			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
 		}
@@ -43,11 +44,11 @@ func Setup() {
 
 		switch r.Method {
 		case http.MethodGet:
-			handlers.GetTask(w, r)
+			api.GetTask(w, r)
 		case http.MethodPut:
-			handlers.UpdateTask(w, r)
+			api.UpdateTask(w, r)
 		case http.MethodDelete:
-			handlers.DeleteTask(w, r)
+			api.DeleteTask(w, r)
 		default:
 			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
 		}
@@ -59,7 +60,7 @@ func Setup() {
 			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
 			return
 		}
-		handlers.GetTasksHTML(w, r)
+		web.GetTasksHTML(w, r)
 	}))
 
 	http.HandleFunc("/component/tasks/", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
@@ -71,7 +72,7 @@ func Setup() {
 
 		// Handle DELETE requests for HTMX
 		if r.Method == http.MethodDelete && strings.HasSuffix(path, "/delete") {
-			handlers.DeleteTaskHTML(w, r)
+			web.DeleteTaskHTML(w, r)
 			return
 		}
 
@@ -82,9 +83,9 @@ func Setup() {
 
 		// Check if this is an edit request
 		if strings.HasSuffix(path, "/edit") {
-			handlers.GetTaskEditHTML(w, r)
+			web.GetTaskEditHTML(w, r)
 		} else {
-			handlers.GetTaskHTML(w, r)
+			web.GetTaskHTML(w, r)
 		}
 	}))
 }

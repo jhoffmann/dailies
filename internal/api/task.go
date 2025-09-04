@@ -1,5 +1,5 @@
-// Package handlers implements HTTP handlers for task management
-package handlers
+// Package api implements HTTP handlers for task management
+package api
 
 import (
 	"encoding/json"
