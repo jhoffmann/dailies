@@ -42,6 +42,23 @@ var taskNames = []string{
 	"Project planning",
 }
 
+var tagNames = []string{
+	"work",
+	"personal",
+	"urgent",
+	"low-priority",
+	"development",
+	"testing",
+	"documentation",
+	"meeting",
+	"maintenance",
+	"security",
+	"performance",
+	"frontend",
+	"backend",
+	"devops",
+}
+
 // main is the entry point for the client application that handles subcommands.
 func main() {
 	if len(os.Args) < 2 {
@@ -80,7 +97,7 @@ func connectToDatabase(dbPath string) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	err = db.AutoMigrate(&models.Task{})
+	err = db.AutoMigrate(&models.Task{}, &models.Tag{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to migrate database: %w", err)
 	}
@@ -100,10 +117,9 @@ func listCommand(args []string) {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	var tasks []models.Task
-	result := db.Find(&tasks)
-	if result.Error != nil {
-		log.Fatalf("Failed to retrieve tasks: %v", result.Error)
+	tasks, err := models.GetTasks(db, nil, "", "")
+	if err != nil {
+		log.Fatalf("Failed to retrieve tasks: %v", err)
 	}
 
 	jsonData, err := json.MarshalIndent(tasks, "", "  ")
@@ -141,22 +157,52 @@ func populateCommand(args []string) {
 	log.Printf("Successfully created %d sample tasks", *entries)
 }
 
-// populateWithSampleData clears existing tasks and creates the specified number of sample tasks in the database.
+// populateWithSampleData clears existing tasks and tags, then creates sample data.
 func populateWithSampleData(db *gorm.DB, count int) error {
-	// Clear existing tasks
+	// Clear existing data
+	db.Exec("DELETE FROM task_tags")
+
 	result := db.Where("1 = 1").Delete(&models.Task{})
 	if result.Error != nil {
 		return fmt.Errorf("failed to clear existing tasks: %w", result.Error)
 	}
 	log.Printf("Cleared %d existing tasks", result.RowsAffected)
 
+	result = db.Where("1 = 1").Delete(&models.Tag{})
+	if result.Error != nil {
+		return fmt.Errorf("failed to clear existing tags: %w", result.Error)
+	}
+	log.Printf("Cleared %d existing tags", result.RowsAffected)
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
+	// Create sample tags
+	var createdTags []models.Tag
+	for _, tagName := range tagNames {
+		tag := models.Tag{Name: tagName}
+		err := tag.Create(db)
+		if err != nil {
+			return fmt.Errorf("failed to create tag %s: %w", tagName, err)
+		}
+		createdTags = append(createdTags, tag)
+	}
+	log.Printf("Created %d sample tags", len(createdTags))
+
+	// Create sample tasks with random tags
 	for i := range count {
 		task := models.Task{
 			Name:      getRandomTaskName(r),
 			Completed: r.Float32() < 0.3, // 30% chance of being completed
 			Priority:  r.Intn(5) + 1,     // Random priority 1-5
+		}
+
+		// Add random tags to each task (0-3 tags per task)
+		numTags := r.Intn(4)
+		if numTags > 0 {
+			tagIndices := r.Perm(len(createdTags))
+			for j := 0; j < numTags && j < len(tagIndices); j++ {
+				task.Tags = append(task.Tags, createdTags[tagIndices[j]])
+			}
 		}
 
 		result := db.Create(&task)
