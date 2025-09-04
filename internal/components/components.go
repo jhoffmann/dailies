@@ -31,7 +31,13 @@ func formatDate(t time.Time) string {
 				if minutes == 0 {
 					return "just now"
 				}
+				if minutes == 1 {
+					return "1 minute ago"
+				}
 				return fmt.Sprintf("%d minutes ago", minutes)
+			}
+			if hours == 1 {
+				return "1 hour ago"
 			}
 			return fmt.Sprintf("%d hours ago", hours)
 		}
