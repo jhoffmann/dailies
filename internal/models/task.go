@@ -16,7 +16,8 @@ import (
 //	 "name": "Review pull requests",
 //	 "date_created": "2025-09-03T21:17:04.32338525-06:00",
 //	 "date_modified": "2025-09-03T21:17:04.32338525-06:00",
-//	 "completed": false
+//	 "completed": false,
+//	 "priority": 3
 //	}
 type Task struct {
 	ID           uuid.UUID `json:"id" gorm:"type:text;primary_key"`
@@ -24,6 +25,7 @@ type Task struct {
 	DateCreated  time.Time `json:"date_created" gorm:"autoCreateTime"`
 	DateModified time.Time `json:"date_modified" gorm:"autoUpdateTime"`
 	Completed    bool      `json:"completed" gorm:"default:false"`
+	Priority     int       `json:"priority" gorm:"default:3"`
 }
 
 // BeforeCreate is a GORM hook that generates a UUID for new tasks if not already set.
@@ -67,6 +69,9 @@ func (task *Task) Update(db *gorm.DB, updateData *Task) error {
 		task.Name = updateData.Name
 	}
 	task.Completed = updateData.Completed
+	if updateData.Priority >= 1 && updateData.Priority <= 5 {
+		task.Priority = updateData.Priority
+	}
 
 	result := db.Save(task)
 	return result.Error
@@ -84,8 +89,9 @@ func (task *Task) Delete(db *gorm.DB) error {
 	return nil
 }
 
-// GetTasks retrieves tasks with optional filtering.
-func GetTasks(db *gorm.DB, completedFilter *bool, nameFilter string) ([]Task, error) {
+// GetTasks retrieves tasks with optional filtering and sorting.
+// sortField can be "completed", "priority", or "name".
+func GetTasks(db *gorm.DB, completedFilter *bool, nameFilter string, sortField string) ([]Task, error) {
 	var tasks []Task
 	query := db
 
@@ -95,6 +101,17 @@ func GetTasks(db *gorm.DB, completedFilter *bool, nameFilter string) ([]Task, er
 
 	if nameFilter != "" {
 		query = query.Where("name LIKE ?", "%"+nameFilter+"%")
+	}
+
+	switch sortField {
+	case "completed":
+		query = query.Order("completed ASC")
+	case "priority":
+		query = query.Order("priority ASC")
+	case "name":
+		query = query.Order("name ASC")
+	default:
+		query = query.Order("date_created DESC")
 	}
 
 	result := query.Find(&tasks)

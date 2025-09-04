@@ -12,8 +12,8 @@ import (
 	"github.com/jhoffmann/dailies/internal/models"
 )
 
-// GetTasks handles GET requests to retrieve tasks with optional filtering.
-// Supports query parameters: completed (boolean) and name (string for partial matching).
+// GetTasks handles GET requests to retrieve tasks with optional filtering and sorting.
+// Supports query parameters: completed (boolean), name (string for partial matching), and sort (completed, priority, name).
 func GetTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -26,8 +26,9 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 	}
 
 	nameFilter := r.URL.Query().Get("name")
+	sortField := r.URL.Query().Get("sort")
 
-	tasks, err := models.GetTasks(database.GetDB(), completedFilter, nameFilter)
+	tasks, err := models.GetTasks(database.GetDB(), completedFilter, nameFilter, sortField)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return

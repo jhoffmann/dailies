@@ -34,7 +34,7 @@ func ServeIndex(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetTasksHTML returns HTML snippet for task list (for HTMX).
-// Supports query parameters: completed (boolean) and name (string for partial matching).
+// Supports query parameters: completed (boolean), name (string for partial matching), and sort (completed, priority, name).
 func GetTasksHTML(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
@@ -47,8 +47,9 @@ func GetTasksHTML(w http.ResponseWriter, r *http.Request) {
 	}
 
 	nameFilter := r.URL.Query().Get("name")
+	sortField := r.URL.Query().Get("sort")
 
-	tasks, err := models.GetTasks(database.GetDB(), completedFilter, nameFilter)
+	tasks, err := models.GetTasks(database.GetDB(), completedFilter, nameFilter, sortField)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return
