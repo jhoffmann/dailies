@@ -25,6 +25,15 @@ func Setup() {
 		web.ServeIndex(w, r)
 	}))
 
+	// Health check endpoint
+	http.HandleFunc("/healthz", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
+			return
+		}
+		api.HealthCheck(w, r)
+	}))
+
 	http.HandleFunc("/tasks", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:

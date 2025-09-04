@@ -16,7 +16,7 @@ services:
           "--no-verbose",
           "--tries=1",
           "--spider",
-          "http://localhost:8080/api/periods",
+          "http://localhost:8080/healthz",
         ]
       interval: 30s
       timeout: 10s

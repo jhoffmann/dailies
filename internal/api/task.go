@@ -132,3 +132,29 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusNoContent)
 }
+
+// HealthCheck handles GET requests to check application health.
+// Returns HTTP 200 with JSON body {'health': 'Ok'} if database connection is working.
+func HealthCheck(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	db := database.GetDB()
+	if db == nil {
+		logger.LoggedError(w, "Database not initialized", http.StatusInternalServerError, r)
+		return
+	}
+
+	sqlDB, err := db.DB()
+	if err != nil {
+		logger.LoggedError(w, "Failed to get database connection", http.StatusInternalServerError, r)
+		return
+	}
+
+	if err := sqlDB.Ping(); err != nil {
+		logger.LoggedError(w, "Database connection failed", http.StatusInternalServerError, r)
+		return
+	}
+
+	response := map[string]string{"status": "UP"}
+	json.NewEncoder(w).Encode(response)
+}
