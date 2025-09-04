@@ -170,6 +170,41 @@ h1 {
     font-size: 14px;
 }
 
+/* Priority Styling */
+.priority-badge {
+    display: inline-block;
+    min-width: 24px;
+    height: 24px;
+    border-radius: 4px;
+    color: white;
+    font-weight: bold;
+    font-size: 12px;
+    text-align: center;
+    line-height: 24px;
+    padding: 0 4px;
+}
+
+.priority-1 {
+    background-color: #e74c3c; /* Red */
+}
+
+.priority-2 {
+    background-color: #f39c12; /* Orange */
+}
+
+.priority-3 {
+    background-color: #f1c40f; /* Yellow */
+    color: #333; /* Dark text for better contrast on yellow */
+}
+
+.priority-4 {
+    background-color: #27ae60; /* Green */
+}
+
+.priority-5 {
+    background-color: #3498db; /* Blue */
+}
+
 /* Task Edit Input Styling */
 .task-name-input {
     width: 600px;
