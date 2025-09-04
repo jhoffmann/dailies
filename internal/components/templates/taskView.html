@@ -27,7 +27,7 @@
       <i class="fas fa-pencil-alt icon"></i>
     </button>
     <button class="btn-delete"
-            hx-delete="/component/tasks/{{.ID}}/delete"
+            hx-delete="/component/tasks/{{.ID}}"
             confirm-with-sweet-alert='true'
             hx-target="#task-{{.ID}}"
             hx-swap="outerHTML">

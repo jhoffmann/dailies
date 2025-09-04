@@ -70,22 +70,20 @@ func Setup() {
 			return
 		}
 
-		// Handle DELETE requests for HTMX
-		if r.Method == http.MethodDelete && strings.HasSuffix(path, "/delete") {
+		switch r.Method {
+		case http.MethodGet:
+			// Check if this is an edit request
+			if strings.HasSuffix(path, "/edit") {
+				web.GetTaskEditHTML(w, r)
+			} else {
+				web.GetTaskHTML(w, r)
+			}
+		case http.MethodPut:
+			web.UpdateTaskHTML(w, r)
+		case http.MethodDelete:
 			web.DeleteTaskHTML(w, r)
-			return
-		}
-
-		if r.Method != http.MethodGet {
+		default:
 			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
-			return
-		}
-
-		// Check if this is an edit request
-		if strings.HasSuffix(path, "/edit") {
-			web.GetTaskEditHTML(w, r)
-		} else {
-			web.GetTaskHTML(w, r)
 		}
 	}))
 }

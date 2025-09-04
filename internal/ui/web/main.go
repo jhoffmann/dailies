@@ -126,8 +126,7 @@ func DeleteTaskHTML(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
 	path := r.URL.Path
-	idEnd := len(path) - len("/delete")
-	id := path[len("/component/tasks/"):idEnd]
+	id := path[len("/component/tasks/"):]
 
 	taskID, err := uuid.Parse(id)
 	if err != nil {
