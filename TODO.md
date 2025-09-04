@@ -1,0 +1,3 @@
+- Add priorities with a radio pillbox
+- Add a tags model
+- Add a frequency model

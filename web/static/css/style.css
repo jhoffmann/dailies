@@ -170,6 +170,16 @@ h1 {
     font-size: 14px;
 }
 
+/* Task Edit Input Styling */
+.task-name-input {
+    width: 600px;
+    border: none;
+    background: transparent;
+    font-size: inherit;
+    font-family: inherit;
+    outline: none;
+}
+
 /* Form Styling */
 .form-group {
     margin-bottom: 20px;

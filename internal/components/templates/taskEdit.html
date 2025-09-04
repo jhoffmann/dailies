@@ -1,1 +1,19 @@
-<!-- Placeholder -->
+<form hx-ext="json-enc"
+      hx-put="/component/tasks/{{.ID}}"
+      hx-target="#task-{{.ID}}"
+      hx-swap="outerHTML"
+      style="display: inline; margin: 0;">
+  <input type="text" 
+         name="name"
+         class="task-name-input"
+         value="{{.Name}}"
+         autofocus
+         hx-trigger="keyup[key=='Enter'] from:closest form"
+         placeholder="Task name...">
+  <button type="button" 
+          hx-get="/component/tasks/{{.ID}}"
+          hx-target="#task-{{.ID}}"
+          hx-swap="outerHTML"
+          hx-trigger="blur from:previous input, keyup[key=='Escape'] from:previous input"
+          style="display: none;">Cancel</button>
+</form>

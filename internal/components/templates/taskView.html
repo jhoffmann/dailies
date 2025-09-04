@@ -22,7 +22,7 @@
   <div class="task-actions">
     <button class="btn-edit"
             hx-get="/component/tasks/{{.ID}}/edit"
-            hx-target="#task-{{.ID}}"
+            hx-target="#task-{{.ID}} .task-name"
             hx-swap="outerHTML">
       <i class="fas fa-pencil-alt icon"></i>
     </button>
