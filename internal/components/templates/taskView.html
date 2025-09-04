@@ -10,7 +10,12 @@
            hx-swap="outerHTML"
            title="{{if .Completed}}Mark as incomplete{{else}}Mark as complete{{end}}"></i>
       </div>
-      <span class="priority-badge priority-{{.Priority}}">{{.Priority}}</span>
+      <span class="priority-badge priority-{{.Priority}}"
+            hx-ext="json-enc"
+            hx-put="/component/tasks/{{.ID}}"
+            hx-vals='{"priority": {{raise .Priority}}}'
+            hx-target="#task-{{.ID}}"
+            hx-swap="outerHTML">{{.Priority}}</span>
       <span class="task-name{{if .Completed}} completed{{end}}"
             hx-get="/component/tasks/{{.ID}}/edit"
             hx-target="#task-{{.ID}} .task-name"

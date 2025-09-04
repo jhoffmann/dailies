@@ -50,6 +50,14 @@ func formatDateFull(t time.Time) string {
 	return t.Format("2006-01-02 3:04pm MST")
 }
 
+func raisePriority(i int) int {
+	i = i - 1
+	if i == 0 {
+		i = 5
+	}
+	return i
+}
+
 func NewComponentRenderer() *ComponentRenderer {
 	cr := &ComponentRenderer{templates: make(map[string]*template.Template)}
 
@@ -58,6 +66,7 @@ func NewComponentRenderer() *ComponentRenderer {
 		"formatDate":     formatDate,
 		"formatDateFull": formatDateFull,
 		"toggle":         func(b bool) bool { return !b },
+		"raise":          raisePriority,
 	}
 
 	// Load all component templates together so they can reference each other

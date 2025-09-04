@@ -1,5 +1,6 @@
 - ~Add priorities~
-- Add a way to edit priorities
+- ~Add a way to edit priorities~
 - Add a tags model
 - Add a frequency model
 - Create task form
+- Update our unit test coverage
