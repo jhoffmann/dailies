@@ -117,3 +117,30 @@ func GetTaskEditHTML(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte(html))
 }
+
+// DeleteTaskHTML handles DELETE requests for HTMX task deletion.
+// Returns empty content to remove the task from DOM.
+func DeleteTaskHTML(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+
+	path := r.URL.Path
+	idEnd := len(path) - len("/delete")
+	id := path[len("/component/tasks/"):idEnd]
+
+	taskID, err := uuid.Parse(id)
+	if err != nil {
+		logger.LoggedError(w, "Invalid task ID", http.StatusBadRequest, r)
+		return
+	}
+
+	var task models.Task
+	task.ID = taskID
+	err = task.Delete(database.GetDB())
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
+		return
+	}
+
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(""))
+}

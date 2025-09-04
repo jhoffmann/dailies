@@ -69,6 +69,12 @@ func Setup() {
 			return
 		}
 
+		// Handle DELETE requests for HTMX
+		if r.Method == http.MethodDelete && strings.HasSuffix(path, "/delete") {
+			handlers.DeleteTaskHTML(w, r)
+			return
+		}
+
 		if r.Method != http.MethodGet {
 			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
 			return
