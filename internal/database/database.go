@@ -3,7 +3,6 @@ package database
 
 import (
 	"log"
-	"os"
 
 	"github.com/jhoffmann/dailies/internal/models"
 	"gorm.io/driver/sqlite"
@@ -13,12 +12,8 @@ import (
 var DB *gorm.DB
 
 // Init initializes the database connection and performs auto-migration.
-// It uses the DB_PATH environment variable or defaults to "dailies.db".
-func Init() {
-	dbPath := os.Getenv("DB_PATH")
-	if dbPath == "" {
-		dbPath = "dailies.db"
-	}
+// It accepts a database file path parameter.
+func Init(dbPath string) {
 
 	var err error
 	DB, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{})

@@ -10,15 +10,13 @@ import (
 
 func TestInit(t *testing.T) {
 	t.Run("initializes database with default path", func(t *testing.T) {
-		os.Unsetenv("DB_PATH")
-
 		originalDB := DB
 		defer func() {
 			DB = originalDB
 		}()
 
 		DB = nil
-		Init()
+		Init("dailies.db")
 
 		if DB == nil {
 			t.Error("Expected DB to be initialized")
@@ -33,11 +31,7 @@ func TestInit(t *testing.T) {
 
 	t.Run("initializes database with custom path", func(t *testing.T) {
 		testDB := "test_dailies.db"
-		os.Setenv("DB_PATH", testDB)
-		defer func() {
-			os.Unsetenv("DB_PATH")
-			os.Remove(testDB)
-		}()
+		defer os.Remove(testDB)
 
 		originalDB := DB
 		defer func() {
@@ -45,7 +39,7 @@ func TestInit(t *testing.T) {
 		}()
 
 		DB = nil
-		Init()
+		Init(testDB)
 
 		if DB == nil {
 			t.Error("Expected DB to be initialized")
@@ -89,16 +83,13 @@ func TestInit_WithExistingFile(t *testing.T) {
 	testDB := "test_existing.db"
 	defer os.Remove(testDB)
 
-	os.Setenv("DB_PATH", testDB)
-	defer os.Unsetenv("DB_PATH")
-
 	originalDB := DB
 	defer func() {
 		DB = originalDB
 	}()
 
 	DB = nil
-	Init()
+	Init(testDB)
 
 	if DB == nil {
 		t.Error("Expected DB to be initialized")

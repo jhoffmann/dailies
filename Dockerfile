@@ -37,4 +37,4 @@ EXPOSE 8080
 ENV DB_PATH=/data/dailies.db
 
 # Run the application
-CMD ["./server", "--address", ":8080"]
+CMD ["sh", "-c", "./server --address :8080 --db ${DB_PATH}"]
