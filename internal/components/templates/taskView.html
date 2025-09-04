@@ -1,0 +1,30 @@
+<div class="task-item" id="task-{{.ID}}" data-task-id="{{.ID}}">
+  <div class="task-content">
+    <div class="task-header">
+       <input type="checkbox" class="task-checkbox" {{if .Completed}}checked{{end}}
+              hx-ext="json-enc"
+              hx-put="/tasks/{{.ID}}"
+              hx-vals='js:{"completed": this.checked}'
+              hx-target="#task-{{.ID}}"
+              hx-swap="outerHTML">
+      <span class="task-name {{if .Completed}}completed{{end}}">{{.Name}}</span>
+    </div>
+    <div class="task-meta">
+      <span class="task-created" title="{{formatDateFull .DateCreated}}">{{formatDate .DateCreated}}</span>
+      {{if ne .DateCreated .DateModified}}
+      <span class="task-modified" title="{{formatDateFull .DateModified}}"> • Modified {{formatDate .DateModified}}</span>
+      {{end}}
+    </div>
+  </div>
+  <div class="task-actions">
+    <button class="btn-edit"
+            hx-get="/component/tasks/{{.ID}}/edit"
+            hx-target="#task-{{.ID}}"
+            hx-swap="outerHTML">Edit</button>
+    <button class="btn-delete"
+            hx-delete="/tasks/{{.ID}}"
+            confirm-with-sweet-alert='true'
+            hx-target="#task-{{.ID}}"
+            hx-swap="outerHTML">Delete</button>
+  </div>
+</div>

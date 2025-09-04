@@ -1,0 +1,7 @@
+{{range .}}
+{{template "taskView.html" .}}
+{{else}}
+<div class="no-tasks">
+  <p>No tasks found.</p>
+</div>
+{{end}}

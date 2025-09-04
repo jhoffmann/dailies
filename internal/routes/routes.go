@@ -50,4 +50,33 @@ func Setup() {
 			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
 		}
 	})
+
+	// Component routes for HTMX HTML snippets
+	http.HandleFunc("/component/tasks", func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+		handlers.GetTasksHTML(w, r)
+	})
+
+	http.HandleFunc("/component/tasks/", func(w http.ResponseWriter, r *http.Request) {
+		path := strings.TrimPrefix(r.URL.Path, "/component/tasks/")
+		if path == "" {
+			http.Error(w, "Task ID is required", http.StatusBadRequest)
+			return
+		}
+
+		if r.Method != http.MethodGet {
+			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
+			return
+		}
+
+		// Check if this is an edit request
+		if strings.HasSuffix(path, "/edit") {
+			handlers.GetTaskEditHTML(w, r)
+		} else {
+			handlers.GetTaskHTML(w, r)
+		}
+	})
 }

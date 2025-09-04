@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -8,6 +9,14 @@ import (
 )
 
 // Task represents a daily task with tracking information.
+//
+//	{
+//	 "id": "a4837ac1-c807-4edd-ba49-d4e37f295be7",
+//	 "name": "Review pull requests",
+//	 "date_created": "2025-09-03T21:17:04.32338525-06:00",
+//	 "date_modified": "2025-09-03T21:17:04.32338525-06:00",
+//	 "completed": false
+//	}
 type Task struct {
 	ID           uuid.UUID `json:"id" gorm:"type:text;primary_key"`
 	Name         string    `json:"name" gorm:"not null"`
@@ -21,5 +30,72 @@ func (task *Task) BeforeCreate(tx *gorm.DB) (err error) {
 	if task.ID == uuid.Nil {
 		task.ID = uuid.New()
 	}
-	return
+	return err
+}
+
+// Save creates or updates the task in the database.
+func (task *Task) Save(db *gorm.DB) error {
+	result := db.Save(task)
+	return result.Error
+}
+
+// Create inserts a new task into the database.
+func (task *Task) Create(db *gorm.DB) error {
+	if task.Name == "" {
+		return errors.New("task name is required")
+	}
+	result := db.Create(task)
+	return result.Error
+}
+
+// LoadByID loads a task by its ID from the database.
+func (task *Task) LoadByID(db *gorm.DB, id uuid.UUID) error {
+	result := db.First(task, "id = ?", id)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return errors.New("task not found")
+		}
+		return result.Error
+	}
+	return nil
+}
+
+// Update updates the task in the database with new data.
+func (task *Task) Update(db *gorm.DB, updateData *Task) error {
+	if updateData.Name != "" {
+		task.Name = updateData.Name
+	}
+	task.Completed = updateData.Completed
+
+	result := db.Save(task)
+	return result.Error
+}
+
+// Delete removes the task from the database.
+func (task *Task) Delete(db *gorm.DB) error {
+	result := db.Delete(task, "id = ?", task.ID)
+	if result.Error != nil {
+		return result.Error
+	}
+	if result.RowsAffected == 0 {
+		return errors.New("task not found")
+	}
+	return nil
+}
+
+// GetTasks retrieves tasks with optional filtering.
+func GetTasks(db *gorm.DB, completedFilter *bool, nameFilter string) ([]Task, error) {
+	var tasks []Task
+	query := db
+
+	if completedFilter != nil {
+		query = query.Where("completed = ?", *completedFilter)
+	}
+
+	if nameFilter != "" {
+		query = query.Where("name LIKE ?", "%"+nameFilter+"%")
+	}
+
+	result := query.Find(&tasks)
+	return tasks, result.Error
 }

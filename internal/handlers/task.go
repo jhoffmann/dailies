@@ -15,24 +15,19 @@ import (
 func GetTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var tasks []models.Task
-	query := database.GetDB()
-
+	var completedFilter *bool
 	completed := r.URL.Query().Get("completed")
 	if completed != "" {
 		if completedBool, err := strconv.ParseBool(completed); err == nil {
-			query = query.Where("completed = ?", completedBool)
+			completedFilter = &completedBool
 		}
 	}
 
-	name := r.URL.Query().Get("name")
-	if name != "" {
-		query = query.Where("name LIKE ?", "%"+name+"%")
-	}
+	nameFilter := r.URL.Query().Get("name")
 
-	result := query.Find(&tasks)
-	if result.Error != nil {
-		http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+	tasks, err := models.GetTasks(database.GetDB(), completedFilter, nameFilter)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
@@ -51,9 +46,9 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var task models.Task
-	result := database.GetDB().First(&task, "id = ?", taskID)
-	if result.Error != nil {
-		http.Error(w, "Task not found", http.StatusNotFound)
+	err = task.LoadByID(database.GetDB(), taskID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -71,14 +66,9 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if task.Name == "" {
-		http.Error(w, "Task name is required", http.StatusBadRequest)
-		return
-	}
-
-	result := database.GetDB().Create(&task)
-	if result.Error != nil {
-		http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+	err := task.Create(database.GetDB())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
 	}
 
@@ -98,10 +88,10 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var existingTask models.Task
-	result := database.GetDB().First(&existingTask, "id = ?", taskID)
-	if result.Error != nil {
-		http.Error(w, "Task not found", http.StatusNotFound)
+	var task models.Task
+	err = task.LoadByID(database.GetDB(), taskID)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 
@@ -111,18 +101,13 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if updateData.Name != "" {
-		existingTask.Name = updateData.Name
-	}
-	existingTask.Completed = updateData.Completed
-
-	result = database.GetDB().Save(&existingTask)
-	if result.Error != nil {
-		http.Error(w, result.Error.Error(), http.StatusInternalServerError)
+	err = task.Update(database.GetDB(), &updateData)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	json.NewEncoder(w).Encode(existingTask)
+	json.NewEncoder(w).Encode(task)
 }
 
 // DeleteTask handles DELETE requests to remove a task by ID.
@@ -134,14 +119,11 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	result := database.GetDB().Delete(&models.Task{}, "id = ?", taskID)
-	if result.Error != nil {
-		http.Error(w, result.Error.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	if result.RowsAffected == 0 {
-		http.Error(w, "Task not found", http.StatusNotFound)
+	var task models.Task
+	task.ID = taskID
+	err = task.Delete(database.GetDB())
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusNotFound)
 		return
 	}
 

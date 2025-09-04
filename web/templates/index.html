@@ -12,7 +12,8 @@
         <div class="main-content">
             <h1>Dailies</h1>
             <div id="app">
-                <!-- SPA content will be rendered here -->
+              <h3>Tasks</h3>
+              <div hx-get="/component/tasks" hx-swap="innerHTML" hx-trigger="load"></div>
             </div>
         </div>
     </div>

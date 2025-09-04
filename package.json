@@ -13,6 +13,8 @@
     "webpack-cli": "^6.0"
   },
   "dependencies": {
-    "htmx.org": "^2.0"
+    "htmx-ext-json-enc": "^2.0.2",
+    "htmx.org": "^2.0.6",
+    "sweetalert2": "^11.23"
   }
 }
