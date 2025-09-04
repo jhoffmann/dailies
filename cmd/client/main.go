@@ -156,6 +156,7 @@ func populateWithSampleData(db *gorm.DB, count int) error {
 		task := models.Task{
 			Name:      getRandomTaskName(r),
 			Completed: r.Float32() < 0.3, // 30% chance of being completed
+			Priority:  r.Intn(5) + 1,     // Random priority 1-5
 		}
 
 		result := db.Create(&task)

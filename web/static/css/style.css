@@ -46,6 +46,11 @@ h1 {
     box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
 }
 
+.task-item.completed {
+    background: #dedede;
+    border-color: #dedede;
+}
+
 .task-content {
     display: flex;
     flex-direction: column;
@@ -114,7 +119,6 @@ h1 {
 }
 
 .task-name.completed {
-    text-decoration: line-through;
     color: #7f8c8d;
 }
 
@@ -127,7 +131,6 @@ h1 {
 .task-actions {
     display: flex;
     gap: 8px;
-    margin-top: 12px;
     justify-content: flex-end;
 }
 
@@ -136,9 +139,9 @@ h1 {
     background: none;
     border: 1px solid #ddd;
     border-radius: 6px;
-    padding: 8px 12px;
+    padding: 6px 10px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: inherit;
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
@@ -167,7 +170,7 @@ h1 {
 
 /* Icon Styling */
 .icon {
-    font-size: 14px;
+    font-size: inherit;
 }
 
 /* Priority Styling */
@@ -182,6 +185,10 @@ h1 {
     text-align: center;
     line-height: 24px;
     padding: 0 4px;
+}
+
+.task-item.completed .priority-badge {
+    opacity: 0.6;
 }
 
 .priority-1 {

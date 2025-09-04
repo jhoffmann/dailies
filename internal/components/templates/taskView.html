@@ -1,4 +1,4 @@
-<div class="task-item" id="task-{{.ID}}" data-task-id="{{.ID}}">
+<div class="task-item{{if .Completed}} completed{{end}}" id="task-{{.ID}}" data-task-id="{{.ID}}">
   <div class="task-content">
     <div class="task-header">
       <div class="checkbox-wrapper">
@@ -10,13 +10,13 @@
            hx-swap="outerHTML"
            title="{{if .Completed}}Mark as incomplete{{else}}Mark as complete{{end}}"></i>
       </div>
+      <span class="priority-badge priority-{{.Priority}}">{{.Priority}}</span>
       <span class="task-name{{if .Completed}} completed{{end}}"
-        hx-get="/component/tasks/{{.ID}}/edit"
-        hx-target="#task-{{.ID}} .task-name"
-        hx-swap="outerHTML">{{.Name}}</span>
+            hx-get="/component/tasks/{{.ID}}/edit"
+            hx-target="#task-{{.ID}} .task-name"
+            hx-swap="outerHTML">{{.Name}}</span>
     </div>
     <div class="task-meta">
-      <span class="priority-badge priority-{{.Priority}}">{{.Priority}}</span>
       <span class="task-created" title="{{formatDateFull .DateCreated}}">{{formatDate .DateCreated}}</span>
       {{if ne .DateCreated .DateModified}}
       <span class="task-modified" title="{{formatDateFull .DateModified}}"> • Modified {{formatDate .DateModified}}</span>
@@ -24,12 +24,14 @@
     </div>
   </div>
   <div class="task-actions">
+    {{if .Completed}}
     <button class="btn-delete"
             hx-delete="/component/tasks/{{.ID}}"
-            confirm-with-sweet-alert='true'
+            confirm-delete='true'
             hx-target="#task-{{.ID}}"
             hx-swap="outerHTML">
       <i class="fas fa-trash-alt icon"></i>
     </button>
+    {{end}}
   </div>
 </div>

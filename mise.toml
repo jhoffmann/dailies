@@ -11,7 +11,7 @@ run = "cd demo && vhs demo.tape"
 
 [tasks.clean]
 description = "Clean build and test artifacts"
-run = ["rm -rf build/", "rm -f *.out *.html *.sql *.db", "go clean -testcache"]
+run = ["rm -rf build/", "rm -f *.out *.html", "go clean -testcache"]
 
 [tasks.dev]
 description = "Standard development workflow"

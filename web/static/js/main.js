@@ -4,7 +4,7 @@ import Swal from 'sweetalert2';
 
 document.addEventListener('htmx:confirm', function(evt) {
   // Fancy delete confirmation popup
-  if (evt.target.matches("[confirm-with-sweet-alert='true']")) {
+  if (evt.target.matches("[confirm-delete='true']")) {
     evt.preventDefault();
     Swal.fire({
       title: "Are you sure?",

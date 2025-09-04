@@ -43,13 +43,14 @@
                             hx-get="/component/tasks"
                             hx-target="#task-list">
                         <i class="fas fa-times icon"></i>
-                        Clear
                     </button>
                 </div>
             </div>
 
             <div id="app">
-              <div id="task-list" hx-get="/component/tasks" hx-swap="innerHTML" hx-trigger="load"></div>
+              <div id="task-list" hx-get="/component/tasks"
+                   hx-swap="innerHTML" 
+                   hx-trigger="load"></div>
             </div>
         </div>
     </div>

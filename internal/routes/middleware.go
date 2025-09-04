@@ -33,10 +33,10 @@ func LogMiddleware(next http.HandlerFunc) http.HandlerFunc {
 
 		// Check if an error was stored in context
 		if errorInfo, ok := r.Context().Value(logger.ErrorKey).(logger.ErrorInfo); ok {
-			log.Printf("Request: %s %s - %d - %s - %v",
+			log.Printf("%s %s - %d - %s - %v",
 				r.Method, r.URL.Path, wrapped.statusCode, errorInfo.Message, duration)
 		} else {
-			log.Printf("Request: %s %s - %d - %v",
+			log.Printf("%s %s - %d - %v",
 				r.Method, r.URL.Path, wrapped.statusCode, duration)
 		}
 	}
