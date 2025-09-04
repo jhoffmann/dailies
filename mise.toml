@@ -15,8 +15,12 @@ run = ["rm -rf build/", "rm -f *.out *.html *.sql *.db", "go clean -testcache"]
 
 [tasks.dev]
 description = "Standard development workflow"
-depends = ["dependencies", "format", "analysis", "test"]
+depends = ["dependencies", "format", "analysis", "test", "webpack"]
 alias = "d"
+
+[tasks.webpack]
+description = "Run webpack to bundle frontend assets"
+run = "bun run build"
 
 [tasks.dependencies]
 description = "Install dependencies"

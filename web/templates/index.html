@@ -12,8 +12,44 @@
     <div class="container">
         <div class="main-content">
             <h1>Daily Tasks</h1>
+
+            <!-- Filter Bar -->
+            <div class="filter-bar">
+                <div class="filter-group">
+                    <input type="text" 
+                           id="name-filter" 
+                           name="name"
+                           placeholder="Filter by name..."
+                           hx-get="/component/tasks"
+                           hx-target="#task-list"
+                           hx-trigger="keyup changed delay:300ms, search"
+                           hx-include="#completion-filter">
+                </div>
+                <div class="filter-group">
+                    <select id="completion-filter" 
+                            name="completed"
+                            hx-get="/component/tasks"
+                            hx-target="#task-list"
+                            hx-trigger="change"
+                            hx-include="#name-filter">
+                        <option value="">All tasks</option>
+                        <option value="false">Active tasks</option>
+                        <option value="true">Completed tasks</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <button type="button" 
+                            class="btn-clear-filters"
+                            hx-get="/component/tasks"
+                            hx-target="#task-list">
+                        <i class="fas fa-times icon"></i>
+                        Clear
+                    </button>
+                </div>
+            </div>
+
             <div id="app">
-              <div hx-get="/component/tasks" hx-swap="innerHTML" hx-trigger="load"></div>
+              <div id="task-list" hx-get="/component/tasks" hx-swap="innerHTML" hx-trigger="load"></div>
             </div>
         </div>
     </div>

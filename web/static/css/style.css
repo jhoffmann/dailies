@@ -215,3 +215,102 @@ h1 {
 .btn-primary:hover {
     background-color: #2980b9;
 }
+
+/* Filter Bar Styling */
+.filter-bar {
+    background: #f8f9fa;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.filter-group:first-child {
+    flex: 1;
+    min-width: 200px;
+}
+
+#name-edit, #name-filter {
+    padding: 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    width: 100%;
+    max-width: 300px;
+}
+
+#name-filter:focus {
+    outline: none;
+    border-color: #3498db;
+    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.1);
+}
+
+#completion-filter {
+    padding: 8px 32px 8px 12px;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    font-size: 14px;
+    background: white;
+    background-size: 16px;
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    cursor: pointer;
+    transition: border-color 0.2s ease;
+    min-width: 140px;
+}
+
+#completion-filter:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.btn-clear-filters {
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    color: #6c757d;
+}
+
+.btn-clear-filters:hover {
+    background: #e9ecef;
+    color: #495057;
+}
+
+@media (max-width: 768px) {
+    .filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .filter-group {
+        justify-content: stretch;
+    }
+    
+    .filter-group:first-child {
+        min-width: unset;
+    }
+    
+    #name-filter,
+    #completion-filter {
+        max-width: none;
+    }
+}

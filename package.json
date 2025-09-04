@@ -6,7 +6,7 @@
   "scripts": {
     "build": "webpack --mode production",
     "dev": "webpack --mode development --watch",
-    "serve": "go run cmd/server/main.go serve"
+    "serve": "air"
   },
   "devDependencies": {
     "webpack": "^5.0",
