@@ -4,8 +4,9 @@
 - ~Create task form~
 - ~Replace Swal with a custom modal for consistency~
 - ~Add tags to tasks~
-- Move filters/settings to a collapsible sidebar
+- ~Move filters/settings to a collapsible sidebar~
 - Filter on tags
+- Add task sorting to the web ui
 - Add a frequency model
 - Move FA into webpack
 - Add pagination buttons, gets messy when you're adding/removing from the view real-time

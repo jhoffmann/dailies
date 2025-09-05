@@ -10,10 +10,12 @@ import (
 )
 
 var DB *gorm.DB
+var dbPath string
 
 // Init initializes the database connection and performs auto-migration.
 // It accepts a database file path parameter.
-func Init(dbPath string) {
+func Init(path string) {
+	dbPath = path
 
 	var err error
 	DB, err = gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
@@ -32,4 +34,9 @@ func Init(dbPath string) {
 // GetDB returns the global database instance.
 func GetDB() *gorm.DB {
 	return DB
+}
+
+// GetDBPath returns the database file path.
+func GetDBPath() string {
+	return dbPath
 }

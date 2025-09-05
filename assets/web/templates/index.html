@@ -9,63 +9,31 @@
         <script src="/static/script.bundle.js"></script>
     </head>
     <body>
-        <div class="container">
-            <div class="main-content">
-                <h1>Daily Task List</h1>
+        <div class="app-layout">
+            {{template "sidebar.html"}}
 
-                <!-- Filter Bar -->
-                <div class="filter-bar">
-                    <div class="filter-group">
-                        <input
-                            type="text"
-                            id="name-filter"
-                            name="name"
-                            placeholder="Filter by name..."
-                            hx-get="/component/tasks"
-                            hx-target="#task-list"
-                            hx-trigger="keyup changed delay:300ms, search"
-                            hx-include="#completion-filter"
-                        />
-                    </div>
-                    <div class="filter-group">
-                        <select
-                            id="completion-filter"
-                            name="completed"
-                            hx-get="/component/tasks"
-                            hx-target="#task-list"
-                            hx-trigger="change"
-                            hx-include="#name-filter"
-                        >
-                            <option value="">All tasks</option>
-                            <option value="false">Active tasks</option>
-                            <option value="true">Completed tasks</option>
-                        </select>
-                    </div>
-                    <div class="filter-group">
-                        <button
-                            type="button"
-                            class="btn-clear-filters"
-                            hx-get="/component/tasks"
-                            hx-target="#task-list"
-                            _="on click set #name-filter's value to '' then set #completion-filter's value to ''"
-                        >
-                            <i class="fas fa-times icon"></i>
-                        </button>
-                    </div>
-                </div>
+            <!-- Main Content -->
+            <div class="main-content sidebar-collapsed">
+                <!-- Toggle Button (visible when sidebar is collapsed) -->
+                <button
+                    class="sidebar-toggle collapsed-toggle"
+                    _="on click remove .collapsed from #sidebar then remove .sidebar-collapsed from .main-content"
+                >
+                    <i class="fas fa-bars"></i>
+                </button>
 
-                <div id="app">
-                    <div id="task-list" hx-get="/component/tasks" hx-swap="innerHTML" hx-trigger="load"></div>
-                </div>
-                <div class="form-actions">
-                    <button class="btn-create" hx-get="/component/create/task" hx-target="body" hx-swap="beforeend">
-                        <i class="fas fa-clone icon"></i>
-                        Task
-                    </button>
-                    <button class="btn-create" hx-get="/component/create/tag" hx-target="body" hx-swap="beforeend">
-                        <i class="fas fa-tags icon"></i>
-                        Tag
-                    </button>
+                <div class="container">
+                    <div class="content-wrapper">
+                        <div class="header-row">
+                            <h1>Task List ({{.DatabaseName}})</h1>
+                            {{template "form-actions.html"}}
+                        </div>
+
+                        <div id="app">
+                            <div id="task-list" hx-get="/component/tasks" hx-swap="innerHTML" hx-trigger="load"></div>
+                        </div>
+                        {{template "form-actions.html"}}
+                    </div>
                 </div>
             </div>
         </div>

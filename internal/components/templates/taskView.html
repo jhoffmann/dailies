@@ -29,24 +29,22 @@
                 hx-swap="outerHTML"
                 >{{.Name}}</span
             >
+            {{if .Completed}}
+            <button class="btn-delete btn-delete-compact" hx-get="/component/delete/task/{{.ID}}" hx-target="body" hx-swap="beforeend">
+                <i class="fas fa-trash-alt"></i>
+            </button>
+            {{end}}
         </div>
         <div class="task-meta">
             <span class="tags">{{template "tagsView.html" .}}</span>
-            <span class="task-created" title="{{formatDateFull .DateCreated}}"
+            <!-- <span class="task-created" title="{{formatDateFull .DateCreated}}"
                 >Created {{formatDate .DateCreated}}</span
             >
             {{if ne .DateCreated .DateModified}}
             <span class="task-modified" title="{{formatDateFull .DateModified}}">
                 • Modified {{formatDate .DateModified}}</span
             >
-            {{end}}
+            {{end}} -->
         </div>
-    </div>
-    <div class="task-actions">
-        {{if .Completed}}
-        <button class="btn-delete" hx-get="/component/delete/task/{{.ID}}" hx-target="body" hx-swap="beforeend">
-            <i class="fas fa-trash-alt icon"></i>
-        </button>
-        {{end}}
     </div>
 </div>

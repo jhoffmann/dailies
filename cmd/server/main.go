@@ -14,7 +14,7 @@ import (
 // It accepts a --db flag to specify the database file path.
 func main() {
 	address := flag.String("address", ":9001", "Address to listen on in the form ip:port or :port")
-	dbPath := flag.String("db", "dailies.db", "Database file path")
+	dbPath := flag.String("db", "testing.db", "Database file path")
 	flag.Parse()
 
 	database.Init(*dbPath)

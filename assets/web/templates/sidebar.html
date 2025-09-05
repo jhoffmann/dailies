@@ -1,0 +1,63 @@
+<!-- Left Sidebar -->
+<div id="sidebar" class="sidebar collapsed">
+    <div class="sidebar-header">
+        <h3>Options</h3>
+        <button
+            class="sidebar-toggle open-toggle"
+            _="on click add .collapsed to #sidebar then add .sidebar-collapsed to .main-content"
+        >
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+    <div class="sidebar-content">
+        <div class="filter-section">
+            <label for="name-filter">Filter by name</label>
+            <input
+                type="text"
+                id="name-filter"
+                name="name"
+                placeholder="Filter by name..."
+                hx-get="/component/tasks"
+                hx-target="#task-list"
+                hx-trigger="keyup changed delay:300ms, search"
+                hx-include="#completion-filter"
+            />
+        </div>
+        <div class="filter-section">
+            <label for="completion-filter">Task status</label>
+            <select
+                id="completion-filter"
+                name="completed"
+                hx-get="/component/tasks"
+                hx-target="#task-list"
+                hx-trigger="change"
+                hx-include="#name-filter"
+            >
+                <option value="">All tasks</option>
+                <option value="false">Active tasks</option>
+                <option value="true">Completed tasks</option>
+            </select>
+        </div>
+        <div class="filter-section">
+            <button
+                type="button"
+                class="btn-clear-filters"
+                hx-get="/component/tasks"
+                hx-target="#task-list"
+                _="on click set #name-filter's value to '' then set #completion-filter's value to ''"
+            >
+                <i class="fas fa-times icon"></i>
+                Clear Filters
+            </button>
+        </div>
+        <!-- Placeholder for future features -->
+        <div class="filter-section">
+            <label>Sorting</label>
+            <p class="placeholder-text">Coming soon...</p>
+        </div>
+        <div class="filter-section">
+            <label>Tag Filter</label>
+            <p class="placeholder-text">Coming soon...</p>
+        </div>
+    </div>
+</div>
