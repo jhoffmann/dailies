@@ -63,7 +63,54 @@ body {
 .open-toggle:hover {
     background: #e9ecef;
     color: #495057;
-    transform: none;
+}
+
+/* Completion Filter Options */
+.completion-filter-options {
+    display: flex;
+    border: 1px solid #ddd;
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    margin-top: 8px;
+}
+
+.completion-option {
+    flex: 1;
+    display: flex;
+    padding: 4px 12px;
+    cursor: pointer;
+    background: white;
+    border-right: 1px solid #ddd;
+    transition: all 0.2s ease;
+    font-size: 14px;
+    font-weight: 500;
+    color: #495057;
+    user-select: none;
+}
+
+label.completion-option {
+    text-align: center;
+}
+
+.completion-option:last-child {
+    border-right: none;
+}
+
+.completion-option:hover {
+    background: #f8f9fa;
+}
+
+.completion-option input[type="radio"] {
+    display: none;
+}
+
+.completion-option input[type="radio"]:checked + span {
+    color: #3498db;
+}
+
+.completion-option:has(input[type="radio"]:checked) {
+    background: #e3f2fd;
+    color: #3498db;
 }
 
 /* Sidebar */
