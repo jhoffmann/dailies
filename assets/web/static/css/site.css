@@ -439,6 +439,24 @@ h1 {
     background-color: #6e249d;
 }
 
+.frequency-tag {
+    color: white !important;
+    background-color: #ce84ed;
+    margin: 4px;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-block !important;
+    padding: 4px 8px;
+}
+
+.frequency-tag.selected {
+    background-color: #6e249d;
+}
+
+.frequency-selection input[type="radio"] {
+    display: none;
+}
+
 .task-item.completed .priority-badge {
     opacity: 0.6;
 }

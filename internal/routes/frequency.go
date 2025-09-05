@@ -51,4 +51,13 @@ func SetupFrequencyRoutes() {
 		}
 		web.GetTimerResetsHTML(w, r)
 	}))
+
+	// Component endpoint for frequency selection
+	http.HandleFunc("/component/frequency-selection", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
+			return
+		}
+		web.GetFrequencySelectionHTML(w, r)
+	}))
 }
