@@ -45,6 +45,7 @@ Retrieve all tasks with optional filtering and sorting.
 **Query Parameters:**
 - `completed` (boolean, optional) - Filter by completion status
 - `name` (string, optional) - Filter by task name (partial matching)
+- `tag_ids` (string, optional) - Filter by tag IDs (comma-separated UUIDs, tasks must have ALL specified tags)
 - `sort` (string, optional) - Sort field: `completed`, `priority`, `name` (default: `priority`)
 
 **Example Requests:**
@@ -57,6 +58,15 @@ http GET :8080/tasks completed==true sort==name
 
 # Search for tasks containing "review"
 http GET :8080/tasks name==review
+
+# Get tasks with specific tag
+http GET :8080/tasks tag_ids==b5948bc2-d918-5fe5-ca5a-e8e48f406cf8
+
+# Get tasks that have both "work" and "urgent" tags (AND operation)
+http GET :8080/tasks tag_ids==b5948bc2-d918-5fe5-ca5a-e8e48f406cf8,c6059cd3-ea29-6gf6-db6b-f9f59g517dg9
+
+# Combine tag filtering with other filters
+http GET :8080/tasks tag_ids==b5948bc2-d918-5fe5-ca5a-e8e48f406cf8 completed==false name==review sort==priority
 ```
 
 **Response (200 OK):**
@@ -475,3 +485,5 @@ All endpoints may return these common error responses:
 - Tag colors are automatically assigned from a predefined palette if not specified
 - Priority ranges from 1 (highest) to 5 (lowest), defaults to 3
 - Tasks are sorted by completion status first (incomplete tasks first), then by the specified sort field
+- Tag filtering uses AND logic: when multiple tag IDs are specified, tasks must have ALL specified tags to be returned
+- Tag IDs in the `tag_ids` parameter should be comma-separated with no spaces (e.g., `uuid1,uuid2,uuid3`)

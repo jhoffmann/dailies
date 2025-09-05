@@ -60,6 +60,14 @@ func SetupTagRoutes() {
 		web.GetTagSelectionHTML(w, r)
 	}))
 
+	http.HandleFunc("/component/tag-filter", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
+			return
+		}
+		web.GetTagFilterHTML(w, r)
+	}))
+
 	http.HandleFunc("/component/create/tag", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		switch r.Method {
 		case http.MethodGet:

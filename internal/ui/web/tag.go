@@ -87,3 +87,25 @@ func GetTagSelectionHTML(w http.ResponseWriter, r *http.Request) {
 
 	w.Write([]byte(html))
 }
+
+// GetTagFilterHTML returns HTML snippet for tag filtering checkboxes in sidebar (for HTMX).
+func GetTagFilterHTML(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+
+	nameFilter := r.URL.Query().Get("name")
+
+	// Use the API layer for business logic
+	tags, err := api.GetTagsWithFilter(nameFilter)
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
+		return
+	}
+
+	html, err := componentRenderer.Render("tagFilter", tags)
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
+		return
+	}
+
+	w.Write([]byte(html))
+}

@@ -9,6 +9,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/jhoffmann/dailies/internal/models"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -117,7 +118,7 @@ func listCommand(args []string) {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	tasks, err := models.GetTasks(db, nil, "", nil, "")
+	tasks, err := models.GetTasks(db, nil, "", []uuid.UUID{}, "")
 	if err != nil {
 		log.Fatalf("Failed to retrieve tasks: %v", err)
 	}

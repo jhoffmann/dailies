@@ -120,7 +120,6 @@ body {
     display: block;
     font-weight: 500;
     color: #2c3e50;
-    margin-bottom: 8px;
     font-size: 14px;
 }
 
@@ -525,13 +524,13 @@ h1 {
     .container {
         padding: 60px 20px 20px 20px;
     }
-    
+
     .header-row {
         flex-direction: column;
         align-items: stretch;
         gap: 15px;
     }
-    
+
     h1 {
         text-align: center;
     }

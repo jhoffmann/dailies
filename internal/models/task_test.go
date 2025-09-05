@@ -318,7 +318,7 @@ func TestGetTasks(t *testing.T) {
 	db.Create(&task3)
 
 	t.Run("gets all tasks", func(t *testing.T) {
-		tasks, err := GetTasks(db, nil, "", nil, "")
+		tasks, err := GetTasks(db, nil, "", []uuid.UUID{}, "")
 		if err != nil {
 			t.Errorf("GetTasks returned error: %v", err)
 		}
@@ -431,18 +431,37 @@ func TestGetTasks(t *testing.T) {
 		}
 	})
 
-	t.Run("filters by task ID", func(t *testing.T) {
-		tasks, err := GetTasks(db, nil, "", &task1.ID, "")
+	t.Run("filters by tag IDs", func(t *testing.T) {
+		// Create a tag and associate it with task1
+		tag := Tag{Name: "work"}
+		db.Create(&tag)
+
+		// Associate tag with task1
+		db.Model(&task1).Association("Tags").Append(&tag)
+
+		// Test filtering by tag ID
+		tasks, err := GetTasks(db, nil, "", []uuid.UUID{tag.ID}, "")
 		if err != nil {
 			t.Errorf("GetTasks returned error: %v", err)
 		}
 
 		if len(tasks) != 1 {
-			t.Errorf("Expected 1 task with specific ID, got %d", len(tasks))
+			t.Errorf("Expected 1 task with specific tag, got %d", len(tasks))
 		}
 
 		if tasks[0].ID != task1.ID {
 			t.Errorf("Expected task ID %s, got %s", task1.ID, tasks[0].ID)
+		}
+
+		// Test with non-existent tag
+		nonExistentTagID := uuid.New()
+		tasks, err = GetTasks(db, nil, "", []uuid.UUID{nonExistentTagID}, "")
+		if err != nil {
+			t.Errorf("GetTasks returned error: %v", err)
+		}
+
+		if len(tasks) != 0 {
+			t.Errorf("Expected 0 tasks with non-existent tag, got %d", len(tasks))
 		}
 	})
 }

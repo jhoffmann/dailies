@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jhoffmann/dailies/internal/api"
@@ -13,7 +14,7 @@ import (
 )
 
 // GetTasksHTML returns HTML snippet for task list (for HTMX).
-// Supports query parameters: completed (boolean), name (string for partial matching), and sort (completed, priority, name).
+// Supports query parameters: completed (boolean), name (string for partial matching), tag_ids (comma-separated or multiple), and sort (completed, priority, name).
 func GetTasksHTML(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
@@ -25,6 +26,15 @@ func GetTasksHTML(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	var tagIDFilter []uuid.UUID
+	// Handle multiple tag_ids parameters from checkboxes
+	tagIDs := r.URL.Query()["tag_ids"]
+	for _, tagIDStr := range tagIDs {
+		if tagID, err := uuid.Parse(strings.TrimSpace(tagIDStr)); err == nil {
+			tagIDFilter = append(tagIDFilter, tagID)
+		}
+	}
+
 	nameFilter := r.URL.Query().Get("name")
 	sortField := r.URL.Query().Get("sort")
 	if sortField == "" {
@@ -32,7 +42,7 @@ func GetTasksHTML(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Use the API layer for business logic
-	tasks, err := api.GetTasksWithFilter(completedFilter, nameFilter, nil, sortField)
+	tasks, err := api.GetTasksWithFilter(completedFilter, nameFilter, tagIDFilter, sortField)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return

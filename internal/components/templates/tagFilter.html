@@ -1,0 +1,21 @@
+<div id="tag-filter" class="tag-selection">
+    {{range .}}
+    <label class="tag-checkbox" style="background-color: {{.Color}};">
+        <input 
+            type="checkbox" 
+            name="tag_ids" 
+            value="{{.ID}}" 
+            hx-get="/component/tasks"
+            hx-target="#task-list"
+            hx-trigger="change"
+            hx-include="#name-filter, #completion-filter, [name='tag_ids']:checked"
+            _="on change 
+                if me.checked 
+                    add .selected to closest .tag-checkbox 
+                else 
+                    remove .selected from closest .tag-checkbox"
+        />
+        <span class="tag-name">{{.Name}}</span>
+    </label>
+    {{end}}
+</div>
