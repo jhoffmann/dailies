@@ -7,6 +7,7 @@ import (
 
 	"github.com/jhoffmann/dailies/internal/database"
 	"github.com/jhoffmann/dailies/internal/routes"
+	"github.com/jhoffmann/dailies/internal/scheduler"
 )
 
 // main initializes the database, sets up routes, and starts the HTTP server.
@@ -20,6 +21,10 @@ func main() {
 	database.Init(*dbPath)
 
 	routes.Setup()
+
+	// Start the background task scheduler
+	taskScheduler := scheduler.NewTaskScheduler(database.GetDB())
+	taskScheduler.Start()
 
 	log.Printf("Server starting on %s", *address)
 	log.Fatal(http.ListenAndServe(*address, nil))
