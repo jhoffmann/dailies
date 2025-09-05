@@ -230,3 +230,30 @@ func CreateTaskHTML(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(html))
 }
+
+// GetTaskConfirmDeleteHTML returns HTML confirmation modal for deleting a task.
+func GetTaskConfirmDeleteHTML(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+
+	id := r.URL.Path[len("/component/delete/task/"):]
+	taskID, err := uuid.Parse(id)
+	if err != nil {
+		logger.LoggedError(w, "Invalid task ID", http.StatusBadRequest, r)
+		return
+	}
+
+	var task models.Task
+	err = task.LoadByID(database.GetDB(), taskID)
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
+		return
+	}
+
+	html, err := componentRenderer.Render("taskConfirmDelete", task)
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
+		return
+	}
+
+	w.Write([]byte(html))
+}

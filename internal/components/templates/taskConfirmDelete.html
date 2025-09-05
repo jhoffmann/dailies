@@ -1,0 +1,24 @@
+<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
+	<div class="modal-underlay" _="on click trigger closeModal"></div>
+	<div class="modal-content">
+		<div class="modal-header">
+			<h3>Are you sure?</h3>
+		</div>
+		<div class="modal-body">
+			<p>Are you sure you want to delete the task "<strong>{{.Name}}</strong>"?</p>
+			<p>This action cannot be undone.</p>
+		</div>
+		<div class="form-actions">
+			<button type="button"
+					class="btn-delete"
+					hx-delete="/component/tasks/{{.ID}}"
+					hx-target="#task-{{.ID}}"
+					hx-swap="outerHTML"
+					_="on htmx:afterRequest trigger closeModal">
+				<i class="fas fa-trash-alt icon"></i>
+				Delete Task
+			</button>
+			<button type="button" class="btn-cancel" _="on click trigger closeModal">Cancel</button>
+		</div>
+	</div>
+</div>

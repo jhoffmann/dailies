@@ -85,3 +85,28 @@
 	0% {transform: scale(1);}
 	100% {transform: scale(0.9);}
 }
+
+.modal-header {
+	margin-bottom: 20px;
+}
+
+.modal-header h3 {
+	margin: 0;
+	color: #2c3e50;
+	font-size: 18px;
+	font-weight: 600;
+}
+
+.modal-body {
+	margin-bottom: 24px;
+}
+
+.modal-body p {
+	margin: 0 0 12px 0;
+	color: #555;
+	line-height: 1.5;
+}
+
+.modal-body p:last-child {
+	margin-bottom: 0;
+}

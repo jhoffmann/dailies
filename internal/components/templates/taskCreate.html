@@ -1,13 +1,15 @@
 <div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
 	<div class="modal-underlay" _="on click trigger closeModal"></div>
 	<div class="modal-content">
+    <div class="modal-header">
+      <h3>Task Details</h3>
+    </div>
 		<form hx-post="/component/create/task"
         hx-ext="json-enc"
 			  hx-target="#task-list"
 			  hx-swap="afterbegin"
 			  hx-on::after-request="if(event.detail.successful) this.closest('#modal').dispatchEvent(new CustomEvent('closeModal'))">
 			<div class="form-group">
-        <h3>Task Details</h3>
 				<input type="text"
 					   id="task-name"
 					   name="name"

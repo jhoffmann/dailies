@@ -32,10 +32,9 @@
   <div class="task-actions">
     {{if .Completed}}
     <button class="btn-delete"
-            hx-delete="/component/tasks/{{.ID}}"
-            confirm-delete='true'
-            hx-target="#task-{{.ID}}"
-            hx-swap="outerHTML">
+            hx-get="/component/delete/task/{{.ID}}"
+            hx-target="body"
+            hx-swap="beforeend">
       <i class="fas fa-trash-alt icon"></i>
     </button>
     {{end}}

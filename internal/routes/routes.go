@@ -83,6 +83,14 @@ func Setup() {
 		}
 	}))
 
+	http.HandleFunc("/component/delete/task/", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
+			return
+		}
+		web.GetTaskConfirmDeleteHTML(w, r)
+	}))
+
 	http.HandleFunc("/component/tasks/", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
 		path := strings.TrimPrefix(r.URL.Path, "/component/tasks/")
 		if path == "" {
