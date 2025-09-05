@@ -33,7 +33,8 @@ func Setup() {
 		api.HealthCheck(w, r)
 	}))
 
-	// Setup task and tag routes
+	// Setup task, tag, and frequency routes
 	SetupTaskRoutes()
 	SetupTagRoutes()
+	SetupFrequencyRoutes()
 }

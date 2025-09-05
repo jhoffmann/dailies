@@ -75,13 +75,14 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateTask handles POST requests to create a new task.
-// Requires a JSON body with a task name and optional tag_ids array.
+// Requires a JSON body with a task name and optional tag_ids array and frequency_id.
 func CreateTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
 	var taskData struct {
-		Name   string      `json:"name"`
-		TagIDs []uuid.UUID `json:"tag_ids"`
+		Name        string      `json:"name"`
+		TagIDs      []uuid.UUID `json:"tag_ids"`
+		FrequencyID *uuid.UUID  `json:"frequency_id"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&taskData); err != nil {
@@ -89,7 +90,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task, err := CreateTaskWithTags(taskData.Name, taskData.TagIDs)
+	task, err := CreateTaskWithTagsAndFrequency(taskData.Name, taskData.TagIDs, taskData.FrequencyID)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusBadRequest, r)
 		return
@@ -99,15 +100,24 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(task)
 }
 
-// CreateTaskWithTags creates a new task with associated tags.
-// This function contains the business logic for task creation with tag associations.
-func CreateTaskWithTags(name string, tagIDs []uuid.UUID) (*models.Task, error) {
+// CreateTaskWithTagsAndFrequency creates a new task with associated tags and optional frequency.
+// This function contains the business logic for task creation with tag and frequency associations.
+func CreateTaskWithTagsAndFrequency(name string, tagIDs []uuid.UUID, frequencyID *uuid.UUID) (*models.Task, error) {
 	if name == "" {
 		return nil, errors.New("task name is required")
 	}
 
 	task := models.Task{
-		Name: name,
+		Name:        name,
+		FrequencyID: frequencyID,
+	}
+
+	// Validate frequency exists if provided
+	if frequencyID != nil {
+		var frequency models.Frequency
+		if err := frequency.LoadByID(database.GetDB(), *frequencyID); err != nil {
+			return nil, errors.New("frequency not found")
+		}
 	}
 
 	// Load associated tags if any were selected
@@ -130,13 +140,19 @@ func CreateTaskWithTags(name string, tagIDs []uuid.UUID) (*models.Task, error) {
 		return nil, err
 	}
 
-	// Reload task with tags for the response
+	// Reload task with tags and frequency for the response
 	err = task.LoadByID(database.GetDB(), task.ID)
 	if err != nil {
 		return nil, err
 	}
 
 	return &task, nil
+}
+
+// CreateTaskWithTags creates a new task with associated tags (legacy function for backward compatibility).
+// This function contains the business logic for task creation with tag associations.
+func CreateTaskWithTags(name string, tagIDs []uuid.UUID) (*models.Task, error) {
+	return CreateTaskWithTagsAndFrequency(name, tagIDs, nil)
 }
 
 // GetTasksWithFilter retrieves tasks with optional filtering and sorting.
@@ -168,7 +184,21 @@ func UpdateTaskByID(taskID uuid.UUID, updateData *models.Task) (*models.Task, er
 		return nil, err
 	}
 
+	// Validate frequency exists if provided in update data
+	if updateData.FrequencyID != nil {
+		var frequency models.Frequency
+		if err := frequency.LoadByID(database.GetDB(), *updateData.FrequencyID); err != nil {
+			return nil, errors.New("frequency not found")
+		}
+	}
+
 	err = task.Update(database.GetDB(), updateData)
+	if err != nil {
+		return nil, err
+	}
+
+	// Reload to get updated frequency relationship
+	err = task.LoadByID(database.GetDB(), task.ID)
 	if err != nil {
 		return nil, err
 	}
@@ -185,7 +215,7 @@ func DeleteTaskByID(taskID uuid.UUID) error {
 }
 
 // UpdateTask handles PUT requests to update an existing task by ID.
-// Accepts a JSON body with fields to update (name and/or completed status).
+// Accepts a JSON body with fields to update (name, completed status, priority, and frequency_id).
 func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -196,11 +226,34 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var updateData models.Task
-	if err := json.NewDecoder(r.Body).Decode(&updateData); err != nil {
+	// Use a custom struct to handle the JSON properly
+	var requestData struct {
+		Name        string     `json:"name,omitempty"`
+		Completed   *bool      `json:"completed,omitempty"`
+		Priority    *int       `json:"priority,omitempty"`
+		FrequencyID *uuid.UUID `json:"frequency_id"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		logger.LoggedError(w, "Invalid JSON", http.StatusBadRequest, r)
 		return
 	}
+
+	// Convert to Task struct for update - be explicit about field handling
+	updateData := models.Task{}
+
+	if requestData.Name != "" {
+		updateData.Name = requestData.Name
+	}
+	if requestData.Completed != nil {
+		updateData.Completed = *requestData.Completed
+	}
+	if requestData.Priority != nil {
+		updateData.Priority = *requestData.Priority
+	}
+
+	// Handle frequency update explicitly
+	updateData.FrequencyID = requestData.FrequencyID
 
 	task, err := UpdateTaskByID(taskID, &updateData)
 	if err != nil {

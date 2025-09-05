@@ -21,13 +21,15 @@ import (
 //	 "tags": [{"id": "...", "name": "work"}, {"id": "...", "name": "urgent"}]
 //	}
 type Task struct {
-	ID           uuid.UUID `json:"id" gorm:"type:text;primary_key"`
-	Name         string    `json:"name" gorm:"not null"`
-	DateCreated  time.Time `json:"date_created" gorm:"autoCreateTime"`
-	DateModified time.Time `json:"date_modified" gorm:"autoUpdateTime"`
-	Completed    bool      `json:"completed" gorm:"default:false"`
-	Priority     int       `json:"priority" gorm:"default:3"`
-	Tags         []Tag     `json:"tags,omitempty" gorm:"many2many:task_tags;"`
+	ID           uuid.UUID  `json:"id" gorm:"type:text;primary_key"`
+	Name         string     `json:"name" gorm:"not null"`
+	DateCreated  time.Time  `json:"date_created" gorm:"autoCreateTime"`
+	DateModified time.Time  `json:"date_modified" gorm:"autoUpdateTime"`
+	Completed    bool       `json:"completed" gorm:"default:false"`
+	Priority     int        `json:"priority" gorm:"default:3"`
+	FrequencyID  *uuid.UUID `json:"frequency_id,omitempty" gorm:"type:text"`
+	Frequency    *Frequency `json:"frequency,omitempty" gorm:"foreignKey:FrequencyID"`
+	Tags         []Tag      `json:"tags,omitempty" gorm:"many2many:task_tags;"`
 }
 
 // BeforeCreate is a GORM hook that generates a UUID for new tasks if not already set.
@@ -55,7 +57,7 @@ func (task *Task) Create(db *gorm.DB) error {
 
 // LoadByID loads a task by its ID from the database.
 func (task *Task) LoadByID(db *gorm.DB, id uuid.UUID) error {
-	result := db.Preload("Tags").First(task, "id = ?", id)
+	result := db.Preload("Tags").Preload("Frequency").First(task, "id = ?", id)
 	if result.Error != nil {
 		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
 			return errors.New("task not found")
@@ -74,6 +76,9 @@ func (task *Task) Update(db *gorm.DB, updateData *Task) error {
 	if updateData.Priority >= 1 && updateData.Priority <= 5 {
 		task.Priority = updateData.Priority
 	}
+	// Update frequency association - this allows setting it to nil to remove the association
+	// We always update FrequencyID to match what's in updateData
+	task.FrequencyID = updateData.FrequencyID
 
 	result := db.Save(task)
 	return result.Error
@@ -96,7 +101,7 @@ func (task *Task) Delete(db *gorm.DB) error {
 // tagIDFilter allows filtering tasks that have ALL specified tag IDs (AND operation).
 func GetTasks(db *gorm.DB, completedFilter *bool, nameFilter string, tagIDFilter []uuid.UUID, sortField string) ([]Task, error) {
 	var tasks []Task
-	query := db.Preload("Tags")
+	query := db.Preload("Tags").Preload("Frequency")
 
 	if completedFilter != nil {
 		query = query.Where("completed = ?", *completedFilter)

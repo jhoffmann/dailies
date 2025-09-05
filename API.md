@@ -117,6 +117,12 @@ http GET :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7
   "date_modified": "2025-09-05T21:17:04.323385Z",
   "completed": false,
   "priority": 3,
+  "frequency_id": "f1234567-ab12-34cd-56ef-123456789012",
+  "frequency": {
+    "id": "f1234567-ab12-34cd-56ef-123456789012",
+    "name": "Daily Evening",
+    "reset": "0 18 * * *"
+  },
   "tags": [
     {
       "id": "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
@@ -135,7 +141,7 @@ http GET :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7
 ```
 
 ### Create Task
-Create a new task with optional tag associations.
+Create a new task with optional tag associations and frequency assignment.
 
 **Endpoint:** `POST /tasks`
 
@@ -143,6 +149,7 @@ Create a new task with optional tag associations.
 ```json
 {
   "name": "Complete API documentation",
+  "frequency_id": "f1234567-ab12-34cd-56ef-123456789012",
   "tag_ids": [
     "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
     "c6059cd3-ea29-6gf6-db6b-f9f59g517dg9"
@@ -150,12 +157,26 @@ Create a new task with optional tag associations.
 }
 ```
 
-**Example Request:**
+**Example Requests:**
 ```bash
+# Create task without frequency
 http POST :8080/tasks \
   name="Complete API documentation" \
   tag_ids:='["b5948bc2-d918-5fe5-ca5a-e8e48f406cf8"]'
+
+# Create task with frequency
+http POST :8080/tasks \
+  name="Daily standup meeting" \
+  frequency_id="f1234567-ab12-34cd-56ef-123456789012"
+
+# Create task with both frequency and tags
+http POST :8080/tasks \
+  name="Review and deploy code" \
+  frequency_id="f1234567-ab12-34cd-56ef-123456789012" \
+  tag_ids:='["b5948bc2-d918-5fe5-ca5a-e8e48f406cf8"]'
 ```
+
+> **Note:** Frequency assignment for tasks is currently handled through direct database operations. Future API versions will support `frequency_id` in task creation and updates.
 
 **Response (201 Created):**
 ```json
@@ -184,7 +205,7 @@ http POST :8080/tasks \
 ```
 
 ### Update Task
-Update an existing task by its ID.
+Update an existing task by its ID, including completion status, priority, and frequency assignment.
 
 **Endpoint:** `PUT /tasks/{id}`
 
@@ -196,26 +217,75 @@ Update an existing task by its ID.
 {
   "name": "Updated task name",
   "completed": true,
-  "priority": 1
+  "priority": 1,
+  "frequency_id": "f1234567-ab12-34cd-56ef-123456789012"
 }
 ```
 
-**Example Request:**
+**Example Requests:**
 ```bash
+# Update task completion status
 http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
   completed:=true \
   priority:=1
+
+# Add frequency to existing task
+http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
+  frequency_id="f1234567-ab12-34cd-56ef-123456789012"
+
+# Remove frequency from task (set to null)
+http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
+  frequency_id:=null
+
+# Change task frequency
+http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
+  frequency_id="f2345678-bc23-45de-67fa-234567890123"
+
+# Update multiple fields including frequency
+http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
+  name="Updated task with new frequency" \
+  completed:=false \
+  priority:=2 \
+  frequency_id="f1234567-ab12-34cd-56ef-123456789012"
+```
+
+**Example Requests:**
+```bash
+# Update completion status and priority
+http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
+  completed:=true \
+  priority:=1
+
+# Assign a frequency to an existing task
+http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
+  frequency_id="f1234567-ab12-34cd-56ef-123456789012"
+
+# Remove frequency from a task (set to null)
+http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
+  frequency_id:=null
+
+# Update multiple fields including frequency
+http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
+  name="Updated task name" \
+  completed:=true \
+  frequency_id="f2345678-bc23-45de-67fa-234567890123"
 ```
 
 **Response (200 OK):**
 ```json
 {
   "id": "a4837ac1-c807-4edd-ba49-d4e37f295be7",
-  "name": "Review pull requests",
+  "name": "Updated task name",
   "date_created": "2025-09-05T21:17:04.323385Z",
   "date_modified": "2025-09-05T22:45:30.789012Z",
   "completed": true,
   "priority": 1,
+  "frequency_id": "f2345678-bc23-45de-67fa-234567890123",
+  "frequency": {
+    "id": "f2345678-bc23-45de-67fa-234567890123",
+    "name": "Weekly Monday",
+    "reset": "0 23 * * 1"
+  },
   "tags": [
     {
       "id": "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
@@ -432,6 +502,187 @@ http DELETE :8080/tags/b5948bc2-d918-5fe5-ca5a-e8e48f406cf8
 
 ---
 
+## Frequencies
+
+### Get All Frequencies
+Retrieve all frequencies with optional name filtering.
+
+**Endpoint:** `GET /frequencies`
+
+**Query Parameters:**
+- `name` (string, optional) - Filter by frequency name (partial matching)
+
+**Example Requests:**
+```bash
+# Get all frequencies
+http GET :8080/frequencies
+
+# Search for frequencies containing "daily"
+http GET :8080/frequencies name==daily
+```
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": "f1234567-ab12-34cd-56ef-123456789012",
+    "name": "Daily Evening",
+    "reset": "0 18 * * *"
+  },
+  {
+    "id": "f2345678-bc23-45de-67fa-234567890123",
+    "name": "Weekly Monday",
+    "reset": "0 23 * * 1"
+  }
+]
+```
+
+### Get Single Frequency
+Retrieve a specific frequency by its ID.
+
+**Endpoint:** `GET /frequencies/{id}`
+
+**Path Parameters:**
+- `id` (string, required) - Frequency UUID
+
+**Example Request:**
+```bash
+http GET :8080/frequencies/f1234567-ab12-34cd-56ef-123456789012
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": "f1234567-ab12-34cd-56ef-123456789012",
+  "name": "Daily Evening",
+  "reset": "0 18 * * *"
+}
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "error": "frequency not found"
+}
+```
+
+### Create Frequency
+Create a new frequency with a cron expression for reset timing.
+
+**Endpoint:** `POST /frequencies`
+
+**Request Body:**
+```json
+{
+  "name": "Daily Morning",
+  "reset": "0 6 * * *"
+}
+```
+
+**Example Requests:**
+```bash
+# Daily at 6 AM UTC
+http POST :8080/frequencies \
+  name="Daily Morning" \
+  reset="0 6 * * *"
+
+# Weekly on Mondays at 11 PM UTC
+http POST :8080/frequencies \
+  name="Weekly Monday" \
+  reset="0 23 * * 1"
+
+# Monthly on the 15th at midnight UTC
+http POST :8080/frequencies \
+  name="Monthly 15th" \
+  reset="0 0 15 * *"
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": "f3456789-cd34-56ef-78ab-345678901234",
+  "name": "Daily Morning",
+  "reset": "0 6 * * *"
+}
+```
+
+**Error Responses:**
+```json
+// 400 Bad Request - Missing name
+{
+  "error": "frequency name is required"
+}
+
+// 400 Bad Request - Missing reset
+{
+  "error": "frequency reset is required"
+}
+
+// 400 Bad Request - Duplicate name
+{
+  "error": "frequency name must be unique"
+}
+```
+
+### Update Frequency
+Update an existing frequency by its ID.
+
+**Endpoint:** `PUT /frequencies/{id}`
+
+**Path Parameters:**
+- `id` (string, required) - Frequency UUID
+
+**Request Body:**
+```json
+{
+  "name": "Updated Frequency Name",
+  "reset": "0 12 * * *"
+}
+```
+
+**Example Request:**
+```bash
+http PUT :8080/frequencies/f1234567-ab12-34cd-56ef-123456789012 \
+  name="Daily Noon" \
+  reset="0 12 * * *"
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": "f1234567-ab12-34cd-56ef-123456789012",
+  "name": "Daily Noon",
+  "reset": "0 12 * * *"
+}
+```
+
+### Delete Frequency
+Delete a frequency by its ID.
+
+**Endpoint:** `DELETE /frequencies/{id}`
+
+**Path Parameters:**
+- `id` (string, required) - Frequency UUID
+
+**Example Request:**
+```bash
+http DELETE :8080/frequencies/f1234567-ab12-34cd-56ef-123456789012
+```
+
+**Response (204 No Content):**
+```
+(empty response body)
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "error": "frequency not found"
+}
+```
+
+---
+
 ## Error Responses
 
 All endpoints may return these common error responses:
@@ -463,6 +714,8 @@ All endpoints may return these common error responses:
   "date_modified": "ISO 8601 timestamp", 
   "completed": "boolean",
   "priority": "integer (1-5, default: 3)",
+  "frequency_id": "uuid (optional)",
+  "frequency": "Frequency object (optional)",
   "tags": "array of Tag objects (optional)"
 }
 ```
@@ -473,6 +726,15 @@ All endpoints may return these common error responses:
   "id": "uuid",
   "name": "string (unique)",
   "color": "string (hex color code)"
+}
+```
+
+### Frequency
+```json
+{
+  "id": "uuid",
+  "name": "string (unique)",
+  "reset": "string (cron expression)"
 }
 ```
 
@@ -487,3 +749,12 @@ All endpoints may return these common error responses:
 - Tasks are sorted by completion status first (incomplete tasks first), then by the specified sort field
 - Tag filtering uses AND logic: when multiple tag IDs are specified, tasks must have ALL specified tags to be returned
 - Tag IDs in the `tag_ids` parameter should be comma-separated with no spaces (e.g., `uuid1,uuid2,uuid3`)
+- Tasks can optionally be associated with a frequency for automatic reset scheduling
+- Frequency `reset` field uses standard cron expression format (minute hour day month day-of-week)
+- Frequency names must be unique across the system
+- Common cron expression examples:
+  - `0 18 * * *` - Daily at 6:00 PM UTC
+  - `0 23 * * 1` - Weekly on Mondays at 11:00 PM UTC
+  - `0 0 15 * *` - Monthly on the 15th at midnight UTC
+  - `0 9 * * 1-5` - Weekdays at 9:00 AM UTC
+- When a task has a frequency, the `frequency` object will be included in GET responses if the relationship is preloaded

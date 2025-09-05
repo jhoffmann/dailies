@@ -23,7 +23,7 @@ func Init(path string) {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	err = DB.AutoMigrate(&models.Task{})
+	err = DB.AutoMigrate(&models.Task{}, &models.Tag{}, &models.Frequency{})
 	if err != nil {
 		log.Fatalf("Failed to migrate database: %v", err)
 	}

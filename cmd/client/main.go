@@ -98,7 +98,7 @@ func connectToDatabase(dbPath string) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to open database: %w", err)
 	}
 
-	err = db.AutoMigrate(&models.Task{}, &models.Tag{})
+	err = db.AutoMigrate(&models.Task{}, &models.Tag{}, &models.Frequency{})
 	if err != nil {
 		return nil, fmt.Errorf("failed to migrate database: %w", err)
 	}
@@ -109,7 +109,7 @@ func connectToDatabase(dbPath string) (*gorm.DB, error) {
 // listCommand handles the list subcommand to retrieve and display all tasks in JSON format.
 func listCommand(args []string) {
 	listFlags := flag.NewFlagSet("list", flag.ExitOnError)
-	database := listFlags.String("database", "dailies.db", "Path to the SQLite database file")
+	database := listFlags.String("database", "testing.db", "Path to the SQLite database file")
 
 	listFlags.Parse(args)
 
@@ -134,7 +134,7 @@ func listCommand(args []string) {
 // populateCommand handles the populate subcommand to add sample data to the database.
 func populateCommand(args []string) {
 	populateFlags := flag.NewFlagSet("populate", flag.ExitOnError)
-	database := populateFlags.String("database", "dailies.db", "Path to the SQLite database file")
+	database := populateFlags.String("database", "testing.db", "Path to the SQLite database file")
 	entries := populateFlags.Int("entries", 10, "Number of sample entries to create")
 
 	populateFlags.Parse(args)
@@ -158,7 +158,7 @@ func populateCommand(args []string) {
 	log.Printf("Successfully created %d sample tasks", *entries)
 }
 
-// populateWithSampleData clears existing tasks and tags, then creates sample data.
+// populateWithSampleData clears existing tasks, tags, and frequencies, then creates sample data.
 func populateWithSampleData(db *gorm.DB, count int) error {
 	// Clear existing data
 	db.Exec("DELETE FROM task_tags")
@@ -175,6 +175,12 @@ func populateWithSampleData(db *gorm.DB, count int) error {
 	}
 	log.Printf("Cleared %d existing tags", result.RowsAffected)
 
+	result = db.Where("1 = 1").Delete(&models.Frequency{})
+	if result.Error != nil {
+		return fmt.Errorf("failed to clear existing frequencies: %w", result.Error)
+	}
+	log.Printf("Cleared %d existing frequencies", result.RowsAffected)
+
 	r := rand.New(rand.NewSource(time.Now().UnixNano()))
 
 	// Create sample tags
@@ -189,12 +195,39 @@ func populateWithSampleData(db *gorm.DB, count int) error {
 	}
 	log.Printf("Created %d sample tags", len(createdTags))
 
-	// Create sample tasks with random tags
+	// Create sample frequencies
+	frequencies := []struct {
+		name  string
+		reset string
+	}{
+		{"Daily", "0 0 * * *"},
+		{"Weekly", "0 1 * * 1"},
+		{"Frequently", "*/5 * * * *"},
+	}
+
+	var createdFrequencies []models.Frequency
+	for _, freq := range frequencies {
+		frequency := models.Frequency{Name: freq.name, Reset: freq.reset}
+		err := frequency.Create(db)
+		if err != nil {
+			return fmt.Errorf("failed to create frequency %s: %w", freq.name, err)
+		}
+		createdFrequencies = append(createdFrequencies, frequency)
+	}
+	log.Printf("Created %d sample frequencies", len(createdFrequencies))
+
+	// Create sample tasks with random tags and frequencies
 	for i := range count {
 		task := models.Task{
 			Name:      getRandomTaskName(r),
 			Completed: r.Float32() < 0.3, // 30% chance of being completed
 			Priority:  r.Intn(5) + 1,     // Random priority 1-5
+		}
+
+		// Assign random frequency to each task (70% chance of having a frequency)
+		if r.Float32() < 0.7 && len(createdFrequencies) > 0 {
+			frequencyIndex := r.Intn(len(createdFrequencies))
+			task.FrequencyID = &createdFrequencies[frequencyIndex].ID
 		}
 
 		// Add random tags to each task (0-3 tags per task)

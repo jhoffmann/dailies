@@ -22,7 +22,7 @@ func setupTestDB(t *testing.T) func() {
 		t.Fatalf("Failed to connect to test database: %v", err)
 	}
 
-	err = db.AutoMigrate(&models.Task{})
+	err = db.AutoMigrate(&models.Task{}, &models.Tag{}, &models.Frequency{})
 	if err != nil {
 		t.Fatalf("Failed to migrate test database: %v", err)
 	}
@@ -308,6 +308,101 @@ func TestCreateTask(t *testing.T) {
 
 		if w.Code != http.StatusBadRequest {
 			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+	})
+}
+
+func TestCreateTaskWithFrequency(t *testing.T) {
+	cleanup := setupTestDB(t)
+	defer cleanup()
+
+	// First create a frequency
+	frequency := models.Frequency{Name: "Test Frequency", Reset: "0 18 * * *"}
+	database.DB.Create(&frequency)
+
+	t.Run("create task with valid frequency", func(t *testing.T) {
+		requestBody := map[string]interface{}{
+			"name":         "Task with frequency",
+			"frequency_id": frequency.ID,
+		}
+		body, _ := json.Marshal(requestBody)
+
+		req := httptest.NewRequest("POST", "/tasks", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		CreateTask(w, req)
+
+		if w.Code != http.StatusCreated {
+			t.Errorf("Expected status 201, got %d", w.Code)
+		}
+
+		var task models.Task
+		err := json.Unmarshal(w.Body.Bytes(), &task)
+		if err != nil {
+			t.Errorf("Failed to unmarshal response: %v", err)
+		}
+
+		if task.FrequencyID == nil {
+			t.Error("Expected frequency_id to be set")
+		} else if *task.FrequencyID != frequency.ID {
+			t.Errorf("Expected frequency_id %s, got %s", frequency.ID, *task.FrequencyID)
+		}
+
+		if task.Frequency == nil {
+			t.Error("Expected frequency to be preloaded")
+		} else if task.Frequency.Name != "Test Frequency" {
+			t.Errorf("Expected frequency name 'Test Frequency', got %s", task.Frequency.Name)
+		}
+	})
+
+	t.Run("create task with non-existent frequency", func(t *testing.T) {
+		nonExistentID := uuid.New()
+		requestBody := map[string]interface{}{
+			"name":         "Task with invalid frequency",
+			"frequency_id": nonExistentID,
+		}
+		body, _ := json.Marshal(requestBody)
+
+		req := httptest.NewRequest("POST", "/tasks", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		CreateTask(w, req)
+
+		if w.Code != http.StatusBadRequest {
+			t.Errorf("Expected status 400, got %d", w.Code)
+		}
+	})
+
+	t.Run("create task without frequency", func(t *testing.T) {
+		requestBody := map[string]interface{}{
+			"name": "Task without frequency",
+		}
+		body, _ := json.Marshal(requestBody)
+
+		req := httptest.NewRequest("POST", "/tasks", bytes.NewBuffer(body))
+		req.Header.Set("Content-Type", "application/json")
+		w := httptest.NewRecorder()
+
+		CreateTask(w, req)
+
+		if w.Code != http.StatusCreated {
+			t.Errorf("Expected status 201, got %d", w.Code)
+		}
+
+		var task models.Task
+		err := json.Unmarshal(w.Body.Bytes(), &task)
+		if err != nil {
+			t.Errorf("Failed to unmarshal response: %v", err)
+		}
+
+		if task.FrequencyID != nil {
+			t.Error("Expected frequency_id to be nil")
+		}
+
+		if task.Frequency != nil {
+			t.Error("Expected frequency to be nil")
 		}
 	})
 }

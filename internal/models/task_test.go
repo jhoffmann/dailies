@@ -491,3 +491,41 @@ func TestTaskJSONTags(t *testing.T) {
 		t.Error("Expected task to have a modification date")
 	}
 }
+
+func TestTaskFrequencyUpdate(t *testing.T) {
+	db := setupTaskTestDB(t)
+
+	// Create a frequency first
+	frequency := Frequency{Name: "Test Freq", Reset: "0 18 * * *"}
+	db.Create(&frequency)
+
+	// Create task with frequency
+	task := Task{Name: "Test Task", FrequencyID: &frequency.ID}
+	db.Create(&task)
+
+	t.Run("remove frequency from task using Update", func(t *testing.T) {
+		// Update to remove frequency
+		updateData := Task{FrequencyID: nil}
+		err := task.Update(db, &updateData)
+		if err != nil {
+			t.Errorf("Update failed: %v", err)
+		}
+
+		// Check if frequency was removed
+		if task.FrequencyID != nil {
+			t.Errorf("Expected FrequencyID to be nil, got %v", task.FrequencyID)
+		}
+
+		// Reload from database
+		var reloadedTask Task
+		err = reloadedTask.LoadByID(db, task.ID)
+		if err != nil {
+			t.Errorf("LoadByID failed: %v", err)
+		}
+
+		if reloadedTask.FrequencyID != nil {
+			t.Errorf("Expected reloaded FrequencyID to be nil, got %v", reloadedTask.FrequencyID)
+		}
+	})
+
+}
