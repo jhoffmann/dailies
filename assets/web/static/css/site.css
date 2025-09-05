@@ -65,8 +65,8 @@ body {
     color: #495057;
 }
 
-/* Completion Filter Options */
-.completion-filter-options {
+/* Filter Options (shared by status and sorting filters) */
+.filter-options {
     display: flex;
     border: 1px solid #ddd;
     border-radius: var(--border-radius);
@@ -74,7 +74,7 @@ body {
     margin-top: 8px;
 }
 
-.completion-option {
+.filter-option {
     flex: 1;
     display: flex;
     padding: 4px 12px;
@@ -88,27 +88,27 @@ body {
     user-select: none;
 }
 
-label.completion-option {
+label.filter-option {
     text-align: center;
 }
 
-.completion-option:last-child {
+.filter-option:last-child {
     border-right: none;
 }
 
-.completion-option:hover {
+.filter-option:hover {
     background: #f8f9fa;
 }
 
-.completion-option input[type="radio"] {
+.filter-option input[type="radio"] {
     display: none;
 }
 
-.completion-option input[type="radio"]:checked + span {
+.filter-option input[type="radio"]:checked + span {
     color: #3498db;
 }
 
-.completion-option:has(input[type="radio"]:checked) {
+.filter-option:has(input[type="radio"]:checked) {
     background: #e3f2fd;
     color: #3498db;
 }

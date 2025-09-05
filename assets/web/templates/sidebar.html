@@ -20,13 +20,13 @@
                 hx-get="/component/tasks"
                 hx-target="#task-list"
                 hx-trigger="keyup changed delay:300ms, search"
-                hx-include="#completion-filter, [name='tag_ids']:checked"
+                hx-include="[name='completed']:checked, [name='sort']:checked, [name='tag_ids']:checked"
             />
         </div>
         <div class="filter-section">
             <label>Status</label>
-            <div class="completion-filter-options">
-                <label class="completion-option">
+            <div class="filter-options">
+                <label class="filter-option">
                     <input 
                         type="radio" 
                         name="completed" 
@@ -35,11 +35,11 @@
                         hx-get="/component/tasks"
                         hx-target="#task-list"
                         hx-trigger="change"
-                        hx-include="#name-filter, [name='tag_ids']:checked"
+                        hx-include="#name-filter, [name='sort']:checked, [name='tag_ids']:checked"
                     />
                     <span>All</span>
                 </label>
-                <label class="completion-option">
+                <label class="filter-option">
                     <input 
                         type="radio" 
                         name="completed" 
@@ -47,11 +47,11 @@
                         hx-get="/component/tasks"
                         hx-target="#task-list"
                         hx-trigger="change"
-                        hx-include="#name-filter, [name='tag_ids']:checked"
+                        hx-include="#name-filter, [name='sort']:checked, [name='tag_ids']:checked"
                     />
                     <span>Open</span>
                 </label>
-                <label class="completion-option">
+                <label class="filter-option">
                     <input 
                         type="radio" 
                         name="completed" 
@@ -59,7 +59,7 @@
                         hx-get="/component/tasks"
                         hx-target="#task-list"
                         hx-trigger="change"
-                        hx-include="#name-filter, [name='tag_ids']:checked"
+                        hx-include="#name-filter, [name='sort']:checked, [name='tag_ids']:checked"
                     />
                     <span>Done</span>
                 </label>
@@ -71,9 +71,10 @@
                 class="btn-clear-filters"
                 hx-get="/component/tasks"
                 hx-target="#task-list"
+                hx-include="#name-filter, [name='sort']:checked, [name='tag_ids']:checked"
                 _="on click
                     set #name-filter's value to ''
-                    then set <input[type='radio'][name='completed'][value='']/'s checked to true
+                    then set <input[type='radio'][name='completed'][value='']/>'s checked to true
                     then repeat for checkbox in <input[type='checkbox'][name='tag_ids']:checked/>
                         set checkbox.checked to false
                         then remove .selected from the closest .tag-checkbox to checkbox
@@ -83,10 +84,47 @@
                 Clear Filters
             </button>
         </div>
-        <!-- Placeholder for future features -->
         <div class="filter-section">
             <label>Sorting</label>
-            <p class="placeholder-text">Coming soon...</p>
+            <div class="filter-options">
+                <label class="filter-option">
+                    <input 
+                        type="radio" 
+                        name="sort" 
+                        value="priority"
+                        checked
+                        hx-get="/component/tasks"
+                        hx-target="#task-list"
+                        hx-trigger="change"
+                        hx-include="#name-filter, [name='completed']:checked, [name='tag_ids']:checked"
+                    />
+                    <span>Priority</span>
+                </label>
+                <label class="filter-option">
+                    <input 
+                        type="radio" 
+                        name="sort" 
+                        value="name"
+                        hx-get="/component/tasks"
+                        hx-target="#task-list"
+                        hx-trigger="change"
+                        hx-include="#name-filter, [name='completed']:checked, [name='tag_ids']:checked"
+                    />
+                    <span>Name</span>
+                </label>
+                <label class="filter-option">
+                    <input 
+                        type="radio" 
+                        name="sort" 
+                        value="date_created"
+                        hx-get="/component/tasks"
+                        hx-target="#task-list"
+                        hx-trigger="change"
+                        hx-include="#name-filter, [name='completed']:checked, [name='tag_ids']:checked"
+                    />
+                    <span>Date</span>
+                </label>
+            </div>
         </div>
         <div class="filter-section">
             <label>Filter by tags</label>
