@@ -3,10 +3,10 @@
 - ~Add a tags model~
 - ~Create task form~
 - ~Replace Swal with a custom modal for consistency~
-- Add tags to tasks
+- ~Add tags to tasks~
+- Move filters/settings to a collapsible sidebar
 - Filter on tags
 - Add a frequency model
-- Move filters/settings to a collapsible sidebar
-- Update our unit test coverage
 - Move FA into webpack
 - Add pagination buttons, gets messy when you're adding/removing from the view real-time
+- Update our unit test coverage

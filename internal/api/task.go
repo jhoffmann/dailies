@@ -3,6 +3,7 @@ package api
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"strconv"
 
@@ -59,17 +60,21 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateTask handles POST requests to create a new task.
-// Requires a JSON body with a task name.
+// Requires a JSON body with a task name and optional tag_ids array.
 func CreateTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var task models.Task
-	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
+	var taskData struct {
+		Name   string      `json:"name"`
+		TagIDs []uuid.UUID `json:"tag_ids"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&taskData); err != nil {
 		logger.LoggedError(w, "Invalid JSON", http.StatusBadRequest, r)
 		return
 	}
 
-	err := task.Create(database.GetDB())
+	task, err := CreateTaskWithTags(taskData.Name, taskData.TagIDs)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusBadRequest, r)
 		return
@@ -77,6 +82,46 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(task)
+}
+
+// CreateTaskWithTags creates a new task with associated tags.
+// This function contains the business logic for task creation with tag associations.
+func CreateTaskWithTags(name string, tagIDs []uuid.UUID) (*models.Task, error) {
+	if name == "" {
+		return nil, errors.New("task name is required")
+	}
+
+	task := models.Task{
+		Name: name,
+	}
+
+	// Load associated tags if any were selected
+	if len(tagIDs) > 0 {
+		var tags []models.Tag
+		if err := database.GetDB().Where("id IN ?", tagIDs).Find(&tags).Error; err != nil {
+			return nil, errors.New("failed to load tags")
+		}
+
+		// Validate that all requested tags exist
+		if len(tags) != len(tagIDs) {
+			return nil, errors.New("one or more tags not found")
+		}
+
+		task.Tags = tags
+	}
+
+	err := task.Create(database.GetDB())
+	if err != nil {
+		return nil, err
+	}
+
+	// Reload task with tags for the response
+	err = task.LoadByID(database.GetDB(), task.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	return &task, nil
 }
 
 // UpdateTask handles PUT requests to update an existing task by ID.

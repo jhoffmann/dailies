@@ -7,6 +7,7 @@ import (
 	"strconv"
 
 	"github.com/google/uuid"
+	"github.com/jhoffmann/dailies/internal/api"
 	"github.com/jhoffmann/dailies/internal/database"
 	"github.com/jhoffmann/dailies/internal/logger"
 	"github.com/jhoffmann/dailies/internal/models"
@@ -188,13 +189,18 @@ func GetTaskCreateHTML(w http.ResponseWriter, r *http.Request) {
 func CreateTaskHTML(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
-	var task models.Task
-	if err := json.NewDecoder(r.Body).Decode(&task); err != nil {
+	var taskData struct {
+		Name   string      `json:"name"`
+		TagIDs []uuid.UUID `json:"tag_ids"`
+	}
+
+	if err := json.NewDecoder(r.Body).Decode(&taskData); err != nil {
 		logger.LoggedError(w, "Invalid JSON", http.StatusBadRequest, r)
 		return
 	}
 
-	err := task.Create(database.GetDB())
+	// Use the API layer for business logic
+	task, err := api.CreateTaskWithTags(taskData.Name, taskData.TagIDs)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusBadRequest, r)
 		return

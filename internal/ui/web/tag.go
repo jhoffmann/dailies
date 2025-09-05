@@ -77,3 +77,23 @@ func CreateTagHTML(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 }
+
+// GetTagSelectionHTML returns HTML snippet for tag selection checkboxes (for HTMX).
+func GetTagSelectionHTML(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "text/html")
+
+	nameFilter := r.URL.Query().Get("name")
+	tags, err := models.GetTags(database.GetDB(), nameFilter)
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
+		return
+	}
+
+	html, err := componentRenderer.Render("tagSelection", tags)
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
+		return
+	}
+
+	w.Write([]byte(html))
+}
