@@ -7,6 +7,7 @@ import (
 
 	"github.com/jhoffmann/dailies/internal/api"
 	"github.com/jhoffmann/dailies/internal/logger"
+	"github.com/jhoffmann/dailies/internal/ui/web"
 )
 
 // SetupTagRoutes configures HTTP routes for tag management.
@@ -37,6 +38,26 @@ func SetupTagRoutes() {
 			api.UpdateTag(w, r)
 		case http.MethodDelete:
 			api.DeleteTag(w, r)
+		default:
+			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
+		}
+	}))
+
+	// Tag component routes for HTMX HTML snippets
+	http.HandleFunc("/component/tags", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
+			return
+		}
+		web.GetTagsHTML(w, r)
+	}))
+
+	http.HandleFunc("/component/create/tag", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			web.GetTagCreateHTML(w, r)
+		case http.MethodPost:
+			web.CreateTagHTML(w, r)
 		default:
 			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
 		}

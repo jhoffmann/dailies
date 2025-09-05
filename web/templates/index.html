@@ -1,66 +1,73 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dailies</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/static/style.bundle.css">
-    <script src="/static/script.bundle.js"></script>
-</head>
-<body>
-    <div class="container">
-        <div class="main-content">
-            <h1>Daily Task List</h1>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Dailies</title>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+        <link rel="stylesheet" href="/static/style.bundle.css" />
+        <script src="/static/script.bundle.js"></script>
+    </head>
+    <body>
+        <div class="container">
+            <div class="main-content">
+                <h1>Daily Task List</h1>
 
-            <!-- Filter Bar -->
-            <div class="filter-bar">
-                <div class="filter-group">
-                    <input type="text" 
-                           id="name-filter" 
-                           name="name"
-                           placeholder="Filter by name..."
-                           hx-get="/component/tasks"
-                           hx-target="#task-list"
-                           hx-trigger="keyup changed delay:300ms, search"
-                           hx-include="#completion-filter">
-                </div>
-                <div class="filter-group">
-                    <select id="completion-filter" 
+                <!-- Filter Bar -->
+                <div class="filter-bar">
+                    <div class="filter-group">
+                        <input
+                            type="text"
+                            id="name-filter"
+                            name="name"
+                            placeholder="Filter by name..."
+                            hx-get="/component/tasks"
+                            hx-target="#task-list"
+                            hx-trigger="keyup changed delay:300ms, search"
+                            hx-include="#completion-filter"
+                        />
+                    </div>
+                    <div class="filter-group">
+                        <select
+                            id="completion-filter"
                             name="completed"
                             hx-get="/component/tasks"
                             hx-target="#task-list"
                             hx-trigger="change"
-                            hx-include="#name-filter">
-                        <option value="">All tasks</option>
-                        <option value="false">Active tasks</option>
-                        <option value="true">Completed tasks</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <button type="button" 
+                            hx-include="#name-filter"
+                        >
+                            <option value="">All tasks</option>
+                            <option value="false">Active tasks</option>
+                            <option value="true">Completed tasks</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <button
+                            type="button"
                             class="btn-clear-filters"
                             hx-get="/component/tasks"
                             hx-target="#task-list"
-                            _="on click set #name-filter's value to '' then set #completion-filter's value to ''">
-                        <i class="fas fa-times icon"></i>
+                            _="on click set #name-filter's value to '' then set #completion-filter's value to ''"
+                        >
+                            <i class="fas fa-times icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div id="app">
+                    <div id="task-list" hx-get="/component/tasks" hx-swap="innerHTML" hx-trigger="load"></div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-create" hx-get="/component/create/task" hx-target="body" hx-swap="beforeend">
+                        <i class="fas fa-clone icon"></i>
+                        Task
+                    </button>
+                    <button class="btn-create" hx-get="/component/create/tag" hx-target="body" hx-swap="beforeend">
+                        <i class="fas fa-tags icon"></i>
+                        Tag
                     </button>
                 </div>
             </div>
-
-            <div id="app">
-              <div id="task-list" hx-get="/component/tasks"
-                   hx-swap="innerHTML" 
-                   hx-trigger="load"></div>
-            </div>
-            <button class="btn-create"
-                    hx-get="/component/create/task"
-                    hx-target="body"
-                    hx-swap="beforeend">
-                <i class="fas fa-clone icon"></i>
-                New Task
-            </button>
         </div>
-    </div>
-</body>
+    </body>
 </html>

@@ -1,8 +1,8 @@
 # Build stage for Go application
 FROM golang:1.24.6-alpine as go-builder
 RUN apk update && \
-  apk upgrade --no-cache && \
-  apk add --no-cache binutils ca-certificates gcc musl-dev sqlite-dev
+    apk upgrade --no-cache && \
+    apk add --no-cache binutils ca-certificates gcc musl-dev sqlite-dev
 
 WORKDIR /app
 
