@@ -93,7 +93,7 @@ func (task *Task) Delete(db *gorm.DB) error {
 
 // GetTasks retrieves tasks with optional filtering and sorting.
 // sortField can be "completed", "priority", or "name".
-func GetTasks(db *gorm.DB, completedFilter *bool, nameFilter string, sortField string) ([]Task, error) {
+func GetTasks(db *gorm.DB, completedFilter *bool, nameFilter string, taskIDFilter *uuid.UUID, sortField string) ([]Task, error) {
 	var tasks []Task
 	query := db.Preload("Tags")
 
@@ -103,6 +103,10 @@ func GetTasks(db *gorm.DB, completedFilter *bool, nameFilter string, sortField s
 
 	if nameFilter != "" {
 		query = query.Where("name LIKE ?", "%"+nameFilter+"%")
+	}
+
+	if taskIDFilter != nil {
+		query = query.Where("id = ?", *taskIDFilter)
 	}
 
 	switch sortField {

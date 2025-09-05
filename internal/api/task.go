@@ -15,7 +15,7 @@ import (
 )
 
 // GetTasks handles GET requests to retrieve tasks with optional filtering and sorting.
-// Supports query parameters: completed (boolean), name (string for partial matching), and sort (completed, priority, name).
+// Supports query parameters: completed (boolean), name (string for partial matching), id (UUID), and sort (completed, priority, name).
 func GetTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -27,10 +27,21 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
+	var taskIDFilter *uuid.UUID
+	taskIDParam := r.URL.Query().Get("id")
+	if taskIDParam != "" {
+		if taskID, err := uuid.Parse(taskIDParam); err == nil {
+			taskIDFilter = &taskID
+		} else {
+			logger.LoggedError(w, "Invalid task ID format", http.StatusBadRequest, r)
+			return
+		}
+	}
+
 	nameFilter := r.URL.Query().Get("name")
 	sortField := r.URL.Query().Get("sort")
 
-	tasks, err := GetTasksWithFilter(completedFilter, nameFilter, sortField)
+	tasks, err := GetTasksWithFilter(completedFilter, nameFilter, taskIDFilter, sortField)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return
@@ -126,8 +137,8 @@ func CreateTaskWithTags(name string, tagIDs []uuid.UUID) (*models.Task, error) {
 
 // GetTasksWithFilter retrieves tasks with optional filtering and sorting.
 // This function contains the business logic for task retrieval.
-func GetTasksWithFilter(completedFilter *bool, nameFilter string, sortField string) ([]models.Task, error) {
-	return models.GetTasks(database.GetDB(), completedFilter, nameFilter, sortField)
+func GetTasksWithFilter(completedFilter *bool, nameFilter string, taskIDFilter *uuid.UUID, sortField string) ([]models.Task, error) {
+	return models.GetTasks(database.GetDB(), completedFilter, nameFilter, taskIDFilter, sortField)
 }
 
 // GetTaskByID retrieves a single task by ID.

@@ -32,7 +32,7 @@ func GetTasksHTML(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Use the API layer for business logic
-	tasks, err := api.GetTasksWithFilter(completedFilter, nameFilter, sortField)
+	tasks, err := api.GetTasksWithFilter(completedFilter, nameFilter, nil, sortField)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return

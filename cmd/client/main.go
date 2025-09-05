@@ -117,7 +117,7 @@ func listCommand(args []string) {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
-	tasks, err := models.GetTasks(db, nil, "", "")
+	tasks, err := models.GetTasks(db, nil, "", nil, "")
 	if err != nil {
 		log.Fatalf("Failed to retrieve tasks: %v", err)
 	}

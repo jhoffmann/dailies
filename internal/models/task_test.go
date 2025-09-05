@@ -318,7 +318,7 @@ func TestGetTasks(t *testing.T) {
 	db.Create(&task3)
 
 	t.Run("gets all tasks", func(t *testing.T) {
-		tasks, err := GetTasks(db, nil, "", "")
+		tasks, err := GetTasks(db, nil, "", nil, "")
 		if err != nil {
 			t.Errorf("GetTasks returned error: %v", err)
 		}
@@ -330,7 +330,7 @@ func TestGetTasks(t *testing.T) {
 
 	t.Run("filters by completed true", func(t *testing.T) {
 		completed := true
-		tasks, err := GetTasks(db, &completed, "", "")
+		tasks, err := GetTasks(db, &completed, "", nil, "")
 		if err != nil {
 			t.Errorf("GetTasks returned error: %v", err)
 		}
@@ -346,7 +346,7 @@ func TestGetTasks(t *testing.T) {
 
 	t.Run("filters by completed false", func(t *testing.T) {
 		completed := false
-		tasks, err := GetTasks(db, &completed, "", "")
+		tasks, err := GetTasks(db, &completed, "", nil, "")
 		if err != nil {
 			t.Errorf("GetTasks returned error: %v", err)
 		}
@@ -363,7 +363,7 @@ func TestGetTasks(t *testing.T) {
 	})
 
 	t.Run("filters by name", func(t *testing.T) {
-		tasks, err := GetTasks(db, nil, "Complete", "")
+		tasks, err := GetTasks(db, nil, "Complete", nil, "")
 		if err != nil {
 			t.Errorf("GetTasks returned error: %v", err)
 		}
@@ -374,7 +374,7 @@ func TestGetTasks(t *testing.T) {
 	})
 
 	t.Run("sorts by priority", func(t *testing.T) {
-		tasks, err := GetTasks(db, nil, "", "priority")
+		tasks, err := GetTasks(db, nil, "", nil, "priority")
 		if err != nil {
 			t.Errorf("GetTasks returned error: %v", err)
 		}
@@ -399,7 +399,7 @@ func TestGetTasks(t *testing.T) {
 	})
 
 	t.Run("sorts by name", func(t *testing.T) {
-		tasks, err := GetTasks(db, nil, "", "name")
+		tasks, err := GetTasks(db, nil, "", nil, "name")
 		if err != nil {
 			t.Errorf("GetTasks returned error: %v", err)
 		}
@@ -410,7 +410,7 @@ func TestGetTasks(t *testing.T) {
 	})
 
 	t.Run("sorts by completed", func(t *testing.T) {
-		tasks, err := GetTasks(db, nil, "", "completed")
+		tasks, err := GetTasks(db, nil, "", nil, "completed")
 		if err != nil {
 			t.Errorf("GetTasks returned error: %v", err)
 		}
@@ -421,13 +421,28 @@ func TestGetTasks(t *testing.T) {
 	})
 
 	t.Run("default sorting", func(t *testing.T) {
-		tasks, err := GetTasks(db, nil, "", "invalid")
+		tasks, err := GetTasks(db, nil, "", nil, "invalid")
 		if err != nil {
 			t.Errorf("GetTasks returned error: %v", err)
 		}
 
 		if len(tasks) != 3 {
 			t.Errorf("Expected 3 tasks, got %d", len(tasks))
+		}
+	})
+
+	t.Run("filters by task ID", func(t *testing.T) {
+		tasks, err := GetTasks(db, nil, "", &task1.ID, "")
+		if err != nil {
+			t.Errorf("GetTasks returned error: %v", err)
+		}
+
+		if len(tasks) != 1 {
+			t.Errorf("Expected 1 task with specific ID, got %d", len(tasks))
+		}
+
+		if tasks[0].ID != task1.ID {
+			t.Errorf("Expected task ID %s, got %s", task1.ID, tasks[0].ID)
 		}
 	})
 }
