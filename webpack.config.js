@@ -4,11 +4,11 @@ const RemoveEmptyScriptsPlugin = require("webpack-remove-empty-scripts");
 
 module.exports = {
   entry: {
-    script: "./web/static/js/site.js",
-    style: "./web/static/css/index.css",
+    script: "./assets/web/static/js/site.js",
+    style: "./assets/web/static/css/index.css",
   },
   output: {
-    path: path.resolve(__dirname, "web/static/dist"),
+    path: path.resolve(__dirname, "assets/web/static/dist"),
     filename: "[name].bundle.js",
     clean: true,
   },

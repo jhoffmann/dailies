@@ -13,7 +13,7 @@ import (
 // Registers handlers for static files, root path, and calls setup functions for task and tag routes.
 func Setup() {
 	// Static file server for bundled assets
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("web/static/dist/"))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("assets/web/static/dist/"))))
 
 	// Root path serves the main HTML template
 	http.HandleFunc("/", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {

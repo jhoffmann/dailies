@@ -15,7 +15,7 @@ var componentRenderer = components.NewComponentRenderer()
 // ServeIndex handles GET requests to serve the main HTML template.
 // Renders the index.html template for the single-page application.
 func ServeIndex(w http.ResponseWriter, r *http.Request) {
-	tmpl, err := template.ParseFiles(filepath.Join("web", "templates", "index.html"))
+	tmpl, err := template.ParseFiles(filepath.Join("assets", "web", "templates", "index.html"))
 	if err != nil {
 		logger.LoggedError(w, "Error loading template", http.StatusInternalServerError, r)
 		return
