@@ -472,7 +472,6 @@ func TestTaskJSONTags(t *testing.T) {
 		Name:         "Test Task",
 		DateCreated:  time.Now(),
 		DateModified: time.Now(),
-		Completed:    true,
 	}
 
 	if task.ID == uuid.Nil {
@@ -527,5 +526,4 @@ func TestTaskFrequencyUpdate(t *testing.T) {
 			t.Errorf("Expected reloaded FrequencyID to be nil, got %v", reloadedTask.FrequencyID)
 		}
 	})
-
 }

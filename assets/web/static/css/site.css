@@ -434,6 +434,11 @@ h1 {
     margin-right: 4px;
 }
 
+.tag.frequency {
+    color: white;
+    background-color: #6e249d;
+}
+
 .task-item.completed .priority-badge {
     opacity: 0.6;
 }
@@ -539,6 +544,27 @@ h1 {
 .btn-clear-filters:hover {
     background: #e9ecef;
     color: #495057;
+}
+
+.timer-resets {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 10px;
+}
+
+.frequency-item {
+    color: #eee;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.frequency-item:not(:last-child)::after {
+    content: "•";
+    margin-left: 1rem;
+    color: #999;
+    font-weight: bold;
 }
 
 /* Responsive Design */

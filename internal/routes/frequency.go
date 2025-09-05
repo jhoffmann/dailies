@@ -7,6 +7,7 @@ import (
 
 	"github.com/jhoffmann/dailies/internal/api"
 	"github.com/jhoffmann/dailies/internal/logger"
+	"github.com/jhoffmann/dailies/internal/ui/web"
 )
 
 // SetupFrequencyRoutes configures HTTP routes for frequency management.
@@ -40,5 +41,14 @@ func SetupFrequencyRoutes() {
 		default:
 			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
 		}
+	}))
+
+	// Component endpoint for timer resets
+	http.HandleFunc("/component/timer-resets", LogMiddleware(func(w http.ResponseWriter, r *http.Request) {
+		if r.Method != http.MethodGet {
+			logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
+			return
+		}
+		web.GetTimerResetsHTML(w, r)
 	}))
 }

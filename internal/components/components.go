@@ -7,6 +7,8 @@ import (
 	"html/template"
 	"strings"
 	"time"
+
+	"github.com/robfig/cron/v3"
 )
 
 //go:embed templates/*.html
@@ -56,6 +58,8 @@ func formatDateFull(t time.Time) string {
 	return t.Format("2006-01-02 3:04pm MST")
 }
 
+// raisePriority decrements a priority value by 1, wrapping from 1 to 5.
+// Used for cycling task priorities in the UI when clicking the priority badge.
 func raisePriority(i int) int {
 	i = i - 1
 	if i == 0 {
@@ -64,6 +68,57 @@ func raisePriority(i int) int {
 	return i
 }
 
+// timeUntilReset calculates the time remaining until the next occurrence of a cron expression.
+// Takes a standard cron expression (minute hour day month day-of-week) and returns a human-readable
+// string like "2 days", "4 hours", or "30 minutes". Returns empty string for invalid expressions.
+func timeUntilReset(cronExpr string) string {
+	if cronExpr == "" {
+		return ""
+	}
+
+	schedule, err := cron.ParseStandard(cronExpr)
+	if err != nil {
+		return ""
+	}
+
+	now := time.Now()
+	nextReset := schedule.Next(now)
+	duration := nextReset.Sub(now)
+
+	if duration < 0 {
+		return ""
+	}
+
+	days := int(duration.Hours() / 24)
+	hours := int(duration.Hours()) % 24
+	minutes := int(duration.Minutes()) % 60
+
+	if days > 0 {
+		if days == 1 {
+			return "1 day"
+		}
+		return fmt.Sprintf("%d days", days)
+	}
+
+	if hours > 0 {
+		if hours == 1 {
+			return "1 hour"
+		}
+		return fmt.Sprintf("%d hours", hours)
+	}
+
+	if minutes > 0 {
+		if minutes == 1 {
+			return "1 minute"
+		}
+		return fmt.Sprintf("%d minutes", minutes)
+	}
+
+	return "< 1 minute"
+}
+
+// NewComponentRenderer creates and initializes a new ComponentRenderer with all HTML templates loaded.
+// It sets up template functions and parses all component templates from the embedded filesystem.
 func NewComponentRenderer() *ComponentRenderer {
 	cr := &ComponentRenderer{templates: make(map[string]*template.Template)}
 
@@ -73,6 +128,7 @@ func NewComponentRenderer() *ComponentRenderer {
 		"formatDateFull": formatDateFull,
 		"toggle":         func(b bool) bool { return !b },
 		"raise":          raisePriority,
+		"timeUntilReset": timeUntilReset,
 	}
 
 	// Load all component templates together so they can reference each other
@@ -96,6 +152,8 @@ func NewComponentRenderer() *ComponentRenderer {
 	return cr
 }
 
+// Render executes a component template with the provided data and returns the resulting HTML string.
+// Returns an error if the component template is not found or template execution fails.
 func (cr *ComponentRenderer) Render(component string, data any) (string, error) {
 	tmpl, exists := cr.templates[component]
 	if !exists {

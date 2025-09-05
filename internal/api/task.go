@@ -30,8 +30,8 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 	var tagIDFilter []uuid.UUID
 	tagIDsParam := r.URL.Query().Get("tag_ids")
 	if tagIDsParam != "" {
-		tagIDStrings := strings.Split(tagIDsParam, ",")
-		for _, tagIDStr := range tagIDStrings {
+		tagIDStrings := strings.SplitSeq(tagIDsParam, ",")
+		for tagIDStr := range tagIDStrings {
 			tagIDStr = strings.TrimSpace(tagIDStr)
 			if tagID, err := uuid.Parse(tagIDStr); err == nil {
 				tagIDFilter = append(tagIDFilter, tagID)

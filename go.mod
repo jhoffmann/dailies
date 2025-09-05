@@ -4,6 +4,7 @@ go 1.24.6
 
 require (
 	github.com/google/uuid v1.6.0
+	github.com/robfig/cron/v3 v3.0.1
 	gorm.io/driver/sqlite v1.6.0
 	gorm.io/gorm v1.30.2
 )

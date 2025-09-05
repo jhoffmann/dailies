@@ -36,6 +36,11 @@
             {{end}}
         </div>
         <div class="task-meta">
+            {{if .Frequency}}
+            <span class="frequency tag">
+                {{.Frequency.Name}}
+            </span>
+            {{end}}
             <span class="tags">{{template "tagsView.html" .}}</span>
             <!-- <span class="task-created" title="{{formatDateFull .DateCreated}}"
                 >Created {{formatDate .DateCreated}}</span
