@@ -6,6 +6,7 @@ import (
 	"errors"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/jhoffmann/dailies/internal/database"
@@ -29,7 +30,7 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 	nameFilter := r.URL.Query().Get("name")
 	sortField := r.URL.Query().Get("sort")
 
-	tasks, err := models.GetTasks(database.GetDB(), completedFilter, nameFilter, sortField)
+	tasks, err := GetTasksWithFilter(completedFilter, nameFilter, sortField)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return
@@ -49,8 +50,7 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var task models.Task
-	err = task.LoadByID(database.GetDB(), taskID)
+	task, err := GetTaskByID(taskID)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
 		return
@@ -124,6 +124,51 @@ func CreateTaskWithTags(name string, tagIDs []uuid.UUID) (*models.Task, error) {
 	return &task, nil
 }
 
+// GetTasksWithFilter retrieves tasks with optional filtering and sorting.
+// This function contains the business logic for task retrieval.
+func GetTasksWithFilter(completedFilter *bool, nameFilter string, sortField string) ([]models.Task, error) {
+	return models.GetTasks(database.GetDB(), completedFilter, nameFilter, sortField)
+}
+
+// GetTaskByID retrieves a single task by ID.
+// This function contains the business logic for single task retrieval.
+func GetTaskByID(taskID uuid.UUID) (*models.Task, error) {
+	var task models.Task
+	err := task.LoadByID(database.GetDB(), taskID)
+	if err != nil {
+		return nil, err
+	}
+	return &task, nil
+}
+
+// UpdateTaskByID updates an existing task by ID.
+// This function contains the business logic for task updates.
+func UpdateTaskByID(taskID uuid.UUID, updateData *models.Task) (*models.Task, error) {
+	var task models.Task
+	err := task.LoadByID(database.GetDB(), taskID)
+	if err != nil {
+		if strings.Contains(err.Error(), "not found") {
+			return nil, errors.New("task not found")
+		}
+		return nil, err
+	}
+
+	err = task.Update(database.GetDB(), updateData)
+	if err != nil {
+		return nil, err
+	}
+
+	return &task, nil
+}
+
+// DeleteTaskByID deletes a task by ID.
+// This function contains the business logic for task deletion.
+func DeleteTaskByID(taskID uuid.UUID) error {
+	var task models.Task
+	task.ID = taskID
+	return task.Delete(database.GetDB())
+}
+
 // UpdateTask handles PUT requests to update an existing task by ID.
 // Accepts a JSON body with fields to update (name and/or completed status).
 func UpdateTask(w http.ResponseWriter, r *http.Request) {
@@ -136,22 +181,19 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var task models.Task
-	err = task.LoadByID(database.GetDB(), taskID)
-	if err != nil {
-		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
-		return
-	}
-
 	var updateData models.Task
 	if err := json.NewDecoder(r.Body).Decode(&updateData); err != nil {
 		logger.LoggedError(w, "Invalid JSON", http.StatusBadRequest, r)
 		return
 	}
 
-	err = task.Update(database.GetDB(), &updateData)
+	task, err := UpdateTaskByID(taskID, &updateData)
 	if err != nil {
-		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
+		if strings.Contains(err.Error(), "not found") {
+			logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
+		} else {
+			logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
+		}
 		return
 	}
 
@@ -167,9 +209,7 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var task models.Task
-	task.ID = taskID
-	err = task.Delete(database.GetDB())
+	err = DeleteTaskByID(taskID)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
 		return

@@ -8,7 +8,6 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/jhoffmann/dailies/internal/api"
-	"github.com/jhoffmann/dailies/internal/database"
 	"github.com/jhoffmann/dailies/internal/logger"
 	"github.com/jhoffmann/dailies/internal/models"
 )
@@ -32,7 +31,8 @@ func GetTasksHTML(w http.ResponseWriter, r *http.Request) {
 		sortField = "priority"
 	}
 
-	tasks, err := models.GetTasks(database.GetDB(), completedFilter, nameFilter, sortField)
+	// Use the API layer for business logic
+	tasks, err := api.GetTasksWithFilter(completedFilter, nameFilter, sortField)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return
@@ -58,8 +58,8 @@ func GetTaskHTML(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var task models.Task
-	err = task.LoadByID(database.GetDB(), taskID)
+	// Use the API layer for business logic
+	task, err := api.GetTaskByID(taskID)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
 		return
@@ -88,8 +88,8 @@ func GetTaskEditHTML(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var task models.Task
-	err = task.LoadByID(database.GetDB(), taskID)
+	// Use the API layer for business logic
+	task, err := api.GetTaskByID(taskID)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
 		return
@@ -118,9 +118,8 @@ func DeleteTaskHTML(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var task models.Task
-	task.ID = taskID
-	err = task.Delete(database.GetDB())
+	// Use the API layer for business logic
+	err = api.DeleteTaskByID(taskID)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
 		return
@@ -144,20 +143,14 @@ func UpdateTaskHTML(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var task models.Task
-	err = task.LoadByID(database.GetDB(), taskID)
-	if err != nil {
-		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
-		return
-	}
-
 	var updateData models.Task
 	if err := json.NewDecoder(r.Body).Decode(&updateData); err != nil {
 		logger.LoggedError(w, "Invalid JSON", http.StatusBadRequest, r)
 		return
 	}
 
-	err = task.Update(database.GetDB(), &updateData)
+	// Use the API layer for business logic
+	task, err := api.UpdateTaskByID(taskID, &updateData)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return
@@ -227,8 +220,8 @@ func GetTaskConfirmDeleteHTML(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var task models.Task
-	err = task.LoadByID(database.GetDB(), taskID)
+	// Use the API layer for business logic
+	task, err := api.GetTaskByID(taskID)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
 		return

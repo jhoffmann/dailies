@@ -4,11 +4,9 @@ package web
 import (
 	"encoding/json"
 	"net/http"
-	"strings"
 
-	"github.com/jhoffmann/dailies/internal/database"
+	"github.com/jhoffmann/dailies/internal/api"
 	"github.com/jhoffmann/dailies/internal/logger"
-	"github.com/jhoffmann/dailies/internal/models"
 )
 
 // GetTagsHTML returns HTML snippet for tag list (for HTMX).
@@ -16,7 +14,9 @@ func GetTagsHTML(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
 	nameFilter := r.URL.Query().Get("name")
-	tags, err := models.GetTags(database.GetDB(), nameFilter)
+
+	// Use the API layer for business logic
+	tags, err := api.GetTagsWithFilter(nameFilter)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return
@@ -56,22 +56,10 @@ func CreateTagHTML(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if tagData.Name == "" {
-		logger.LoggedError(w, "Tag name is required", http.StatusBadRequest, r)
-		return
-	}
-
-	tag := models.Tag{
-		Name:  tagData.Name,
-		Color: tagData.Color,
-	}
-
-	if err := tag.Create(database.GetDB()); err != nil {
-		if strings.Contains(err.Error(), "UNIQUE constraint failed: tags.name") {
-			logger.LoggedError(w, "Tag name must be unique", http.StatusBadRequest, r)
-			return
-		}
-		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
+	// Use the API layer for business logic
+	_, err := api.CreateTagWithValidation(tagData.Name, tagData.Color)
+	if err != nil {
+		logger.LoggedError(w, err.Error(), http.StatusBadRequest, r)
 		return
 	}
 
@@ -83,7 +71,9 @@ func GetTagSelectionHTML(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
 	nameFilter := r.URL.Query().Get("name")
-	tags, err := models.GetTags(database.GetDB(), nameFilter)
+
+	// Use the API layer for business logic
+	tags, err := api.GetTagsWithFilter(nameFilter)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return

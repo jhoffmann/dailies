@@ -1,0 +1,477 @@
+# Dailies API Documentation
+
+This document describes the REST API endpoints for the Dailies task management application.
+
+## Base URL
+```
+http://localhost:8080
+```
+
+## Content Type
+All endpoints accept and return `application/json` unless otherwise specified.
+
+**Note:** Examples use [HTTPie](https://httpie.io/) command-line tool. Install with `pip install httpie` or use your preferred HTTP client.
+
+---
+
+## Health Check
+
+### Check Application Health
+Get the health status of the application.
+
+**Endpoint:** `GET /healthz`
+
+**Example Request:**
+```bash
+http GET :8080/healthz
+```
+
+**Response (200 OK):**
+```json
+{
+  "status": "UP"
+}
+```
+
+---
+
+## Tasks
+
+### Get All Tasks
+Retrieve all tasks with optional filtering and sorting.
+
+**Endpoint:** `GET /tasks`
+
+**Query Parameters:**
+- `completed` (boolean, optional) - Filter by completion status
+- `name` (string, optional) - Filter by task name (partial matching)
+- `sort` (string, optional) - Sort field: `completed`, `priority`, `name` (default: `priority`)
+
+**Example Requests:**
+```bash
+# Get all tasks
+http GET :8080/tasks
+
+# Get completed tasks sorted by name
+http GET :8080/tasks completed==true sort==name
+
+# Search for tasks containing "review"
+http GET :8080/tasks name==review
+```
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": "a4837ac1-c807-4edd-ba49-d4e37f295be7",
+    "name": "Review pull requests",
+    "date_created": "2025-09-05T21:17:04.323385Z",
+    "date_modified": "2025-09-05T21:17:04.323385Z",
+    "completed": false,
+    "priority": 3,
+    "tags": [
+      {
+        "id": "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
+        "name": "work",
+        "color": "#bfdbfe"
+      },
+      {
+        "id": "c6059cd3-ea29-6gf6-db6b-f9f59g517dg9",
+        "name": "urgent",
+        "color": "#fca5a5"
+      }
+    ]
+  }
+]
+```
+
+### Get Single Task
+Retrieve a specific task by its ID.
+
+**Endpoint:** `GET /tasks/{id}`
+
+**Path Parameters:**
+- `id` (string, required) - Task UUID
+
+**Example Request:**
+```bash
+http GET :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": "a4837ac1-c807-4edd-ba49-d4e37f295be7",
+  "name": "Review pull requests",
+  "date_created": "2025-09-05T21:17:04.323385Z",
+  "date_modified": "2025-09-05T21:17:04.323385Z",
+  "completed": false,
+  "priority": 3,
+  "tags": [
+    {
+      "id": "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
+      "name": "work",
+      "color": "#bfdbfe"
+    }
+  ]
+}
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "error": "task not found"
+}
+```
+
+### Create Task
+Create a new task with optional tag associations.
+
+**Endpoint:** `POST /tasks`
+
+**Request Body:**
+```json
+{
+  "name": "Complete API documentation",
+  "tag_ids": [
+    "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
+    "c6059cd3-ea29-6gf6-db6b-f9f59g517dg9"
+  ]
+}
+```
+
+**Example Request:**
+```bash
+http POST :8080/tasks \
+  name="Complete API documentation" \
+  tag_ids:='["b5948bc2-d918-5fe5-ca5a-e8e48f406cf8"]'
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": "d7160de4-fb3a-7hg7-ec7c-g0g60h628eh0",
+  "name": "Complete API documentation",
+  "date_created": "2025-09-05T22:30:15.456789Z",
+  "date_modified": "2025-09-05T22:30:15.456789Z",
+  "completed": false,
+  "priority": 3,
+  "tags": [
+    {
+      "id": "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
+      "name": "work",
+      "color": "#bfdbfe"
+    }
+  ]
+}
+```
+
+**Error Response (400 Bad Request):**
+```json
+{
+  "error": "task name is required"
+}
+```
+
+### Update Task
+Update an existing task by its ID.
+
+**Endpoint:** `PUT /tasks/{id}`
+
+**Path Parameters:**
+- `id` (string, required) - Task UUID
+
+**Request Body:**
+```json
+{
+  "name": "Updated task name",
+  "completed": true,
+  "priority": 1
+}
+```
+
+**Example Request:**
+```bash
+http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
+  completed:=true \
+  priority:=1
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": "a4837ac1-c807-4edd-ba49-d4e37f295be7",
+  "name": "Review pull requests",
+  "date_created": "2025-09-05T21:17:04.323385Z",
+  "date_modified": "2025-09-05T22:45:30.789012Z",
+  "completed": true,
+  "priority": 1,
+  "tags": [
+    {
+      "id": "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
+      "name": "work",
+      "color": "#bfdbfe"
+    }
+  ]
+}
+```
+
+### Delete Task
+Delete a task by its ID.
+
+**Endpoint:** `DELETE /tasks/{id}`
+
+**Path Parameters:**
+- `id` (string, required) - Task UUID
+
+**Example Request:**
+```bash
+http DELETE :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7
+```
+
+**Response (204 No Content):**
+```
+(empty response body)
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "error": "task not found"
+}
+```
+
+---
+
+## Tags
+
+### Get All Tags
+Retrieve all tags with optional name filtering.
+
+**Endpoint:** `GET /tags`
+
+**Query Parameters:**
+- `name` (string, optional) - Filter by tag name (partial matching)
+
+**Example Requests:**
+```bash
+# Get all tags
+http GET :8080/tags
+
+# Search for tags containing "work"
+http GET :8080/tags name==work
+```
+
+**Response (200 OK):**
+```json
+[
+  {
+    "id": "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
+    "name": "work",
+    "color": "#bfdbfe"
+  },
+  {
+    "id": "c6059cd3-ea29-6gf6-db6b-f9f59g517dg9",
+    "name": "personal",
+    "color": "#bbf7d0"
+  }
+]
+```
+
+### Get Single Tag
+Retrieve a specific tag by its ID.
+
+**Endpoint:** `GET /tags/{id}`
+
+**Path Parameters:**
+- `id` (string, required) - Tag UUID
+
+**Example Request:**
+```bash
+http GET :8080/tags/b5948bc2-d918-5fe5-ca5a-e8e48f406cf8
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
+  "name": "work",
+  "color": "#bfdbfe"
+}
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "error": "tag not found"
+}
+```
+
+### Create Tag
+Create a new tag with an optional color.
+
+**Endpoint:** `POST /tags`
+
+**Request Body:**
+```json
+{
+  "name": "urgent",
+  "color": "#fca5a5"
+}
+```
+
+**Example Request:**
+```bash
+http POST :8080/tags \
+  name=urgent \
+  color="#fca5a5"
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": "e8271ef5-gc4b-8ih8-fd8d-h1h71i739fi1",
+  "name": "urgent",
+  "color": "#fca5a5"
+}
+```
+
+**Example Request (auto-generated color):**
+```bash
+http POST :8080/tags name=meeting
+```
+
+**Response (201 Created):**
+```json
+{
+  "id": "f9382fg6-hd5c-9ji9-ge9e-i2i82j840gj2",
+  "name": "meeting",
+  "color": "#c7d2fe"
+}
+```
+
+**Error Responses:**
+```json
+// 400 Bad Request - Missing name
+{
+  "error": "tag name is required"
+}
+
+// 400 Bad Request - Duplicate name
+{
+  "error": "tag name must be unique"
+}
+```
+
+### Update Tag
+Update an existing tag by its ID.
+
+**Endpoint:** `PUT /tags/{id}`
+
+**Path Parameters:**
+- `id` (string, required) - Tag UUID
+
+**Request Body:**
+```json
+{
+  "name": "high-priority",
+  "color": "#f87171"
+}
+```
+
+**Example Request:**
+```bash
+http PUT :8080/tags/b5948bc2-d918-5fe5-ca5a-e8e48f406cf8 \
+  name=high-priority \
+  color="#f87171"
+```
+
+**Response (200 OK):**
+```json
+{
+  "id": "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
+  "name": "high-priority",
+  "color": "#f87171"
+}
+```
+
+### Delete Tag
+Delete a tag by its ID.
+
+**Endpoint:** `DELETE /tags/{id}`
+
+**Path Parameters:**
+- `id` (string, required) - Tag UUID
+
+**Example Request:**
+```bash
+http DELETE :8080/tags/b5948bc2-d918-5fe5-ca5a-e8e48f406cf8
+```
+
+**Response (204 No Content):**
+```
+(empty response body)
+```
+
+**Error Response (404 Not Found):**
+```json
+{
+  "error": "tag not found"
+}
+```
+
+---
+
+## Error Responses
+
+All endpoints may return these common error responses:
+
+### 400 Bad Request
+```json
+{
+  "error": "Invalid JSON"
+}
+```
+
+### 500 Internal Server Error
+```json
+{
+  "error": "Database connection failed"
+}
+```
+
+---
+
+## Data Models
+
+### Task
+```json
+{
+  "id": "uuid",
+  "name": "string",
+  "date_created": "ISO 8601 timestamp",
+  "date_modified": "ISO 8601 timestamp", 
+  "completed": "boolean",
+  "priority": "integer (1-5, default: 3)",
+  "tags": "array of Tag objects (optional)"
+}
+```
+
+### Tag
+```json
+{
+  "id": "uuid",
+  "name": "string (unique)",
+  "color": "string (hex color code)"
+}
+```
+
+---
+
+## Notes
+
+- All timestamps are in ISO 8601 format (UTC)
+- UUIDs are version 4 format
+- Tag colors are automatically assigned from a predefined palette if not specified
+- Priority ranges from 1 (highest) to 5 (lowest), defaults to 3
+- Tasks are sorted by completion status first (incomplete tasks first), then by the specified sort field
