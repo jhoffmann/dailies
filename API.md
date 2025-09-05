@@ -3,11 +3,13 @@
 This document describes the REST API endpoints for the Dailies task management application.
 
 ## Base URL
+
 ```
 http://localhost:8080
 ```
 
 ## Content Type
+
 All endpoints accept and return `application/json` unless otherwise specified.
 
 **Note:** Examples use [HTTPie](https://httpie.io/) command-line tool. Install with `pip install httpie` or use your preferred HTTP client.
@@ -17,16 +19,19 @@ All endpoints accept and return `application/json` unless otherwise specified.
 ## Health Check
 
 ### Check Application Health
+
 Get the health status of the application.
 
 **Endpoint:** `GET /healthz`
 
 **Example Request:**
+
 ```bash
 http GET :8080/healthz
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "status": "UP"
@@ -38,17 +43,20 @@ http GET :8080/healthz
 ## Tasks
 
 ### Get All Tasks
+
 Retrieve all tasks with optional filtering and sorting.
 
 **Endpoint:** `GET /tasks`
 
 **Query Parameters:**
+
 - `completed` (boolean, optional) - Filter by completion status
 - `name` (string, optional) - Filter by task name (partial matching)
 - `tag_ids` (string, optional) - Filter by tag IDs (comma-separated UUIDs, tasks must have ALL specified tags)
 - `sort` (string, optional) - Sort field: `completed`, `priority`, `name` (default: `priority`)
 
 **Example Requests:**
+
 ```bash
 # Get all tasks
 http GET :8080/tasks
@@ -70,6 +78,7 @@ http GET :8080/tasks tag_ids==b5948bc2-d918-5fe5-ca5a-e8e48f406cf8 completed==fa
 ```
 
 **Response (200 OK):**
+
 ```json
 [
   {
@@ -96,19 +105,23 @@ http GET :8080/tasks tag_ids==b5948bc2-d918-5fe5-ca5a-e8e48f406cf8 completed==fa
 ```
 
 ### Get Single Task
+
 Retrieve a specific task by its ID.
 
 **Endpoint:** `GET /tasks/{id}`
 
 **Path Parameters:**
+
 - `id` (string, required) - Task UUID
 
 **Example Request:**
+
 ```bash
 http GET :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "a4837ac1-c807-4edd-ba49-d4e37f295be7",
@@ -134,6 +147,7 @@ http GET :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7
 ```
 
 **Error Response (404 Not Found):**
+
 ```json
 {
   "error": "task not found"
@@ -141,11 +155,13 @@ http GET :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7
 ```
 
 ### Create Task
+
 Create a new task with optional tag associations and frequency assignment.
 
 **Endpoint:** `POST /tasks`
 
 **Request Body:**
+
 ```json
 {
   "name": "Complete API documentation",
@@ -158,6 +174,7 @@ Create a new task with optional tag associations and frequency assignment.
 ```
 
 **Example Requests:**
+
 ```bash
 # Create task without frequency
 http POST :8080/tasks \
@@ -179,6 +196,7 @@ http POST :8080/tasks \
 > **Note:** Frequency assignment for tasks is currently handled through direct database operations. Future API versions will support `frequency_id` in task creation and updates.
 
 **Response (201 Created):**
+
 ```json
 {
   "id": "d7160de4-fb3a-7hg7-ec7c-g0g60h628eh0",
@@ -198,6 +216,7 @@ http POST :8080/tasks \
 ```
 
 **Error Response (400 Bad Request):**
+
 ```json
 {
   "error": "task name is required"
@@ -205,14 +224,17 @@ http POST :8080/tasks \
 ```
 
 ### Update Task
+
 Update an existing task by its ID, including completion status, priority, and frequency assignment.
 
 **Endpoint:** `PUT /tasks/{id}`
 
 **Path Parameters:**
+
 - `id` (string, required) - Task UUID
 
 **Request Body:**
+
 ```json
 {
   "name": "Updated task name",
@@ -223,6 +245,7 @@ Update an existing task by its ID, including completion status, priority, and fr
 ```
 
 **Example Requests:**
+
 ```bash
 # Update task completion status
 http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
@@ -250,6 +273,7 @@ http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
 ```
 
 **Example Requests:**
+
 ```bash
 # Update completion status and priority
 http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
@@ -272,6 +296,7 @@ http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "a4837ac1-c807-4edd-ba49-d4e37f295be7",
@@ -297,24 +322,29 @@ http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
 ```
 
 ### Delete Task
+
 Delete a task by its ID.
 
 **Endpoint:** `DELETE /tasks/{id}`
 
 **Path Parameters:**
+
 - `id` (string, required) - Task UUID
 
 **Example Request:**
+
 ```bash
 http DELETE :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7
 ```
 
 **Response (204 No Content):**
+
 ```
 (empty response body)
 ```
 
 **Error Response (404 Not Found):**
+
 ```json
 {
   "error": "task not found"
@@ -326,14 +356,17 @@ http DELETE :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7
 ## Tags
 
 ### Get All Tags
+
 Retrieve all tags with optional name filtering.
 
 **Endpoint:** `GET /tags`
 
 **Query Parameters:**
+
 - `name` (string, optional) - Filter by tag name (partial matching)
 
 **Example Requests:**
+
 ```bash
 # Get all tags
 http GET :8080/tags
@@ -343,6 +376,7 @@ http GET :8080/tags name==work
 ```
 
 **Response (200 OK):**
+
 ```json
 [
   {
@@ -359,19 +393,23 @@ http GET :8080/tags name==work
 ```
 
 ### Get Single Tag
+
 Retrieve a specific tag by its ID.
 
 **Endpoint:** `GET /tags/{id}`
 
 **Path Parameters:**
+
 - `id` (string, required) - Tag UUID
 
 **Example Request:**
+
 ```bash
 http GET :8080/tags/b5948bc2-d918-5fe5-ca5a-e8e48f406cf8
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
@@ -381,6 +419,7 @@ http GET :8080/tags/b5948bc2-d918-5fe5-ca5a-e8e48f406cf8
 ```
 
 **Error Response (404 Not Found):**
+
 ```json
 {
   "error": "tag not found"
@@ -388,11 +427,13 @@ http GET :8080/tags/b5948bc2-d918-5fe5-ca5a-e8e48f406cf8
 ```
 
 ### Create Tag
+
 Create a new tag with an optional color.
 
 **Endpoint:** `POST /tags`
 
 **Request Body:**
+
 ```json
 {
   "name": "urgent",
@@ -401,6 +442,7 @@ Create a new tag with an optional color.
 ```
 
 **Example Request:**
+
 ```bash
 http POST :8080/tags \
   name=urgent \
@@ -408,6 +450,7 @@ http POST :8080/tags \
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "id": "e8271ef5-gc4b-8ih8-fd8d-h1h71i739fi1",
@@ -417,11 +460,13 @@ http POST :8080/tags \
 ```
 
 **Example Request (auto-generated color):**
+
 ```bash
 http POST :8080/tags name=meeting
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "id": "f9382fg6-hd5c-9ji9-ge9e-i2i82j840gj2",
@@ -431,6 +476,7 @@ http POST :8080/tags name=meeting
 ```
 
 **Error Responses:**
+
 ```json
 // 400 Bad Request - Missing name
 {
@@ -444,14 +490,17 @@ http POST :8080/tags name=meeting
 ```
 
 ### Update Tag
+
 Update an existing tag by its ID.
 
 **Endpoint:** `PUT /tags/{id}`
 
 **Path Parameters:**
+
 - `id` (string, required) - Tag UUID
 
 **Request Body:**
+
 ```json
 {
   "name": "high-priority",
@@ -460,6 +509,7 @@ Update an existing tag by its ID.
 ```
 
 **Example Request:**
+
 ```bash
 http PUT :8080/tags/b5948bc2-d918-5fe5-ca5a-e8e48f406cf8 \
   name=high-priority \
@@ -467,6 +517,7 @@ http PUT :8080/tags/b5948bc2-d918-5fe5-ca5a-e8e48f406cf8 \
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
@@ -476,24 +527,29 @@ http PUT :8080/tags/b5948bc2-d918-5fe5-ca5a-e8e48f406cf8 \
 ```
 
 ### Delete Tag
+
 Delete a tag by its ID.
 
 **Endpoint:** `DELETE /tags/{id}`
 
 **Path Parameters:**
+
 - `id` (string, required) - Tag UUID
 
 **Example Request:**
+
 ```bash
 http DELETE :8080/tags/b5948bc2-d918-5fe5-ca5a-e8e48f406cf8
 ```
 
 **Response (204 No Content):**
+
 ```
 (empty response body)
 ```
 
 **Error Response (404 Not Found):**
+
 ```json
 {
   "error": "tag not found"
@@ -505,14 +561,17 @@ http DELETE :8080/tags/b5948bc2-d918-5fe5-ca5a-e8e48f406cf8
 ## Frequencies
 
 ### Get All Frequencies
+
 Retrieve all frequencies with optional name filtering.
 
 **Endpoint:** `GET /frequencies`
 
 **Query Parameters:**
+
 - `name` (string, optional) - Filter by frequency name (partial matching)
 
 **Example Requests:**
+
 ```bash
 # Get all frequencies
 http GET :8080/frequencies
@@ -522,6 +581,7 @@ http GET :8080/frequencies name==daily
 ```
 
 **Response (200 OK):**
+
 ```json
 [
   {
@@ -538,19 +598,23 @@ http GET :8080/frequencies name==daily
 ```
 
 ### Get Single Frequency
+
 Retrieve a specific frequency by its ID.
 
 **Endpoint:** `GET /frequencies/{id}`
 
 **Path Parameters:**
+
 - `id` (string, required) - Frequency UUID
 
 **Example Request:**
+
 ```bash
 http GET :8080/frequencies/f1234567-ab12-34cd-56ef-123456789012
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "f1234567-ab12-34cd-56ef-123456789012",
@@ -560,6 +624,7 @@ http GET :8080/frequencies/f1234567-ab12-34cd-56ef-123456789012
 ```
 
 **Error Response (404 Not Found):**
+
 ```json
 {
   "error": "frequency not found"
@@ -567,11 +632,13 @@ http GET :8080/frequencies/f1234567-ab12-34cd-56ef-123456789012
 ```
 
 ### Create Frequency
+
 Create a new frequency with a cron expression for reset timing.
 
 **Endpoint:** `POST /frequencies`
 
 **Request Body:**
+
 ```json
 {
   "name": "Daily Morning",
@@ -580,6 +647,7 @@ Create a new frequency with a cron expression for reset timing.
 ```
 
 **Example Requests:**
+
 ```bash
 # Daily at 6 AM UTC
 http POST :8080/frequencies \
@@ -598,6 +666,7 @@ http POST :8080/frequencies \
 ```
 
 **Response (201 Created):**
+
 ```json
 {
   "id": "f3456789-cd34-56ef-78ab-345678901234",
@@ -607,6 +676,7 @@ http POST :8080/frequencies \
 ```
 
 **Error Responses:**
+
 ```json
 // 400 Bad Request - Missing name
 {
@@ -625,14 +695,17 @@ http POST :8080/frequencies \
 ```
 
 ### Update Frequency
+
 Update an existing frequency by its ID.
 
 **Endpoint:** `PUT /frequencies/{id}`
 
 **Path Parameters:**
+
 - `id` (string, required) - Frequency UUID
 
 **Request Body:**
+
 ```json
 {
   "name": "Updated Frequency Name",
@@ -641,6 +714,7 @@ Update an existing frequency by its ID.
 ```
 
 **Example Request:**
+
 ```bash
 http PUT :8080/frequencies/f1234567-ab12-34cd-56ef-123456789012 \
   name="Daily Noon" \
@@ -648,6 +722,7 @@ http PUT :8080/frequencies/f1234567-ab12-34cd-56ef-123456789012 \
 ```
 
 **Response (200 OK):**
+
 ```json
 {
   "id": "f1234567-ab12-34cd-56ef-123456789012",
@@ -657,24 +732,29 @@ http PUT :8080/frequencies/f1234567-ab12-34cd-56ef-123456789012 \
 ```
 
 ### Delete Frequency
+
 Delete a frequency by its ID.
 
 **Endpoint:** `DELETE /frequencies/{id}`
 
 **Path Parameters:**
+
 - `id` (string, required) - Frequency UUID
 
 **Example Request:**
+
 ```bash
 http DELETE :8080/frequencies/f1234567-ab12-34cd-56ef-123456789012
 ```
 
 **Response (204 No Content):**
+
 ```
 (empty response body)
 ```
 
 **Error Response (404 Not Found):**
+
 ```json
 {
   "error": "frequency not found"
@@ -688,6 +768,7 @@ http DELETE :8080/frequencies/f1234567-ab12-34cd-56ef-123456789012
 All endpoints may return these common error responses:
 
 ### 400 Bad Request
+
 ```json
 {
   "error": "Invalid JSON"
@@ -695,6 +776,7 @@ All endpoints may return these common error responses:
 ```
 
 ### 500 Internal Server Error
+
 ```json
 {
   "error": "Database connection failed"
@@ -706,12 +788,13 @@ All endpoints may return these common error responses:
 ## Data Models
 
 ### Task
+
 ```json
 {
   "id": "uuid",
   "name": "string",
   "date_created": "ISO 8601 timestamp",
-  "date_modified": "ISO 8601 timestamp", 
+  "date_modified": "ISO 8601 timestamp",
   "completed": "boolean",
   "priority": "integer (1-5, default: 3)",
   "frequency_id": "uuid (optional)",
@@ -721,6 +804,7 @@ All endpoints may return these common error responses:
 ```
 
 ### Tag
+
 ```json
 {
   "id": "uuid",
@@ -730,6 +814,7 @@ All endpoints may return these common error responses:
 ```
 
 ### Frequency
+
 ```json
 {
   "id": "uuid",

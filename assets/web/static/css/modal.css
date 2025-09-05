@@ -1,203 +1,203 @@
 /***** MODAL DIALOG ****/
 #modal {
-    /* Underlay covers entire screen. */
-    position: fixed;
-    top: 0px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
-    background-color: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
+  /* Underlay covers entire screen. */
+  position: fixed;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1000;
 
-    /* Flexbox centers the .modal-content vertically and horizontally */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  /* Flexbox centers the .modal-content vertically and horizontally */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-    /* Animate when opening */
-    animation-name: fadeIn;
-    animation-duration: 150ms;
-    animation-timing-function: ease;
+  /* Animate when opening */
+  animation-name: fadeIn;
+  animation-duration: 150ms;
+  animation-timing-function: ease;
 }
 
 #modal > .modal-underlay {
-    /* underlay takes up the entire viewport. This is only
+  /* underlay takes up the entire viewport. This is only
 	required if you want to click to dismiss the popup */
-    position: absolute;
-    z-index: -1;
-    top: 0px;
-    bottom: 0px;
-    left: 0px;
-    right: 0px;
+  position: absolute;
+  z-index: -1;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
 }
 
 #modal > .modal-content {
-    /* Position visible dialog near the top of the window */
-    margin-top: 30vh;
+  /* Position visible dialog near the top of the window */
+  margin-top: 30vh;
 
-    /* Sizing for visible dialog */
-    width: 80%;
-    max-width: 600px;
+  /* Sizing for visible dialog */
+  width: 80%;
+  max-width: 600px;
 
-    /* Display properties for visible dialog*/
-    border: solid 1px #999;
-    border-radius: 8px;
-    box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.3);
-    background-color: white;
-    padding: 20px;
+  /* Display properties for visible dialog*/
+  border: solid 1px #999;
+  border-radius: 8px;
+  box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.3);
+  background-color: white;
+  padding: 20px;
 
-    /* Animate when opening */
-    animation-name: zoomIn;
-    animation-duration: 150ms;
-    animation-timing-function: ease;
+  /* Animate when opening */
+  animation-name: zoomIn;
+  animation-duration: 150ms;
+  animation-timing-function: ease;
 }
 
 #modal.closing {
-    /* Animate when closing */
-    animation-name: fadeOut;
-    animation-duration: 150ms;
-    animation-timing-function: ease;
+  /* Animate when closing */
+  animation-name: fadeOut;
+  animation-duration: 150ms;
+  animation-timing-function: ease;
 }
 
 #modal.closing > .modal-content {
-    /* Animate when closing */
-    animation-name: zoomOut;
-    animation-duration: 150ms;
-    animation-timing-function: ease;
+  /* Animate when closing */
+  animation-name: zoomOut;
+  animation-duration: 150ms;
+  animation-timing-function: ease;
 }
 
 @keyframes fadeIn {
-    0% {
-        opacity: 0;
-    }
-    100% {
-        opacity: 1;
-    }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 @keyframes fadeOut {
-    0% {
-        opacity: 1;
-    }
-    100% {
-        opacity: 0;
-    }
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }
 
 @keyframes zoomIn {
-    0% {
-        transform: scale(0.9);
-    }
-    100% {
-        transform: scale(1);
-    }
+  0% {
+    transform: scale(0.9);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
 
 @keyframes zoomOut {
-    0% {
-        transform: scale(1);
-    }
-    100% {
-        transform: scale(0.9);
-    }
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(0.9);
+  }
 }
 
 .modal-header {
-    margin-bottom: 20px;
+  margin-bottom: 20px;
 }
 
 .modal-header h3 {
-    margin: 0;
-    color: #2c3e50;
-    font-size: 18px;
-    font-weight: 600;
+  margin: 0;
+  color: #2c3e50;
+  font-size: 18px;
+  font-weight: 600;
 }
 
 .modal-body {
-    margin-bottom: 24px;
+  margin-bottom: 24px;
 }
 
 .modal-body p {
-    margin: 0 0 12px 0;
-    color: #555;
-    line-height: 1.5;
+  margin: 0 0 12px 0;
+  color: #555;
+  line-height: 1.5;
 }
 
 .modal-body p:last-child {
-    margin-bottom: 0;
+  margin-bottom: 0;
 }
 
 /* Modal Form Styling */
 .form-group-inline {
-    display: flex;
-    align-items: center;
-    gap: 12px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .form-group-inline input[type="color"] {
-    margin: 8px 0;
+  margin: 8px 0;
 }
 
 .error-message {
-    display: none;
-    color: #e74c3c;
-    background: #ffeaea;
-    border: 1px solid #e74c3c;
-    padding: 8px 12px;
-    border-radius: 4px;
-    font-size: 14px;
-    flex: 1;
+  display: none;
+  color: #e74c3c;
+  background: #ffeaea;
+  border: 1px solid #e74c3c;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+  flex: 1;
 }
 
 /* Tag Selection Styles */
 .tag-selection {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    margin-top: 4px;
-    max-height: 250px;
-    overflow-y: auto;
-    padding: 4px 8px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 4px;
+  max-height: 250px;
+  overflow-y: auto;
+  padding: 4px 8px;
 }
 
 .tag-checkbox {
-    position: relative;
-    display: inline-flex;
-    align-items: center;
-    padding: 0px 6px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-    opacity: 0.7;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 0px 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  opacity: 0.7;
 }
 
 .tag-checkbox:hover {
-    opacity: 0.9;
-    transform: scale(1.05);
+  opacity: 0.9;
+  transform: scale(1.05);
 }
 
 .tag-checkbox.selected {
-    opacity: 1;
-    border-color: #2c3e50;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  opacity: 1;
+  border-color: #2c3e50;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .tag-checkbox input[type="checkbox"] {
-    position: absolute;
-    opacity: 0;
-    width: 0;
-    height: 0;
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
 }
 
 .tag-name {
-    font-size: 13px;
-    font-weight: 500;
-    color: #2c3e50;
-    user-select: none;
+  font-size: 13px;
+  font-weight: 500;
+  color: #2c3e50;
+  user-select: none;
 }
 
 .tag-loading {
-    padding: 12px;
-    text-align: center;
-    color: #666;
-    font-style: italic;
+  padding: 12px;
+  text-align: center;
+  color: #666;
+  font-style: italic;
 }

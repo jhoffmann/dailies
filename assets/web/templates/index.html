@@ -1,45 +1,55 @@
 <!doctype html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8" />
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Task List ({{.DatabaseName}})</title>
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
-        <link rel="stylesheet" href="/static/style.bundle.css" />
-        <script src="/static/script.bundle.js"></script>
-    </head>
-    <body>
-        <div class="app-layout">
-            {{template "sidebar.html"}}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Task List ({{.DatabaseName}})</title>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="/static/style.bundle.css" />
+    <script src="/static/script.bundle.js"></script>
+  </head>
+  <body>
+    <div class="app-layout">
+      {{template "sidebar.html"}}
 
-            <!-- Main Content -->
-            <div class="main-content sidebar-collapsed">
-                <!-- Toggle Button (visible when sidebar is collapsed) -->
-                <button
-                    class="sidebar-toggle collapsed-toggle"
-                    _="on click remove .collapsed from #sidebar then remove .sidebar-collapsed from .main-content"
-                >
-                    <i class="fas fa-bars"></i>
-                </button>
+      <!-- Main Content -->
+      <div class="main-content sidebar-collapsed">
+        <!-- Toggle Button (visible when sidebar is collapsed) -->
+        <button
+          class="sidebar-toggle collapsed-toggle"
+          _="on click remove .collapsed from #sidebar then remove .sidebar-collapsed from .main-content"
+        >
+          <i class="fas fa-bars"></i>
+        </button>
 
-                <div class="container">
-                    <div class="content-wrapper">
-                        <div class="header-row">
-                            <h1>Task List ({{.DatabaseName}})</h1>
-                            {{template "form-actions.html"}}
-                        </div>
-
-                        <div id="app">
-                            <div id="task-list" hx-get="/component/tasks" hx-swap="innerHTML" hx-trigger="load"></div>
-                        </div>
-                        {{template "form-actions.html"}}
-                    </div>
-                    <div id="timer-resets"
-                      hx-get="/component/timer-resets"
-                      hx-swap="innerHTML"
-                      hx-trigger="load, every 30s"></div>
-                </div>
+        <div class="container">
+          <div class="content-wrapper">
+            <div class="header-row">
+              <h1>Task List ({{.DatabaseName}})</h1>
+              {{template "form-actions.html"}}
             </div>
+
+            <div id="app">
+              <div
+                id="task-list"
+                hx-get="/component/tasks"
+                hx-swap="innerHTML"
+                hx-trigger="load"
+              ></div>
+            </div>
+            {{template "form-actions.html"}}
+          </div>
+          <div
+            id="timer-resets"
+            hx-get="/component/timer-resets"
+            hx-swap="innerHTML"
+            hx-trigger="load, every 60s"
+          ></div>
         </div>
-    </body>
+      </div>
+    </div>
+  </body>
 </html>

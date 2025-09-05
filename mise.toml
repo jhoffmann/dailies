@@ -36,7 +36,7 @@ run = ["go mod download", "go mod tidy"]
 description = "Format code"
 alias = "fmt"
 hide = true
-run = "go fmt ./..."
+run = ["go fmt ./...", "prettier -lw ."]
 
 [tasks.analysis]
 description = "Run a static code analyzer"

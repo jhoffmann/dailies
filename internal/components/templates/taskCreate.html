@@ -1,54 +1,65 @@
-<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
-    <div class="modal-underlay" _="on click trigger closeModal"></div>
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>New Task</h3>
-        </div>
-        <form
-            hx-post="/component/create/task"
-            hx-ext="json-enc"
-            hx-target="#task-list"
-            hx-swap="afterbegin"
-            hx-on::after-request="if(event.detail.successful && event.detail.xhr.responseURL.includes('/component/create/task')) this.closest('#modal').dispatchEvent(new CustomEvent('closeModal'))"
-        >
-            <div class="form-group">
-                <input
-                    type="text"
-                    id="task-name"
-                    name="name"
-                    placeholder="Enter a short description..."
-                    required
-                    autofocus
-                />
-            </div>
-            <div class="form-group">
-                <label>Frequency</label>
-                <div 
-                    id="frequency-selection-container"
-                    hx-get="/component/frequency-selection"
-                    hx-trigger="load"
-                    hx-target="#frequency-selection-container"
-                    hx-swap="innerHTML"
-                >
-                    <div class="tag-loading">Loading frequencies...</div>
-                </div>
-            </div>
-            <div class="form-group">
-                <label>Tags</label>
-                <div 
-                    id="tag-selection-container"
-                    hx-get="/component/tag-selection"
-                    hx-trigger="load"
-                    hx-target="#tag-selection-container"
-                    hx-swap="innerHTML"
-                >
-                    <div class="tag-loading">Loading tags...</div>
-                </div>
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn-create"><i class="fas fa-clone icon"></i>Create Task</button>
-                <button type="button" class="btn-cancel" _="on click trigger closeModal">Cancel</button>
-            </div>
-        </form>
+<div
+  id="modal"
+  _="on closeModal add .closing then wait for animationend then remove me"
+>
+  <div class="modal-underlay" _="on click trigger closeModal"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>New Task</h3>
     </div>
+    <form
+      hx-post="/component/create/task"
+      hx-ext="json-enc"
+      hx-target="#task-list"
+      hx-swap="afterbegin"
+      hx-on::after-request="if(event.detail.successful && event.detail.xhr.responseURL.includes('/component/create/task')) this.closest('#modal').dispatchEvent(new CustomEvent('closeModal'))"
+    >
+      <div class="form-group">
+        <input
+          type="text"
+          id="task-name"
+          name="name"
+          placeholder="Enter a short description..."
+          required
+          autofocus
+        />
+      </div>
+      <div class="form-group">
+        <label>Frequency</label>
+        <div
+          id="frequency-selection-container"
+          hx-get="/component/frequency-selection"
+          hx-trigger="load"
+          hx-target="#frequency-selection-container"
+          hx-swap="innerHTML"
+        >
+          <div class="tag-loading">Loading frequencies...</div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label>Tags</label>
+        <div
+          id="tag-selection-container"
+          hx-get="/component/tag-selection"
+          hx-trigger="load"
+          hx-target="#tag-selection-container"
+          hx-swap="innerHTML"
+        >
+          <div class="tag-loading">Loading tags...</div>
+        </div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-create">
+          <i class="fas fa-clone icon"></i>Create Task
+        </button>
+        <button
+          type="button"
+          class="btn-cancel"
+          _="on click trigger closeModal"
+        >
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

@@ -1,13 +1,16 @@
-<div id="modal" _="on closeModal add .closing then wait for animationend then remove me">
-    <div class="modal-underlay" _="on click trigger closeModal"></div>
-    <div class="modal-content">
-        <div class="modal-header">
-            <h3>New Tag</h3>
-        </div>
-        <form
-            hx-post="/component/create/tag"
-            hx-ext="json-enc"
-            hx-on::before-request="
+<div
+  id="modal"
+  _="on closeModal add .closing then wait for animationend then remove me"
+>
+  <div class="modal-underlay" _="on click trigger closeModal"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h3>New Tag</h3>
+    </div>
+    <form
+      hx-post="/component/create/tag"
+      hx-ext="json-enc"
+      hx-on::before-request="
                 const colorInput = document.getElementById('tag-color');
                 if (colorInput.value === '#000000') {
                     colorInput.removeAttribute('name');
@@ -15,7 +18,7 @@
                     colorInput.setAttribute('name', 'color');
                 }
             "
-            hx-on::after-request="
+      hx-on::after-request="
                 if(event.detail.successful) {
                     this.closest('#modal').dispatchEvent(new CustomEvent('closeModal'));
                 } else {
@@ -26,26 +29,38 @@
                     }
                 }
             "
+    >
+      <div class="form-group">
+        <input
+          type="text"
+          id="tag-name"
+          name="name"
+          placeholder="Enter tag name..."
+          required
+          autofocus
+          _="on input hide #error-message"
+        />
+      </div>
+      <div class="form-group form-group-inline">
+        <input
+          type="color"
+          id="tag-color"
+          placeholder="Select color (optional)"
+        />
+        <div id="error-message" class="error-message"></div>
+      </div>
+      <div class="form-actions">
+        <button type="submit" class="btn-create">
+          <i class="fas fa-tag icon"></i>Create Tag
+        </button>
+        <button
+          type="button"
+          class="btn-cancel"
+          _="on click trigger closeModal"
         >
-            <div class="form-group">
-                <input
-                    type="text"
-                    id="tag-name"
-                    name="name"
-                    placeholder="Enter tag name..."
-                    required
-                    autofocus
-                    _="on input hide #error-message"
-                />
-            </div>
-            <div class="form-group form-group-inline">
-                <input type="color" id="tag-color" placeholder="Select color (optional)" />
-                <div id="error-message" class="error-message"></div>
-            </div>
-            <div class="form-actions">
-                <button type="submit" class="btn-create"><i class="fas fa-tag icon"></i>Create Tag</button>
-                <button type="button" class="btn-cancel" _="on click trigger closeModal">Cancel</button>
-            </div>
-        </form>
-    </div>
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
 </div>

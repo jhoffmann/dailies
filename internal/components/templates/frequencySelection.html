@@ -1,15 +1,15 @@
 <div id="frequency-selection" class="frequency-selection">
-    {{range .}}
-    <label class="frequency-tag">
-        <input 
-            type="radio" 
-            name="frequency_id" 
-            value="{{.ID}}" 
-            _="on change 
+  {{range .}}
+  <label class="frequency-tag">
+    <input
+      type="radio"
+      name="frequency_id"
+      value="{{.ID}}"
+      _="on change 
                 remove .selected from .frequency-tag in #frequency-selection
                 add .selected to closest .frequency-tag"
-        />
-        <span class="frequency-name">{{.Name}}</span>
-    </label>
-    {{end}}
+    />
+    <span class="frequency-name">{{.Name}}</span>
+  </label>
+  {{end}}
 </div>
