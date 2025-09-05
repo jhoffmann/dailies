@@ -134,6 +134,49 @@ func TestGetTasks(t *testing.T) {
 		}
 	})
 
+	t.Run("sort by priority", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/tasks?sort=priority", nil)
+		w := httptest.NewRecorder()
+
+		GetTasks(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var tasks []models.Task
+		err := json.Unmarshal(w.Body.Bytes(), &tasks)
+		if err != nil {
+			t.Errorf("Failed to unmarshal response: %v", err)
+		}
+
+		if len(tasks) != 3 {
+			t.Errorf("Expected 3 tasks, got %d", len(tasks))
+		}
+	})
+
+	t.Run("sort by name", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/tasks?sort=name", nil)
+		w := httptest.NewRecorder()
+
+		GetTasks(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+	})
+
+	t.Run("sort by completed", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/tasks?sort=completed", nil)
+		w := httptest.NewRecorder()
+
+		GetTasks(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+	})
+
 	t.Run("invalid completed parameter", func(t *testing.T) {
 		req := httptest.NewRequest("GET", "/tasks?completed=invalid", nil)
 		w := httptest.NewRecorder()
@@ -425,6 +468,49 @@ func TestDeleteTask(t *testing.T) {
 
 		if w.Code != http.StatusNotFound {
 			t.Errorf("Expected status 404, got %d", w.Code)
+		}
+	})
+}
+
+func TestHealthCheck(t *testing.T) {
+	cleanup := setupTestDB(t)
+	defer cleanup()
+
+	t.Run("returns health status when database is connected", func(t *testing.T) {
+		req := httptest.NewRequest("GET", "/health", nil)
+		w := httptest.NewRecorder()
+
+		HealthCheck(w, req)
+
+		if w.Code != http.StatusOK {
+			t.Errorf("Expected status 200, got %d", w.Code)
+		}
+
+		var response map[string]string
+		err := json.Unmarshal(w.Body.Bytes(), &response)
+		if err != nil {
+			t.Errorf("Failed to unmarshal response: %v", err)
+		}
+
+		if response["status"] != "UP" {
+			t.Errorf("Expected status 'UP', got %s", response["status"])
+		}
+	})
+
+	t.Run("returns error when database is nil", func(t *testing.T) {
+		originalDB := database.DB
+		database.DB = nil
+		defer func() {
+			database.DB = originalDB
+		}()
+
+		req := httptest.NewRequest("GET", "/health", nil)
+		w := httptest.NewRecorder()
+
+		HealthCheck(w, req)
+
+		if w.Code != http.StatusInternalServerError {
+			t.Errorf("Expected status 500, got %d", w.Code)
 		}
 	})
 }
