@@ -1,4 +1,21 @@
 /***** MODAL DIALOG ****/
+/* Animation Classes */
+.modal-fade-in {
+  animation: fadeIn var(--animation-duration) ease;
+}
+
+.modal-fade-out {
+  animation: fadeOut var(--animation-duration) ease;
+}
+
+.modal-zoom-in {
+  animation: zoomIn var(--animation-duration) ease;
+}
+
+.modal-zoom-out {
+  animation: zoomOut var(--animation-duration) ease;
+}
+
 #modal {
   /* Underlay covers entire screen. */
   position: fixed;
@@ -16,7 +33,7 @@
 
   /* Animate when opening */
   animation-name: fadeIn;
-  animation-duration: 150ms;
+  animation-duration: var(--animation-duration);
   animation-timing-function: ease;
 }
 
@@ -40,30 +57,35 @@
   max-width: 600px;
 
   /* Display properties for visible dialog*/
-  border: solid 1px #999;
-  border-radius: 8px;
+  border: solid 1px var(--border-color);
+  border-radius: var(--border-radius);
   box-shadow: 0px 0px 20px 0px rgba(0, 0, 0, 0.3);
   background-color: white;
   padding: 20px;
 
   /* Animate when opening */
   animation-name: zoomIn;
-  animation-duration: 150ms;
+  animation-duration: var(--animation-duration);
   animation-timing-function: ease;
 }
 
 #modal.closing {
   /* Animate when closing */
   animation-name: fadeOut;
-  animation-duration: 150ms;
+  animation-duration: var(--animation-duration);
   animation-timing-function: ease;
 }
 
 #modal.closing > .modal-content {
   /* Animate when closing */
   animation-name: zoomOut;
-  animation-duration: 150ms;
+  animation-duration: var(--animation-duration);
   animation-timing-function: ease;
+}
+
+#modal.closing > .modal-content {
+  /* Animate when closing */
+  animation: zoomOut var(--animation-duration) ease;
 }
 
 @keyframes fadeIn {
@@ -108,7 +130,7 @@
 
 .modal-header h3 {
   margin: 0;
-  color: #2c3e50;
+  color: var(--text-dark);
   font-size: 18px;
   font-weight: 600;
 }
@@ -140,11 +162,11 @@
 
 .error-message {
   display: none;
-  color: #e74c3c;
+  color: var(--danger-red);
   background: #ffeaea;
-  border: 1px solid #e74c3c;
+  border: 1px solid var(--danger-red);
   padding: 8px 12px;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   font-size: 14px;
   flex: 1;
 }
@@ -177,7 +199,7 @@
 
 .tag-checkbox.selected {
   opacity: 1;
-  border-color: #2c3e50;
+  border-color: var(--text-dark);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
@@ -191,7 +213,7 @@
 .tag-name {
   font-size: 13px;
   font-weight: 500;
-  color: #2c3e50;
+  color: var(--text-dark);
   user-select: none;
 }
 

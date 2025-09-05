@@ -7,7 +7,7 @@
 - ~Move filters/settings to a collapsible sidebar~
 - ~Filter on tags~
 - ~Add task sorting to the web ui~
-- Add a frequency model
+- ~Add a frequency model~
 - Update the dockerfile to build from scratch
 - Move FA into webpack
 - Add pagination buttons, gets messy when you're adding/removing from the view real-time
