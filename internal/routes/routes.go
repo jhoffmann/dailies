@@ -7,6 +7,7 @@ import (
 	"github.com/jhoffmann/dailies/internal/api"
 	"github.com/jhoffmann/dailies/internal/logger"
 	"github.com/jhoffmann/dailies/internal/ui/web"
+	"github.com/jhoffmann/dailies/internal/websocket"
 )
 
 // Setup configures HTTP routes for the application.
@@ -32,6 +33,11 @@ func Setup() {
 		}
 		api.HealthCheck(w, r)
 	}))
+
+	// WebSocket endpoint for notifications
+	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
+		websocket.GetHub().HandleWebSocket(w, r)
+	})
 
 	// Setup task, tag, and frequency routes
 	SetupTaskRoutes()

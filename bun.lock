@@ -5,6 +5,7 @@
       "name": "dailies",
       "dependencies": {
         "htmx-ext-json-enc": "^2.0.2",
+        "htmx-ext-ws": "^2.0.3",
         "htmx.org": "^2.0.6",
         "hyperscript.org": "^0.9.14",
       },
@@ -151,6 +152,8 @@
     "hasown": ["hasown@2.0.2", "", { "dependencies": { "function-bind": "^1.1.2" } }, "sha512-0hJU9SCPvmMzIBdZFqNPXWa6dqh7WdH0cII9y+CyS8rG3nL48Bclra9HmKhVVUHyPWNH5Y7xDwAB7bfgSjkUMQ=="],
 
     "htmx-ext-json-enc": ["htmx-ext-json-enc@2.0.2", "", { "dependencies": { "htmx.org": "^2.0.2" } }, "sha512-RhWacD1u5ViBY1S+YDipuOtJ4ZuruYgxuK7dwAINs1/xo00VIP5AW708MBshwIA8obGvGMSq0LjtWynopTE5Og=="],
+
+    "htmx-ext-ws": ["htmx-ext-ws@2.0.3", "", { "dependencies": { "htmx.org": "^2.0.2" } }, "sha512-782KDh1EHS1iJk9SWXlbNN8DkwHR3ujt8lFnsuQ+o2uBwnZM8WeZOkv1WOER7xXhpZJe4u9oLPhQg5RgCuRAHA=="],
 
     "htmx.org": ["htmx.org@2.0.6", "", {}, "sha512-7ythjYneGSk3yCHgtCnQeaoF+D+o7U2LF37WU3O0JYv3gTZSicdEFiI/Ai/NJyC5ZpYJWMpUb11OC5Lr6AfAqA=="],
 

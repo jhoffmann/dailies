@@ -200,9 +200,10 @@ func populateWithSampleData(db *gorm.DB, count int) error {
 		name  string
 		reset string
 	}{
+		{"hourly", "0 * * * *"},
 		{"daily", "0 0 * * *"},
-		{"weekly", "0 1 * * 1"},
-		{"frequently", "*/5 * * * *"},
+		{"weekly", "0 0 * * 1"},
+		{"quarter-hour", "*/15 * * * *"},
 	}
 
 	var createdFrequencies []models.Frequency

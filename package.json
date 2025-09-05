@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "htmx-ext-json-enc": "^2.0.2",
+    "htmx-ext-ws": "^2.0.3",
     "htmx.org": "^2.0.6",
     "hyperscript.org": "^0.9.14"
   }

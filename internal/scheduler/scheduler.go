@@ -9,6 +9,7 @@ import (
 	"gorm.io/gorm"
 
 	"github.com/jhoffmann/dailies/internal/models"
+	"github.com/jhoffmann/dailies/internal/websocket"
 )
 
 // TaskScheduler manages background task resets based on frequency schedules
@@ -62,6 +63,7 @@ func (ts *TaskScheduler) resetCompletedTasks() {
 
 	now := time.Now()
 	resetCount := 0
+	var lastResetFrequency string
 
 	for _, task := range tasks {
 		if task.Frequency == nil {
@@ -88,11 +90,17 @@ func (ts *TaskScheduler) resetCompletedTasks() {
 				continue
 			}
 			resetCount++
+
+			lastResetFrequency = task.Frequency.Name
+
 			log.Printf("Reset task '%s' (frequency: %s)", task.Name, task.Frequency.Name)
 		}
 	}
 
 	if resetCount > 0 {
 		log.Printf("Reset %d completed tasks", resetCount)
+		// Broadcast WebSocket notifications for task resets using first frequency name
+		websocket.BroadcastTaskReset("tasks", lastResetFrequency, resetCount)
+		websocket.BroadcastTaskListRefresh()
 	}
 }

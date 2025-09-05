@@ -9,7 +9,7 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <link rel="stylesheet" href="/static/style.bundle.css" />
-    <script src="/static/script.bundle.js"></script>
+    <script src="/static/script.bundle.js" defer></script>
   </head>
   <body>
     <div class="app-layout">
@@ -37,7 +37,7 @@
                 id="task-list"
                 hx-get="/component/tasks"
                 hx-swap="innerHTML"
-                hx-trigger="load"
+                hx-trigger="load, refresh"
               ></div>
             </div>
             {{template "form-actions.html"}}
@@ -51,5 +51,41 @@
         </div>
       </div>
     </div>
+
+    <!-- WebSocket Connection and Notifications -->
+    <div hx-ext="ws" ws-connect="/ws"></div>
+
+    <script>
+      // Add event listeners for WebSocket messages (multiple event types for compatibility)
+      document.body.addEventListener("htmx:wsAfterMessage", function (event) {
+        console.log("htmx:wsAfterMessage received:", event);
+        if (window.handleWebSocketMessage) {
+          window.handleWebSocketMessage(event);
+        }
+      });
+
+      document.body.addEventListener("htmx:wsMessage", function (event) {
+        console.log("htmx:wsMessage received:", event);
+        if (window.handleWebSocketMessage) {
+          window.handleWebSocketMessage(event);
+        }
+      });
+
+      // Debug WebSocket connection
+      document.body.addEventListener("htmx:wsOpen", function (event) {
+        console.log("WebSocket connected:", event);
+      });
+
+      document.body.addEventListener("htmx:wsClose", function (event) {
+        console.log("WebSocket disconnected:", event);
+      });
+
+      document.body.addEventListener("htmx:wsError", function (event) {
+        console.log("WebSocket error:", event);
+      });
+    </script>
+
+    <!-- Notification Container -->
+    <div id="notification-container" class="notification-container"></div>
   </body>
 </html>

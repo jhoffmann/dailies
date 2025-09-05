@@ -6,6 +6,7 @@ import (
 	"io"
 	"math/rand"
 	"os"
+	"slices"
 	"testing"
 
 	"github.com/jhoffmann/dailies/internal/models"
@@ -21,7 +22,6 @@ func TestConnectToDatabase(t *testing.T) {
 	t.Run("successful connection", func(t *testing.T) {
 		dbPath := ":memory:"
 		db, err := connectToDatabase(dbPath)
-
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
 		}
@@ -112,20 +112,6 @@ func TestMain_ValidCommands(t *testing.T) {
 
 		listCommand([]string{"--database", testDBFile})
 	})
-}
-
-func setupTestDB(t *testing.T) (*gorm.DB, string) {
-	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	if err != nil {
-		t.Fatalf("Failed to connect to test database: %v", err)
-	}
-
-	err = db.AutoMigrate(&models.Task{})
-	if err != nil {
-		t.Fatalf("Failed to migrate test database: %v", err)
-	}
-
-	return db, ":memory:"
 }
 
 func TestListCommand(t *testing.T) {
@@ -252,7 +238,6 @@ func TestPopulateWithSampleData(t *testing.T) {
 	t.Run("populate with positive count", func(t *testing.T) {
 		count := 5
 		err := populateWithSampleData(db, count)
-
 		if err != nil {
 			t.Errorf("Expected no error, got %v", err)
 		}
@@ -272,7 +257,6 @@ func TestPopulateWithSampleData(t *testing.T) {
 		db2 := setupTestDBForPopulate(t)
 		count := 0
 		err := populateWithSampleData(db2, count)
-
 		if err != nil {
 			t.Errorf("Expected no error for zero count, got %v", err)
 		}
@@ -297,13 +281,7 @@ func TestGetRandomTaskName(t *testing.T) {
 		t.Error("Expected non-empty task name")
 	}
 
-	found := false
-	for _, taskName := range taskNames {
-		if name == taskName {
-			found = true
-			break
-		}
-	}
+	found := slices.Contains(taskNames, name)
 
 	if !found {
 		t.Errorf("Expected task name to be from predefined list, got %s", name)

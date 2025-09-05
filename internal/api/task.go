@@ -12,6 +12,7 @@ import (
 	"github.com/jhoffmann/dailies/internal/database"
 	"github.com/jhoffmann/dailies/internal/logger"
 	"github.com/jhoffmann/dailies/internal/models"
+	"github.com/jhoffmann/dailies/internal/websocket"
 )
 
 // GetTasks handles GET requests to retrieve tasks with optional filtering and sorting.
@@ -98,6 +99,9 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(task)
+
+	// Broadcast task list refresh for new task
+	websocket.BroadcastTaskListRefresh()
 }
 
 // CreateTaskWithTagsAndFrequency creates a new task with associated tags and optional frequency.
@@ -265,6 +269,12 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Broadcast WebSocket notification if task completion status changed
+	if requestData.Completed != nil {
+		websocket.BroadcastTaskUpdated(task.ID.String(), task.Name, *requestData.Completed)
+		websocket.BroadcastTaskListRefresh()
+	}
+
 	json.NewEncoder(w).Encode(task)
 }
 
@@ -282,6 +292,9 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 		logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
 		return
 	}
+
+	// Broadcast task list refresh for deleted task
+	websocket.BroadcastTaskListRefresh()
 
 	w.WriteHeader(http.StatusNoContent)
 }
