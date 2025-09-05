@@ -115,14 +115,14 @@ func GetTasks(db *gorm.DB, completedFilter *bool, nameFilter string, tagIDFilter
 	}
 
 	switch sortField {
-	case "completed":
-		query = query.Order("completed ASC")
-	case "priority":
-		query = query.Order("completed ASC, priority ASC")
-	case "name":
-		query = query.Order("completed ASC, name")
-	default:
+	case "date_created":
 		query = query.Order("completed ASC, date_created DESC")
+	case "date_modified":
+		query = query.Order("completed ASC, date_modified DESC")
+	case "name":
+		query = query.Order("completed ASC, name ASC")
+	default:
+		query = query.Order("completed ASC, priority ASC")
 	}
 
 	result := query.Find(&tasks)

@@ -37,9 +37,6 @@ func GetTasksHTML(w http.ResponseWriter, r *http.Request) {
 
 	nameFilter := r.URL.Query().Get("name")
 	sortField := r.URL.Query().Get("sort")
-	if sortField == "" {
-		sortField = "priority"
-	}
 
 	// Use the API layer for business logic
 	tasks, err := api.GetTasksWithFilter(completedFilter, nameFilter, tagIDFilter, sortField)
