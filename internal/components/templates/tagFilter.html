@@ -8,7 +8,7 @@
             hx-get="/component/tasks"
             hx-target="#task-list"
             hx-trigger="change"
-            hx-include="#name-filter, #completion-filter, [name='tag_ids']:checked"
+            hx-include="#name-filter, [name='completed']:checked, [name='sort']:checked, [name='tag_ids']:checked"
             _="on change 
                 if me.checked 
                     add .selected to closest .tag-checkbox 

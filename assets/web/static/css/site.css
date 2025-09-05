@@ -439,14 +439,17 @@ h1 {
     background-color: #6e249d;
 }
 
+.frequency-selection {
+    padding: 4px 8px;
+}
+
 .frequency-tag {
     color: white !important;
     background-color: #ce84ed;
-    margin: 4px;
-    border-radius: 4px;
+    font-size: 13px;
     cursor: pointer;
     display: inline-block !important;
-    padding: 4px 8px;
+    padding: 2px 6px;
 }
 
 .frequency-tag.selected {
