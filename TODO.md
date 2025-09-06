@@ -15,6 +15,7 @@
 - ~Fix task-list refresh removing current filters~
 - ~Move the client populate to an api endpoint and remove the client code~
 - ~Figure out why task name edit and priority update broke, looks like completed: "" might be the issue~
+- ~Build a MCP that uses the API~
 - Build out the bruno testsuite to cover all api calls
 - Add a proper task edit form
 - Update the dockerfile to build from scratch

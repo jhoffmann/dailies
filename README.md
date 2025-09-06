@@ -15,6 +15,7 @@ Key features include:
 - **Organization Tools**: Tag-based categorization and priority-based sorting
 - **Real-time Updates**: WebSocket integration for live task list updates
 - **Responsive Interface**: HTMX-powered frontend for seamless user interactions
+- **AI Integration**: Model Context Protocol (MCP) server for AI agent access
 
 ## Use Cases
 
@@ -56,6 +57,12 @@ Key features include:
 - **JSON API**: RESTful API design
 - **Embedded Assets**: Self-contained binary deployment
 
+### AI Integration
+
+- **MCP Server**: Model Context Protocol server for AI agent interaction
+- **Tool-based API**: 15 specialized tools for task, tag, and frequency management
+- **Stdio Transport**: Standard input/output communication with AI agents
+
 ## Getting Started
 
 ### Development
@@ -83,3 +90,55 @@ mise run build
 ```
 
 The application will be available at `http://localhost:9001`.
+
+## MCP Integration
+
+The application includes an MCP (Model Context Protocol) server that allows AI agents to interact with your tasks, tags, and frequencies.
+
+### Running the MCP Server
+
+```bash
+# Run MCP server (connects to API at localhost:9001 by default)
+go run cmd/mcp/main.go
+
+# Connect to different API host
+go run cmd/mcp/main.go --host api.example.com:3000
+```
+
+### Available MCP Tools
+
+The MCP server provides 15 tools across three categories:
+
+**Task Management:**
+
+- `tasks_list_tasks` - List tasks with filtering and sorting
+- `tasks_get_task` - Get task details by ID
+- `tasks_create_task` - Create new tasks
+- `tasks_update_task` - Update existing tasks
+- `tasks_delete_task` - Delete tasks
+
+**Tag Management:**
+
+- `tasks_list_tags` - List all tags
+- `tasks_get_tag` - Get tag by ID
+- `tasks_create_tag` - Create new tags
+- `tasks_update_tag` - Update tag properties
+- `tasks_delete_tag` - Delete tags
+
+**Frequency Management:**
+
+- `tasks_list_frequencies` - List frequency schedules
+- `tasks_get_frequency` - Get frequency by ID
+- `tasks_create_frequency` - Create cron-based schedules
+- `tasks_update_frequency` - Update frequency settings
+- `tasks_delete_frequency` - Delete frequencies
+
+### Integration with AI Agents
+
+The MCP server enables AI agents to:
+
+- Automatically manage your daily tasks and routines
+- Create and organize tasks based on natural language requests
+- Set up recurring schedules for habit tracking
+- Analyze task completion patterns and suggest optimizations
+- Provide intelligent task prioritization and scheduling
