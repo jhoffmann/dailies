@@ -62,7 +62,7 @@ func formatDateFull(t time.Time) string {
 // Used for cycling task priorities in the UI when clicking the priority badge.
 func raisePriority(i int) int {
 	i = i - 1
-	if i == 0 {
+	if i <= 0 {
 		i = 5
 	}
 	return i
