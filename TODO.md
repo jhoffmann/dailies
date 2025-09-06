@@ -11,7 +11,7 @@
 - ~Move the websocket JS into site.js~
 - ~Debug the websockets~
 - ~Fix the reset timers display~
-- Update the notifications to include more detail, see about making a noise
+- ~Update the notifications to include more detail, see about making a noise~
 - Fix task-list refresh removing current filters
 - ~Move the client populate to an api endpoint and remove the client code~
 - Update the dockerfile to build from scratch

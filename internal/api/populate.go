@@ -144,7 +144,8 @@ func populateWithSampleData(db *gorm.DB, count int) error {
 		{"hourly", "0 * * * *"},
 		{"daily", "0 0 * * *"},
 		{"weekly", "0 0 * * 1"},
-		{"quarter-hour", "*/15 * * * *"},
+		{"quarter", "*/15 * * * *"},
+		{"fast", "*/2 * * * *"},
 	}
 
 	var createdFrequencies []models.Frequency
