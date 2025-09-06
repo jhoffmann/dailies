@@ -1,8 +1,8 @@
 # Build stage for Go application
 FROM golang:1.24.6-alpine as go-builder
 RUN apk update && \
-    apk upgrade --no-cache && \
-    apk add --no-cache binutils ca-certificates gcc musl-dev sqlite-dev
+  apk upgrade --no-cache && \
+  apk add --no-cache binutils ca-certificates gcc musl-dev sqlite-dev
 
 WORKDIR /app
 
@@ -23,9 +23,8 @@ WORKDIR /root/
 COPY --from=go-builder /app/server .
 
 # Copy templates and static files
-COPY web/static/js/bundle.js ./web/static/js/
-COPY web/static/css ./web/static/css/
-COPY web/templates ./web/templates/
+COPY assets/web/static/dist ./assets/web/static/dist/
+COPY assets/web/templates ./assets/web/templates/
 
 # Create directory for SQLite database
 RUN mkdir -p /data

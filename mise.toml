@@ -58,7 +58,7 @@ description = "Build the container image"
 alias = "bc"
 
 [tasks.run-container]
-run = "podman run --rm -p 8080:8080 lets-go"
+run = "podman run --rm -p 8080:8080 {{vars.project}}:latest"
 description = "Run the container image"
 alias = "rc"
 
