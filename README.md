@@ -2,6 +2,8 @@
 
 A web-based task tracking application designed for managing daily routines and recurring tasks with automated reset capabilities.
 
+![Dailies Screenshot](assets/screenshot.webp)
+
 ## Overview
 
 Dailies is a modern task management system that helps users track their daily activities, habits, and recurring tasks. The application features automatic task reset functionality based on customizable frequency schedules, allowing users to maintain consistent daily routines without manual intervention.
@@ -45,6 +47,7 @@ Key features include:
 - **Bun**: Package management and frontend tooling
 - **Air**: Hot reload development server
 - **Docker**: Containerization support
+- **Mise-en-place**: Development tasks
 
 ### Infrastructure
 
@@ -80,4 +83,3 @@ mise run build
 ```
 
 The application will be available at `http://localhost:9001`.
-
