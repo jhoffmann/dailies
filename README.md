@@ -95,6 +95,11 @@ The application will be available at `http://localhost:9001`.
 
 The application includes an MCP (Model Context Protocol) server that allows AI agents to interact with your tasks, tags, and frequencies.
 
+```
+> create a priority 1 task with the health tag reminding me to eat lunch!
+> mark the task about having lunch as complete
+```
+
 ### Running the MCP Server
 
 ```bash
