@@ -79,7 +79,7 @@ bun run build
 mise run build
 
 # Run the server
-./server --address :9001 --db production.db
+./server --address :9001 --db ~/dailies.db
 ```
 
 The application will be available at `http://localhost:9001`.

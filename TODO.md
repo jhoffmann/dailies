@@ -15,8 +15,10 @@
 - ~Fix task-list refresh removing current filters~
 - ~Move the client populate to an api endpoint and remove the client code~
 - ~Figure out why task name edit and priority update broke, looks like completed: "" might be the issue~
-- Update the dockerfile to build from scratch
+- Build out the bruno testsuite to cover all api calls
 - Add a proper task edit form
+- Update the dockerfile to build from scratch
+- Switch to a Go sqlite driver for static builds (means removing the ORM)
 - Move FA into webpack?
 - Add pagination buttons, gets messy when you're adding/removing from the view real-time
 - Update unit test coverage
