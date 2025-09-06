@@ -1,0 +1,9 @@
+{
+  "version": "1",
+  "name": "dailies-v1-testing",
+  "type": "collection",
+  "ignore": [
+    "node_modules",
+    ".git"
+  ]
+}
