@@ -34,6 +34,9 @@ func Setup() {
 		api.HealthCheck(w, r)
 	}))
 
+	// Populate sample data endpoint
+	http.HandleFunc("/populateSampleData", LogMiddleware(api.PopulateSampleData))
+
 	// WebSocket endpoint for notifications
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		websocket.GetHub().HandleWebSocket(w, r)

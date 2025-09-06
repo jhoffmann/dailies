@@ -763,6 +763,61 @@ http DELETE :8080/frequencies/f1234567-ab12-34cd-56ef-123456789012
 
 ---
 
+## Sample Data Population
+
+### Populate Sample Data
+
+Populate the database with sample tasks, tags, and frequencies for testing or development purposes. This endpoint clears all existing data and creates new sample data.
+
+**Endpoint:** `POST /populateSampleData`
+
+**Query Parameters:**
+
+- `count` (integer, optional) - Number of sample tasks to create (default: 10)
+
+**Example Requests:**
+
+```bash
+# Create 10 sample tasks (default)
+http POST :8080/populateSampleData
+
+# Create 25 sample tasks
+http POST :8080/populateSampleData count==25
+```
+
+**Response (200 OK):**
+
+```json
+{
+  "success": true,
+  "message": "Successfully created 10 sample tasks",
+  "count": 10
+}
+```
+
+**Error Responses:**
+
+```json
+// 400 Bad Request - Invalid count
+{
+  "error": "Invalid count parameter"
+}
+
+// 405 Method Not Allowed
+{
+  "error": "Method not allowed"
+}
+
+// 500 Internal Server Error
+{
+  "error": "Failed to populate database: [error details]"
+}
+```
+
+> **Warning:** This endpoint will **permanently delete** all existing tasks, tags, and frequencies before creating new sample data. Use with caution in production environments.
+
+---
+
 ## Error Responses
 
 All endpoints may return these common error responses:

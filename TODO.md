@@ -13,7 +13,7 @@
 - ~Fix the reset timers display~
 - Update the notifications to include more detail, see about making a noise
 - Fix task-list refresh removing current filters
-- Move the client populate to an api endpoint and remove the client code
+- ~Move the client populate to an api endpoint and remove the client code~
 - Update the dockerfile to build from scratch
 - Move FA into webpack?
 - Add pagination buttons, gets messy when you're adding/removing from the view real-time

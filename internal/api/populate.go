@@ -1,17 +1,18 @@
-package main
+// Package api provides HTTP handlers for population operations
+package api
 
 import (
 	"encoding/json"
-	"flag"
 	"fmt"
 	"log"
 	"math/rand"
-	"os"
+	"net/http"
+	"strconv"
 	"time"
 
-	"github.com/google/uuid"
+	"github.com/jhoffmann/dailies/internal/database"
+	"github.com/jhoffmann/dailies/internal/logger"
 	"github.com/jhoffmann/dailies/internal/models"
-	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
@@ -47,12 +48,9 @@ var tagNames = []string{
 	"work",
 	"personal",
 	"urgent",
-	"low-priority",
 	"development",
 	"testing",
 	"documentation",
-	"meeting",
-	"maintenance",
 	"security",
 	"performance",
 	"frontend",
@@ -60,102 +58,45 @@ var tagNames = []string{
 	"devops",
 }
 
-// main is the entry point for the client application that handles subcommands.
-func main() {
-	if len(os.Args) < 2 {
-		printUsage()
-		os.Exit(1)
+// PopulateSampleData handles the populate sample data endpoint
+func PopulateSampleData(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		logger.LoggedError(w, "Method not allowed", http.StatusMethodNotAllowed, r)
+		return
 	}
 
-	command := os.Args[1]
-	args := os.Args[2:]
-
-	switch command {
-	case "populate":
-		populateCommand(args)
-	case "list":
-		listCommand(args)
-	default:
-		fmt.Printf("Unknown command: %s\n", command)
-		printUsage()
-		os.Exit(1)
+	// Get count parameter from query string, default to 10
+	countStr := r.URL.Query().Get("count")
+	count := 10
+	if countStr != "" {
+		var err error
+		count, err = strconv.Atoi(countStr)
+		if err != nil || count <= 0 {
+			logger.LoggedError(w, "Invalid count parameter", http.StatusBadRequest, r)
+			return
+		}
 	}
-}
 
-// printUsage displays usage information for the client application.
-func printUsage() {
-	fmt.Println("Usage: go run cmd/client/main.go <command> [options]")
-	fmt.Println()
-	fmt.Println("Commands:")
-	fmt.Println("  populate --database <path> --entries <count>  Populate database with sample data")
-	fmt.Println("  list --database <path>                        List all tasks in JSON format")
-}
+	db := database.GetDB()
+	if db == nil {
+		logger.LoggedError(w, "Database connection not available", http.StatusInternalServerError, r)
+		return
+	}
 
-// connectToDatabase establishes a connection to the SQLite database and performs migrations.
-func connectToDatabase(dbPath string) (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open(dbPath), &gorm.Config{})
+	err := populateWithSampleData(db, count)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open database: %w", err)
+		logger.LoggedError(w, fmt.Sprintf("Failed to populate database: %v", err), http.StatusInternalServerError, r)
+		return
 	}
 
-	err = db.AutoMigrate(&models.Task{}, &models.Tag{}, &models.Frequency{})
-	if err != nil {
-		return nil, fmt.Errorf("failed to migrate database: %w", err)
+	response := map[string]interface{}{
+		"success": true,
+		"message": fmt.Sprintf("Successfully created %d sample tasks", count),
+		"count":   count,
 	}
 
-	return db, nil
-}
-
-// listCommand handles the list subcommand to retrieve and display all tasks in JSON format.
-func listCommand(args []string) {
-	listFlags := flag.NewFlagSet("list", flag.ExitOnError)
-	database := listFlags.String("database", "testing.db", "Path to the SQLite database file")
-
-	listFlags.Parse(args)
-
-	db, err := connectToDatabase(*database)
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
-	}
-
-	tasks, err := models.GetTasks(db, nil, "", []uuid.UUID{}, "")
-	if err != nil {
-		log.Fatalf("Failed to retrieve tasks: %v", err)
-	}
-
-	jsonData, err := json.MarshalIndent(tasks, "", "  ")
-	if err != nil {
-		log.Fatalf("Failed to marshal tasks to JSON: %v", err)
-	}
-
-	fmt.Fprint(os.Stdout, string(jsonData))
-}
-
-// populateCommand handles the populate subcommand to add sample data to the database.
-func populateCommand(args []string) {
-	populateFlags := flag.NewFlagSet("populate", flag.ExitOnError)
-	database := populateFlags.String("database", "testing.db", "Path to the SQLite database file")
-	entries := populateFlags.Int("entries", 10, "Number of sample entries to create")
-
-	populateFlags.Parse(args)
-
-	if *entries <= 0 {
-		log.Fatal("Number of entries must be greater than 0")
-	}
-
-	db, err := connectToDatabase(*database)
-	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
-	}
-
-	log.Printf("Connected to database: %s", *database)
-
-	err = populateWithSampleData(db, *entries)
-	if err != nil {
-		log.Fatalf("Failed to populate database: %v", err)
-	}
-
-	log.Printf("Successfully created %d sample tasks", *entries)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(response)
 }
 
 // populateWithSampleData clears existing tasks, tags, and frequencies, then creates sample data.
