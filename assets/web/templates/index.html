@@ -37,8 +37,7 @@
                 id="task-list"
                 hx-get="/component/tasks"
                 hx-swap="innerHTML"
-                hx-trigger="load, refresh"
-                hx-include="#name-filter, [name='completed']:checked, [name='sort']:checked, [name='tag_ids']:checked"
+                hx-trigger="load"
               ></div>
             </div>
             {{template "form-actions.html"}}
@@ -52,6 +51,15 @@
         </div>
       </div>
     </div>
+
+    <div
+      id="refresh-trigger"
+      style="display: none"
+      hx-get="/component/tasks"
+      hx-target="#task-list"
+      hx-swap="innerHTML"
+      hx-include="#name-filter, [name='completed']:checked, [name='sort']:checked, [name='tag_ids']:checked"
+    ></div>
 
     <!-- WebSocket Connection and Notifications -->
     <div hx-ext="ws" ws-connect="/ws"></div>

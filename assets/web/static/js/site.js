@@ -43,14 +43,14 @@ window.handleWebSocketMessage = function (event) {
 
   // Handle task list refresh
   if (message.type === "task-list-refresh") {
-    const taskListElement = document.getElementById("task-list");
+    const taskListElement = document.getElementById("refresh-trigger");
 
     if (taskListElement) {
       if (window.htmx && window.htmx.trigger) {
-        window.htmx.trigger(taskListElement, "refresh");
+        window.htmx.trigger(taskListElement, "click");
       } else {
         // Fallback: dispatch a custom event
-        taskListElement.dispatchEvent(new CustomEvent("refresh"));
+        taskListElement.dispatchEvent(new CustomEvent("click"));
       }
     }
   }
