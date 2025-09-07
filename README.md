@@ -2,7 +2,7 @@
 
 An API-based task tracking application designed for managing daily routines and recurring tasks with automated reset capabilities.
 
-![Dailies Screenshot](assets/screenshot.webp)
+![Dailies Screenshot](/assets/screenshot.webp)
 
 ## Overview
 
