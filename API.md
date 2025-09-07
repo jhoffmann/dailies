@@ -225,7 +225,7 @@ http POST :8080/tasks \
 
 ### Update Task
 
-Update an existing task by its ID, including completion status, priority, and frequency assignment.
+Update an existing task by its ID, including completion status, priority, frequency assignment, and tag associations.
 
 **Endpoint:** `PUT /tasks/{id}`
 
@@ -240,7 +240,11 @@ Update an existing task by its ID, including completion status, priority, and fr
   "name": "Updated task name",
   "completed": true,
   "priority": 1,
-  "frequency_id": "f1234567-ab12-34cd-56ef-123456789012"
+  "frequency_id": "f1234567-ab12-34cd-56ef-123456789012",
+  "tag_ids": [
+    "b5948bc2-d918-5fe5-ca5a-e8e48f406cf8",
+    "c6059cd3-ea29-6gf6-db6b-f9f59g517dg9"
+  ]
 }
 ```
 
@@ -270,6 +274,20 @@ http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
   completed:=false \
   priority:=2 \
   frequency_id="f1234567-ab12-34cd-56ef-123456789012"
+
+# Update task tags (replaces all existing tags)
+http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
+  tag_ids:='["b5948bc2-d918-5fe5-ca5a-e8e48f406cf8", "c6059cd3-ea29-6gf6-db6b-f9f59g517dg9"]'
+
+# Clear all tags from a task
+http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
+  tag_ids:='[]'
+
+# Update task with both frequency and tags
+http PUT :8080/tasks/a4837ac1-c807-4edd-ba49-d4e37f295be7 \
+  name="Updated task" \
+  frequency_id="f1234567-ab12-34cd-56ef-123456789012" \
+  tag_ids:='["b5948bc2-d918-5fe5-ca5a-e8e48f406cf8"]'
 ```
 
 **Example Requests:**
@@ -888,6 +906,7 @@ All endpoints may return these common error responses:
 - Priority ranges from 1 (highest) to 5 (lowest), defaults to 3
 - Tasks are sorted by completion status first (incomplete tasks first), then by the specified sort field
 - Tag filtering uses AND logic: when multiple tag IDs are specified, tasks must have ALL specified tags to be returned
+- When updating task tags using `tag_ids`, the provided array completely replaces existing tag associations. To clear all tags, provide an empty array `[]`
 - Tag IDs in the `tag_ids` parameter should be comma-separated with no spaces (e.g., `uuid1,uuid2,uuid3`)
 - Tasks can optionally be associated with a frequency for automatic reset scheduling
 - Frequency `reset` field uses standard cron expression format (minute hour day month day-of-week)

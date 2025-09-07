@@ -156,8 +156,8 @@ func UpdateTaskHTML(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Use the API layer for business logic
-	task, err := api.UpdateTaskByID(taskID, &updateData)
+	// Use the API layer for business logic - no tag updates from web UI currently
+	task, err := api.UpdateTaskByID(taskID, &updateData, nil)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusInternalServerError, r)
 		return

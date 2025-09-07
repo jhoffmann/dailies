@@ -13,14 +13,15 @@
 - ~Fix the reset timers display~
 - ~Update the notifications to include more detail, see about making a noise~
 - ~Fix task-list refresh removing current filters~
-- ~Move the client populate to an api endpoint and remove the client code~
+- ~Move the client populate to an API endpoint and remove the client code~
 - ~Figure out why task name edit and priority update broke, looks like completed: "" might be the issue~
 - ~Build a MCP that uses the API~
-- Build out the bruno testsuite to cover all api calls
+- ~Add a Swagger/OpenAPI interface~
+- Build out the Bruno testsuite to cover all API calls
 - Add a proper task edit form
-- Update the dockerfile to build from scratch
-- Switch to a Go sqlite driver for static builds (means removing the ORM)
-- Move FA into webpack?
-- Add pagination buttons, gets messy when you're adding/removing from the view real-time
-- still not happy with the MCP response DTO's
+- Update the Dockerfile to build from scratch
+- Switch to a Go SQLite driver for static builds (means removing the ORM)
+- Move FA into Webpack?
+- Add pagination buttons? Gets messy when you're adding/removing from the view real-time, maybe load on scroll?
+- Still not happy with the MCP response DTO's
 - Update unit test coverage

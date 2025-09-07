@@ -19,7 +19,7 @@ run = [
 
 [tasks.dev]
 description = "Standard development workflow"
-depends = ["dependencies", "format", "analysis", "test"]
+depends = ["dependencies", "swagger", "format", "analysis", "test"]
 alias = "d"
 
 [tasks.swagger]

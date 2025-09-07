@@ -109,11 +109,12 @@ type CreateTaskRequest struct {
 
 // UpdateTaskRequest represents the parameters for updating an existing task.
 type UpdateTaskRequest struct {
-	ID          string  `json:"id" jsonschema:"Task UUID"`
-	Name        string  `json:"name,omitempty" jsonschema:"Task name"`
-	Completed   *bool   `json:"completed,omitempty" jsonschema:"Completion status"`
-	Priority    *int    `json:"priority,omitempty" jsonschema:"Priority (1-5)"`
-	FrequencyID *string `json:"frequency_id,omitempty" jsonschema:"Frequency UUID"`
+	ID          string   `json:"id" jsonschema:"Task UUID"`
+	Name        string   `json:"name,omitempty" jsonschema:"Task name"`
+	Completed   *bool    `json:"completed,omitempty" jsonschema:"Completion status"`
+	Priority    *int     `json:"priority,omitempty" jsonschema:"Priority (1-5)"`
+	FrequencyID *string  `json:"frequency_id,omitempty" jsonschema:"Frequency UUID"`
+	TagIDs      []string `json:"tag_ids,omitempty" jsonschema:"Array of tag UUIDs"`
 }
 
 // ListTagsRequest represents the parameters for filtering tags.
@@ -380,7 +381,7 @@ func registerTaskTools(server *mcp.Server, client *DailiesClient) {
 	// Update task
 	mcp.AddTool(server, &mcp.Tool{
 		Name:        "update_task",
-		Description: "Update an existing task's name, completion status, priority, or frequency",
+		Description: "Update an existing task's name, completion status, priority, frequency, or tags",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, args UpdateTaskRequest) (*mcp.CallToolResult, TaskResponse, error) {
 		id := args.ID
 		// Remove ID from request body - it goes in the URL path
@@ -396,6 +397,9 @@ func registerTaskTools(server *mcp.Server, client *DailiesClient) {
 		}
 		if args.FrequencyID != nil {
 			updateData["frequency_id"] = *args.FrequencyID
+		}
+		if args.TagIDs != nil {
+			updateData["tag_ids"] = args.TagIDs
 		}
 
 		respBody, err := client.makeRequest("PUT", "/tasks/"+id, updateData)

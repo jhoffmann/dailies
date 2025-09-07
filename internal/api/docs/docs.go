@@ -776,6 +776,12 @@ const docTemplate = `{
                                 },
                                 "priority": {
                                     "type": "integer"
+                                },
+                                "tag_ids": {
+                                    "type": "array",
+                                    "items": {
+                                        "type": "string"
+                                    }
                                 }
                             }
                         }

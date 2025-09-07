@@ -84,6 +84,30 @@ func (task *Task) Update(db *gorm.DB, updateData *Task) error {
 	return result.Error
 }
 
+// UpdateTags replaces the task's tag associations with the provided tags.
+// This method completely replaces existing tag associations.
+func (task *Task) UpdateTags(db *gorm.DB, tagIDs []uuid.UUID) error {
+	if len(tagIDs) == 0 {
+		// Clear all tag associations
+		return db.Model(task).Association("Tags").Clear()
+	}
+
+	// Load the tags by their IDs
+	var tags []Tag
+	result := db.Where("id IN ?", tagIDs).Find(&tags)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	// Validate that all requested tags exist
+	if len(tags) != len(tagIDs) {
+		return errors.New("one or more tags not found")
+	}
+
+	// Replace tag associations
+	return db.Model(task).Association("Tags").Replace(tags)
+}
+
 // Delete removes the task from the database.
 func (task *Task) Delete(db *gorm.DB) error {
 	result := db.Delete(task, "id = ?", task.ID)

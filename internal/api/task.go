@@ -211,7 +211,7 @@ func GetTaskByID(taskID uuid.UUID) (*models.Task, error) {
 
 // UpdateTaskByID updates an existing task by ID.
 // This function contains the business logic for task updates.
-func UpdateTaskByID(taskID uuid.UUID, updateData *models.Task) (*models.Task, error) {
+func UpdateTaskByID(taskID uuid.UUID, updateData *models.Task, tagIDs *[]uuid.UUID) (*models.Task, error) {
 	var task models.Task
 	err := task.LoadByID(database.GetDB(), taskID)
 	if err != nil {
@@ -234,7 +234,15 @@ func UpdateTaskByID(taskID uuid.UUID, updateData *models.Task) (*models.Task, er
 		return nil, err
 	}
 
-	// Reload to get updated frequency relationship
+	// Update tag associations if provided
+	if tagIDs != nil {
+		err = task.UpdateTags(database.GetDB(), *tagIDs)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	// Reload to get updated relationships
 	err = task.LoadByID(database.GetDB(), task.ID)
 	if err != nil {
 		return nil, err
@@ -259,7 +267,7 @@ func DeleteTaskByID(taskID uuid.UUID) error {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id		path		string																		true	"Task ID"
-//	@Param			task	body		object{name=string,completed=boolean,priority=integer,frequency_id=string}	true	"Task update data"
+//	@Param			task	body		object{name=string,completed=boolean,priority=integer,frequency_id=string,tag_ids=[]string}	true	"Task update data"
 //	@Success		200		{object}	models.Task
 //	@Failure		400		{object}	map[string]string
 //	@Failure		404		{object}	map[string]string
@@ -277,10 +285,11 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 
 	// Use a custom struct to handle the JSON properly
 	var requestData struct {
-		Name        string     `json:"name,omitempty"`
-		Completed   *bool      `json:"completed,omitempty"`
-		Priority    *int       `json:"priority,omitempty"`
-		FrequencyID *uuid.UUID `json:"frequency_id"`
+		Name        string      `json:"name,omitempty"`
+		Completed   *bool       `json:"completed,omitempty"`
+		Priority    *int        `json:"priority,omitempty"`
+		FrequencyID *uuid.UUID  `json:"frequency_id"`
+		TagIDs      []uuid.UUID `json:"tag_ids,omitempty"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
@@ -304,7 +313,13 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	// Handle frequency update explicitly
 	updateData.FrequencyID = requestData.FrequencyID
 
-	task, err := UpdateTaskByID(taskID, &updateData)
+	// Handle tag updates - pass pointer to tagIDs if provided, nil otherwise
+	var tagIDsPtr *[]uuid.UUID
+	if requestData.TagIDs != nil {
+		tagIDsPtr = &requestData.TagIDs
+	}
+
+	task, err := UpdateTaskByID(taskID, &updateData, tagIDsPtr)
 	if err != nil {
 		if strings.Contains(err.Error(), "not found") {
 			logger.LoggedError(w, err.Error(), http.StatusNotFound, r)
@@ -314,11 +329,9 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Broadcast WebSocket notification if task completion status changed
-	if requestData.Completed != nil {
-		websocket.BroadcastTaskUpdated(task.ID.String(), task.Name, *requestData.Completed)
-		websocket.BroadcastTaskListRefresh()
-	}
+	// Broadcast WebSocket notification
+	websocket.BroadcastTaskUpdated(task.ID.String(), task.Name, *requestData.Completed)
+	websocket.BroadcastTaskListRefresh()
 
 	json.NewEncoder(w).Encode(task)
 }
