@@ -11,10 +11,10 @@ import (
 
 // NotificationMessage represents a notification sent via WebSocket
 type NotificationMessage struct {
-	Type      string      `json:"type"`
-	Message   string      `json:"message"`
-	Data      interface{} `json:"data,omitempty"`
-	Timestamp time.Time   `json:"timestamp"`
+	Type      string    `json:"type"`
+	Message   string    `json:"message"`
+	Data      any       `json:"data,omitempty"`
+	Timestamp time.Time `json:"timestamp"`
 }
 
 // Hub maintains active WebSocket connections and broadcasts messages
@@ -86,7 +86,7 @@ func (h *Hub) Run() {
 }
 
 // Broadcast sends a message to all connected clients
-func (h *Hub) Broadcast(messageType, message string, data interface{}) {
+func (h *Hub) Broadcast(messageType, message string, data any) {
 	notification := NotificationMessage{
 		Type:      messageType,
 		Message:   message,

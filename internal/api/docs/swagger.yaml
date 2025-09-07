@@ -480,6 +480,8 @@ paths:
                 type: string
               name:
                 type: string
+              priority:
+                type: integer
               tag_ids:
                 items:
                   type: string

@@ -105,6 +105,7 @@ type CreateTaskRequest struct {
 	Name        string   `json:"name" jsonschema:"Task name"`
 	FrequencyID *string  `json:"frequency_id,omitempty" jsonschema:"Optional frequency UUID"`
 	TagIDs      []string `json:"tag_ids,omitempty" jsonschema:"Array of tag UUIDs"`
+	Priority    *int     `json:"priority,omitempty" jsonschema:"Priority (1-5)"`
 }
 
 // UpdateTaskRequest represents the parameters for updating an existing task.
@@ -385,7 +386,7 @@ func registerTaskTools(server *mcp.Server, client *DailiesClient) {
 	}, func(ctx context.Context, req *mcp.CallToolRequest, args UpdateTaskRequest) (*mcp.CallToolResult, TaskResponse, error) {
 		id := args.ID
 		// Remove ID from request body - it goes in the URL path
-		updateData := map[string]interface{}{}
+		updateData := map[string]any{}
 		if args.Name != "" {
 			updateData["name"] = args.Name
 		}
@@ -509,7 +510,7 @@ func registerTagTools(server *mcp.Server, client *DailiesClient) {
 		Description: "Update an existing tag's name and/or color",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, args UpdateTagRequest) (*mcp.CallToolResult, TagResponse, error) {
 		id := args.ID
-		updateData := map[string]interface{}{}
+		updateData := map[string]any{}
 		if args.Name != "" {
 			updateData["name"] = args.Name
 		}
@@ -624,7 +625,7 @@ func registerFrequencyTools(server *mcp.Server, client *DailiesClient) {
 		Description: "Update an existing frequency's name and/or cron schedule",
 	}, func(ctx context.Context, req *mcp.CallToolRequest, args UpdateFrequencyRequest) (*mcp.CallToolResult, FrequencyResponse, error) {
 		id := args.ID
-		updateData := map[string]interface{}{}
+		updateData := map[string]any{}
 		if args.Name != "" {
 			updateData["name"] = args.Name
 		}

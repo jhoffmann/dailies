@@ -321,7 +321,7 @@ func TestCreateTaskWithFrequency(t *testing.T) {
 	database.DB.Create(&frequency)
 
 	t.Run("create task with valid frequency", func(t *testing.T) {
-		requestBody := map[string]interface{}{
+		requestBody := map[string]any{
 			"name":         "Task with frequency",
 			"frequency_id": frequency.ID,
 		}
@@ -358,7 +358,7 @@ func TestCreateTaskWithFrequency(t *testing.T) {
 
 	t.Run("create task with non-existent frequency", func(t *testing.T) {
 		nonExistentID := uuid.New()
-		requestBody := map[string]interface{}{
+		requestBody := map[string]any{
 			"name":         "Task with invalid frequency",
 			"frequency_id": nonExistentID,
 		}
@@ -376,7 +376,7 @@ func TestCreateTaskWithFrequency(t *testing.T) {
 	})
 
 	t.Run("create task without frequency", func(t *testing.T) {
-		requestBody := map[string]interface{}{
+		requestBody := map[string]any{
 			"name": "Task without frequency",
 		}
 		body, _ := json.Marshal(requestBody)

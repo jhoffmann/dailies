@@ -190,9 +190,9 @@ func CreateTaskHTML(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/html")
 
 	var taskData struct {
-		Name        string      `json:"name"`
-		TagIDs      interface{} `json:"tag_ids"`
-		FrequencyID *uuid.UUID  `json:"frequency_id"`
+		Name        string     `json:"name"`
+		TagIDs      any        `json:"tag_ids"`
+		FrequencyID *uuid.UUID `json:"frequency_id"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&taskData); err != nil {
@@ -209,7 +209,7 @@ func CreateTaskHTML(w http.ResponseWriter, r *http.Request) {
 			if tagID, err := uuid.Parse(v); err == nil {
 				tagIDs = []uuid.UUID{tagID}
 			}
-		case []interface{}:
+		case []any:
 			// Array of tag IDs
 			for _, tagIDInterface := range v {
 				if tagIDStr, ok := tagIDInterface.(string); ok {
@@ -222,7 +222,7 @@ func CreateTaskHTML(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Use the API layer for business logic
-	task, err := api.CreateTaskWithTagsAndFrequency(taskData.Name, tagIDs, taskData.FrequencyID)
+	task, err := api.CreateTaskWithTagsAndFrequency(taskData.Name, tagIDs, taskData.FrequencyID, nil)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusBadRequest, r)
 		return

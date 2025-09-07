@@ -106,7 +106,7 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 //	@Tags			tasks
 //	@Accept			json
 //	@Produce		json
-//	@Param			task	body		object{name=string,tag_ids=[]string,frequency_id=string}	true	"Task data"
+//	@Param			task	body		object{name=string,tag_ids=[]string,frequency_id=string,priority=integer}	true	"Task data"
 //	@Success		201		{object}	models.Task
 //	@Failure		400		{object}	map[string]string
 //	@Router			/tasks [post]
@@ -117,6 +117,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		Name        string      `json:"name"`
 		TagIDs      []uuid.UUID `json:"tag_ids"`
 		FrequencyID *uuid.UUID  `json:"frequency_id"`
+		Priority    *int        `json:"priority"`
 	}
 
 	if err := json.NewDecoder(r.Body).Decode(&taskData); err != nil {
@@ -124,7 +125,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	task, err := CreateTaskWithTagsAndFrequency(taskData.Name, taskData.TagIDs, taskData.FrequencyID)
+	task, err := CreateTaskWithTagsAndFrequency(taskData.Name, taskData.TagIDs, taskData.FrequencyID, taskData.Priority)
 	if err != nil {
 		logger.LoggedError(w, err.Error(), http.StatusBadRequest, r)
 		return
@@ -139,7 +140,7 @@ func CreateTask(w http.ResponseWriter, r *http.Request) {
 
 // CreateTaskWithTagsAndFrequency creates a new task with associated tags and optional frequency.
 // This function contains the business logic for task creation with tag and frequency associations.
-func CreateTaskWithTagsAndFrequency(name string, tagIDs []uuid.UUID, frequencyID *uuid.UUID) (*models.Task, error) {
+func CreateTaskWithTagsAndFrequency(name string, tagIDs []uuid.UUID, frequencyID *uuid.UUID, priority *int) (*models.Task, error) {
 	if name == "" {
 		return nil, errors.New("task name is required")
 	}
@@ -147,6 +148,11 @@ func CreateTaskWithTagsAndFrequency(name string, tagIDs []uuid.UUID, frequencyID
 	task := models.Task{
 		Name:        name,
 		FrequencyID: frequencyID,
+	}
+
+	// Set priority if provided
+	if priority != nil {
+		task.Priority = *priority
 	}
 
 	// Validate frequency exists if provided
@@ -189,7 +195,7 @@ func CreateTaskWithTagsAndFrequency(name string, tagIDs []uuid.UUID, frequencyID
 // CreateTaskWithTags creates a new task with associated tags (legacy function for backward compatibility).
 // This function contains the business logic for task creation with tag associations.
 func CreateTaskWithTags(name string, tagIDs []uuid.UUID) (*models.Task, error) {
-	return CreateTaskWithTagsAndFrequency(name, tagIDs, nil)
+	return CreateTaskWithTagsAndFrequency(name, tagIDs, nil, nil)
 }
 
 // GetTasksWithFilter retrieves tasks with optional filtering and sorting.

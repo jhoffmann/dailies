@@ -659,6 +659,9 @@ const docTemplate = `{
                                 "name": {
                                     "type": "string"
                                 },
+                                "priority": {
+                                    "type": "integer"
+                                },
                                 "tag_ids": {
                                     "type": "array",
                                     "items": {

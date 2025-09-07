@@ -89,7 +89,7 @@ func PopulateSampleData(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	response := map[string]interface{}{
+	response := map[string]any{
 		"success": true,
 		"message": fmt.Sprintf("Successfully created %d sample tasks", count),
 		"count":   count,
