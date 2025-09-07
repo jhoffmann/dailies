@@ -22,4 +22,5 @@
 - Switch to a Go sqlite driver for static builds (means removing the ORM)
 - Move FA into webpack?
 - Add pagination buttons, gets messy when you're adding/removing from the view real-time
+- still not happy with the MCP response DTO's
 - Update unit test coverage

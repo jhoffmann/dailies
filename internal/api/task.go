@@ -16,7 +16,20 @@ import (
 )
 
 // GetTasks handles GET requests to retrieve tasks with optional filtering and sorting.
-// Supports query parameters: completed (boolean), name (string for partial matching), tag_ids (comma-separated UUIDs), and sort (completed, priority, name).
+//
+//	@Summary		List tasks
+//	@Description	Get tasks with optional filtering and sorting
+//	@Tags			tasks
+//	@Accept			json
+//	@Produce		json
+//	@Param			completed	query		boolean	false	"Filter by completion status"
+//	@Param			name		query		string	false	"Filter by task name (partial matching)"
+//	@Param			tag_ids		query		string	false	"Filter by tag IDs (comma-separated)"
+//	@Param			sort		query		string	false	"Sort field: completed, priority, name"
+//	@Success		200			{array}		models.Task
+//	@Failure		400			{object}	map[string]string
+//	@Failure		500			{object}	map[string]string
+//	@Router			/tasks [get]
 func GetTasks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -56,6 +69,17 @@ func GetTasks(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetTask handles GET requests to retrieve a single task by ID.
+//
+//	@Summary		Get task by ID
+//	@Description	Get a single task by its ID
+//	@Tags			tasks
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		string	true	"Task ID"
+//	@Success		200	{object}	models.Task
+//	@Failure		400	{object}	map[string]string
+//	@Failure		404	{object}	map[string]string
+//	@Router			/tasks/{id} [get]
 func GetTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -76,7 +100,16 @@ func GetTask(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateTask handles POST requests to create a new task.
-// Requires a JSON body with a task name and optional tag_ids array and frequency_id.
+//
+//	@Summary		Create a new task
+//	@Description	Create a new task with optional tags and frequency
+//	@Tags			tasks
+//	@Accept			json
+//	@Produce		json
+//	@Param			task	body		object{name=string,tag_ids=[]string,frequency_id=string}	true	"Task data"
+//	@Success		201		{object}	models.Task
+//	@Failure		400		{object}	map[string]string
+//	@Router			/tasks [post]
 func CreateTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -219,7 +252,19 @@ func DeleteTaskByID(taskID uuid.UUID) error {
 }
 
 // UpdateTask handles PUT requests to update an existing task by ID.
-// Accepts a JSON body with fields to update (name, completed status, priority, and frequency_id).
+//
+//	@Summary		Update task
+//	@Description	Update an existing task by ID
+//	@Tags			tasks
+//	@Accept			json
+//	@Produce		json
+//	@Param			id		path		string																		true	"Task ID"
+//	@Param			task	body		object{name=string,completed=boolean,priority=integer,frequency_id=string}	true	"Task update data"
+//	@Success		200		{object}	models.Task
+//	@Failure		400		{object}	map[string]string
+//	@Failure		404		{object}	map[string]string
+//	@Failure		500		{object}	map[string]string
+//	@Router			/tasks/{id} [put]
 func UpdateTask(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -279,6 +324,17 @@ func UpdateTask(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteTask handles DELETE requests to remove a task by ID.
+//
+//	@Summary		Delete task
+//	@Description	Delete a task by ID
+//	@Tags			tasks
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path	string	true	"Task ID"
+//	@Success		204
+//	@Failure		400	{object}	map[string]string
+//	@Failure		404	{object}	map[string]string
+//	@Router			/tasks/{id} [delete]
 func DeleteTask(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/tasks/"):]
 	taskID, err := uuid.Parse(id)
@@ -300,7 +356,15 @@ func DeleteTask(w http.ResponseWriter, r *http.Request) {
 }
 
 // HealthCheck handles GET requests to check application health.
-// Returns HTTP 200 with JSON body {'health': 'Ok'} if database connection is working.
+//
+//	@Summary		Health check
+//	@Description	Check application and database health
+//	@Tags			health
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	map[string]string
+//	@Failure		500	{object}	map[string]string
+//	@Router			/healthz [get]
 func HealthCheck(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 

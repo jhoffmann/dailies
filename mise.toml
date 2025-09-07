@@ -22,6 +22,11 @@ description = "Standard development workflow"
 depends = ["dependencies", "format", "analysis", "test"]
 alias = "d"
 
+[tasks.swagger]
+description = "Generate Swagger documentation"
+run = "swag init -g cmd/server/main.go -o internal/api/docs"
+quiet = true
+
 [tasks.webpack]
 description = "Run webpack to bundle frontend assets"
 run = "bun run build"

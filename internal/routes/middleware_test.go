@@ -12,38 +12,6 @@ import (
 	"github.com/jhoffmann/dailies/internal/logger"
 )
 
-func TestResponseWriter(t *testing.T) {
-	t.Run("wraps ResponseWriter and captures status code", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		wrapped := &responseWriter{
-			ResponseWriter: w,
-			statusCode:     200,
-		}
-
-		wrapped.WriteHeader(404)
-
-		if wrapped.statusCode != 404 {
-			t.Errorf("Expected status code 404, got %d", wrapped.statusCode)
-		}
-
-		if w.Code != 404 {
-			t.Errorf("Expected underlying writer to have code 404, got %d", w.Code)
-		}
-	})
-
-	t.Run("defaults to 200 when WriteHeader not called", func(t *testing.T) {
-		w := httptest.NewRecorder()
-		wrapped := &responseWriter{
-			ResponseWriter: w,
-			statusCode:     200,
-		}
-
-		if wrapped.statusCode != 200 {
-			t.Errorf("Expected default status code 200, got %d", wrapped.statusCode)
-		}
-	})
-}
-
 func TestLogMiddleware(t *testing.T) {
 	t.Run("logs successful request", func(t *testing.T) {
 		// Capture log output

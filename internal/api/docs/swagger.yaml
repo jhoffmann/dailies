@@ -1,0 +1,620 @@
+basePath: /
+definitions:
+  models.Frequency:
+    properties:
+      id:
+        type: string
+      name:
+        type: string
+      reset:
+        description: Cron expression
+        type: string
+      tasks:
+        items:
+          $ref: '#/definitions/models.Task'
+        type: array
+    type: object
+  models.Tag:
+    properties:
+      color:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      tasks:
+        items:
+          $ref: '#/definitions/models.Task'
+        type: array
+    type: object
+  models.Task:
+    properties:
+      completed:
+        type: boolean
+      date_created:
+        type: string
+      date_modified:
+        type: string
+      frequency:
+        $ref: '#/definitions/models.Frequency'
+      frequency_id:
+        type: string
+      id:
+        type: string
+      name:
+        type: string
+      priority:
+        type: integer
+      tags:
+        items:
+          $ref: '#/definitions/models.Tag'
+        type: array
+    type: object
+host: localhost:9001
+info:
+  contact:
+    name: John Hoffmann
+    url: https://github.com/jhoffmann
+  description: A task management API for daily tasks with frequencies and tags
+  license:
+    name: BSD-3-Clause
+    url: https://github.com/jhoffmann/dailies?tab=BSD-3-Clause-1-ov-file
+  title: Dailies API
+  version: "1.0"
+paths:
+  /frequencies:
+    get:
+      consumes:
+      - application/json
+      description: Get all frequencies with optional name filtering
+      parameters:
+      - description: Filter by frequency name (partial matching)
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Frequency'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List frequencies
+      tags:
+      - frequencies
+    post:
+      consumes:
+      - application/json
+      description: Create a new frequency with name and cron schedule
+      parameters:
+      - description: Frequency data
+        in: body
+        name: frequency
+        required: true
+        schema:
+          properties:
+            name:
+              type: string
+            reset:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Frequency'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new frequency
+      tags:
+      - frequencies
+  /frequencies/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a frequency by ID
+      parameters:
+      - description: Frequency ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete frequency
+      tags:
+      - frequencies
+    get:
+      consumes:
+      - application/json
+      description: Get a single frequency by its ID
+      parameters:
+      - description: Frequency ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Frequency'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get frequency by ID
+      tags:
+      - frequencies
+    put:
+      consumes:
+      - application/json
+      description: Update an existing frequency by ID
+      parameters:
+      - description: Frequency ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Frequency update data
+        in: body
+        name: frequency
+        required: true
+        schema:
+          $ref: '#/definitions/models.Frequency'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Frequency'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update frequency
+      tags:
+      - frequencies
+  /healthz:
+    get:
+      consumes:
+      - application/json
+      description: Check application and database health
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Health check
+      tags:
+      - health
+  /tags:
+    get:
+      consumes:
+      - application/json
+      description: Get all tags with optional name filtering
+      parameters:
+      - description: Filter by tag name (partial matching)
+        in: query
+        name: name
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Tag'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List tags
+      tags:
+      - tags
+    post:
+      consumes:
+      - application/json
+      description: Create a new tag with name and optional color
+      parameters:
+      - description: Tag data
+        in: body
+        name: tag
+        required: true
+        schema:
+          properties:
+            color:
+              type: string
+            name:
+              type: string
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new tag
+      tags:
+      - tags
+  /tags/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a tag by ID
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete tag
+      tags:
+      - tags
+    get:
+      consumes:
+      - application/json
+      description: Get a single tag by its ID
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get tag by ID
+      tags:
+      - tags
+    put:
+      consumes:
+      - application/json
+      description: Update an existing tag by ID
+      parameters:
+      - description: Tag ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Tag update data
+        in: body
+        name: tag
+        required: true
+        schema:
+          $ref: '#/definitions/models.Tag'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Tag'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update tag
+      tags:
+      - tags
+  /tasks:
+    get:
+      consumes:
+      - application/json
+      description: Get tasks with optional filtering and sorting
+      parameters:
+      - description: Filter by completion status
+        in: query
+        name: completed
+        type: boolean
+      - description: Filter by task name (partial matching)
+        in: query
+        name: name
+        type: string
+      - description: Filter by tag IDs (comma-separated)
+        in: query
+        name: tag_ids
+        type: string
+      - description: 'Sort field: completed, priority, name'
+        in: query
+        name: sort
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.Task'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: List tasks
+      tags:
+      - tasks
+    post:
+      consumes:
+      - application/json
+      description: Create a new task with optional tags and frequency
+      parameters:
+      - description: Task data
+        in: body
+        name: task
+        required: true
+        schema:
+          properties:
+            frequency_id:
+              type: string
+            name:
+              type: string
+            tag_ids:
+              items:
+                type: string
+              type: array
+          type: object
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new task
+      tags:
+      - tasks
+  /tasks/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a task by ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: No Content
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete task
+      tags:
+      - tasks
+    get:
+      consumes:
+      - application/json
+      description: Get a single task by its ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get task by ID
+      tags:
+      - tasks
+    put:
+      consumes:
+      - application/json
+      description: Update an existing task by ID
+      parameters:
+      - description: Task ID
+        in: path
+        name: id
+        required: true
+        type: string
+      - description: Task update data
+        in: body
+        name: task
+        required: true
+        schema:
+          properties:
+            completed:
+              type: boolean
+            frequency_id:
+              type: string
+            name:
+              type: string
+            priority:
+              type: integer
+          type: object
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.Task'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "404":
+          description: Not Found
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update task
+      tags:
+      - tasks
+swagger: "2.0"

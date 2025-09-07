@@ -14,7 +14,16 @@ import (
 )
 
 // GetTags handles GET requests to retrieve all tags with optional name filtering.
-// Supports query parameter: name (string for partial matching).
+//
+//	@Summary		List tags
+//	@Description	Get all tags with optional name filtering
+//	@Tags			tags
+//	@Accept			json
+//	@Produce		json
+//	@Param			name	query		string	false	"Filter by tag name (partial matching)"
+//	@Success		200		{array}		models.Tag
+//	@Failure		500		{object}	map[string]string
+//	@Router			/tags [get]
 func GetTags(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -30,6 +39,17 @@ func GetTags(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetTag handles GET requests to retrieve a single tag by ID.
+//
+//	@Summary		Get tag by ID
+//	@Description	Get a single tag by its ID
+//	@Tags			tags
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		string	true	"Tag ID"
+//	@Success		200	{object}	models.Tag
+//	@Failure		400	{object}	map[string]string
+//	@Failure		404	{object}	map[string]string
+//	@Router			/tags/{id} [get]
 func GetTag(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -50,7 +70,16 @@ func GetTag(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateTag handles POST requests to create a new tag.
-// Requires a JSON body with a tag name.
+//
+//	@Summary		Create a new tag
+//	@Description	Create a new tag with name and optional color
+//	@Tags			tags
+//	@Accept			json
+//	@Produce		json
+//	@Param			tag	body		object{name=string,color=string}	true	"Tag data"
+//	@Success		201	{object}	models.Tag
+//	@Failure		400	{object}	map[string]string
+//	@Router			/tags [post]
 func CreateTag(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -75,7 +104,19 @@ func CreateTag(w http.ResponseWriter, r *http.Request) {
 }
 
 // UpdateTag handles PUT requests to update an existing tag by ID.
-// Accepts a JSON body with fields to update (name).
+//
+//	@Summary		Update tag
+//	@Description	Update an existing tag by ID
+//	@Tags			tags
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		string		true	"Tag ID"
+//	@Param			tag	body		models.Tag	true	"Tag update data"
+//	@Success		200	{object}	models.Tag
+//	@Failure		400	{object}	map[string]string
+//	@Failure		404	{object}	map[string]string
+//	@Failure		500	{object}	map[string]string
+//	@Router			/tags/{id} [put]
 func UpdateTag(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -106,6 +147,17 @@ func UpdateTag(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteTag handles DELETE requests to remove a tag by ID.
+//
+//	@Summary		Delete tag
+//	@Description	Delete a tag by ID
+//	@Tags			tags
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path	string	true	"Tag ID"
+//	@Success		204
+//	@Failure		400	{object}	map[string]string
+//	@Failure		404	{object}	map[string]string
+//	@Router			/tags/{id} [delete]
 func DeleteTag(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/tags/"):]
 	tagID, err := uuid.Parse(id)

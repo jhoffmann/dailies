@@ -49,6 +49,7 @@ Key features include:
 - **Air**: Hot reload development server
 - **Docker**: Containerization support
 - **Mise-en-place**: Development tasks
+- **Swagger**: OpenAPI 2 compatible specification
 
 ### Infrastructure
 
@@ -90,6 +91,10 @@ mise run build
 ```
 
 The application will be available at `http://localhost:9001`.
+
+### API Documentation
+
+The REST API is documented using Swagger/OpenAPI and is available at `http://localhost:9001/swagger/` when the server is running. The API provides endpoints for managing tasks, tags, and frequencies with full CRUD operations.
 
 ## MCP Integration
 

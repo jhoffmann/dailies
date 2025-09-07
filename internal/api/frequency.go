@@ -14,7 +14,16 @@ import (
 )
 
 // GetFrequencies handles GET requests to retrieve frequencies with optional name filtering.
-// Supports query parameter: name (string for partial matching).
+//
+//	@Summary		List frequencies
+//	@Description	Get all frequencies with optional name filtering
+//	@Tags			frequencies
+//	@Accept			json
+//	@Produce		json
+//	@Param			name	query		string	false	"Filter by frequency name (partial matching)"
+//	@Success		200		{array}		models.Frequency
+//	@Failure		500		{object}	map[string]string
+//	@Router			/frequencies [get]
 func GetFrequencies(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -30,6 +39,17 @@ func GetFrequencies(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetFrequency handles GET requests to retrieve a single frequency by ID.
+//
+//	@Summary		Get frequency by ID
+//	@Description	Get a single frequency by its ID
+//	@Tags			frequencies
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		string	true	"Frequency ID"
+//	@Success		200	{object}	models.Frequency
+//	@Failure		400	{object}	map[string]string
+//	@Failure		404	{object}	map[string]string
+//	@Router			/frequencies/{id} [get]
 func GetFrequency(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -50,7 +70,16 @@ func GetFrequency(w http.ResponseWriter, r *http.Request) {
 }
 
 // CreateFrequency handles POST requests to create a new frequency.
-// Requires a JSON body with name and reset fields.
+//
+//	@Summary		Create a new frequency
+//	@Description	Create a new frequency with name and cron schedule
+//	@Tags			frequencies
+//	@Accept			json
+//	@Produce		json
+//	@Param			frequency	body		object{name=string,reset=string}	true	"Frequency data"
+//	@Success		201			{object}	models.Frequency
+//	@Failure		400			{object}	map[string]string
+//	@Router			/frequencies [post]
 func CreateFrequency(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -150,7 +179,19 @@ func DeleteFrequencyByID(frequencyID uuid.UUID) error {
 }
 
 // UpdateFrequency handles PUT requests to update an existing frequency by ID.
-// Accepts a JSON body with fields to update (name and/or reset).
+//
+//	@Summary		Update frequency
+//	@Description	Update an existing frequency by ID
+//	@Tags			frequencies
+//	@Accept			json
+//	@Produce		json
+//	@Param			id			path		string				true	"Frequency ID"
+//	@Param			frequency	body		models.Frequency	true	"Frequency update data"
+//	@Success		200			{object}	models.Frequency
+//	@Failure		400			{object}	map[string]string
+//	@Failure		404			{object}	map[string]string
+//	@Failure		500			{object}	map[string]string
+//	@Router			/frequencies/{id} [put]
 func UpdateFrequency(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
@@ -183,6 +224,17 @@ func UpdateFrequency(w http.ResponseWriter, r *http.Request) {
 }
 
 // DeleteFrequency handles DELETE requests to remove a frequency by ID.
+//
+//	@Summary		Delete frequency
+//	@Description	Delete a frequency by ID
+//	@Tags			frequencies
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path	string	true	"Frequency ID"
+//	@Success		204
+//	@Failure		400	{object}	map[string]string
+//	@Failure		404	{object}	map[string]string
+//	@Router			/frequencies/{id} [delete]
 func DeleteFrequency(w http.ResponseWriter, r *http.Request) {
 	id := r.URL.Path[len("/frequencies/"):]
 	frequencyID, err := uuid.Parse(id)

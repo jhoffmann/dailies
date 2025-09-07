@@ -6,10 +6,24 @@ import (
 	"net/http"
 	"os"
 
+	_ "github.com/jhoffmann/dailies/internal/api/docs"
 	"github.com/jhoffmann/dailies/internal/database"
 	"github.com/jhoffmann/dailies/internal/routes"
 	"github.com/jhoffmann/dailies/internal/scheduler"
 )
+
+//	@title			Dailies API
+//	@version		1.0
+//	@description	A task management API for daily tasks with frequencies and tags
+
+//	@contact.name	John Hoffmann
+//	@contact.url	https://github.com/jhoffmann
+
+//	@license.name	BSD-3-Clause
+//	@license.url	https://github.com/jhoffmann/dailies?tab=BSD-3-Clause-1-ov-file
+
+//	@host		localhost:9001
+//	@BasePath	/
 
 // main initializes the database, sets up routes, and starts the HTTP server.
 // It accepts an --address flag to specify the listening address in the form ip:port or :port.

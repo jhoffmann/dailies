@@ -8,6 +8,7 @@ import (
 	"github.com/jhoffmann/dailies/internal/logger"
 	"github.com/jhoffmann/dailies/internal/ui/web"
 	"github.com/jhoffmann/dailies/internal/websocket"
+	httpSwagger "github.com/swaggo/http-swagger"
 )
 
 // Setup configures HTTP routes for the application.
@@ -41,6 +42,9 @@ func Setup() {
 	http.HandleFunc("/ws", func(w http.ResponseWriter, r *http.Request) {
 		websocket.GetHub().HandleWebSocket(w, r)
 	})
+
+	// Swagger documentation endpoint
+	http.HandleFunc("/swagger/", httpSwagger.WrapHandler)
 
 	// Setup task, tag, and frequency routes
 	SetupTaskRoutes()
