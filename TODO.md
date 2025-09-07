@@ -17,6 +17,7 @@
 - ~Figure out why task name edit and priority update broke, looks like completed: "" might be the issue~
 - ~Build a MCP that uses the API~
 - ~Add a Swagger/OpenAPI interface~
+- ~Add a history/audit log table for Tasks
 - Build out the Bruno testsuite to cover all API calls
 - Add a proper task edit form
 - Update the Dockerfile to build from scratch

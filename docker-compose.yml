@@ -4,7 +4,7 @@ services:
     ports:
       - "9001:8080"
     volumes:
-      - dailies_data:/data
+      - ~/dailies.db:/data/dailies.db
     environment:
       - DB_PATH=/data/dailies.db
     restart: unless-stopped
@@ -22,7 +22,3 @@ services:
       timeout: 10s
       retries: 3
       start_period: 40s
-
-volumes:
-  dailies_data:
-    driver: local

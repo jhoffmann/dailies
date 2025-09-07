@@ -699,9 +699,13 @@ h1 {
 
 .frequency-item:not(:last-child)::after {
   content: "•";
-  margin-left: 2rem;
+  margin-left: 0.7em;
   color: var(--text-muted);
   font-weight: bold;
+}
+
+.frequency-name {
+  font-weight: 300;
 }
 
 /* Timer Resets Responsive Design */
