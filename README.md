@@ -2,6 +2,8 @@
 
 A task management application with scheduled recurring tasks, tags, and frequencies. Built with Go backend and Angular frontend.
 
+![screenshot](https://github.com/jhoffmann/dailies/blob/main/screenshot.png?raw=true)
+
 ## Features
 
 - Task management with CRUD operations
