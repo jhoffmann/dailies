@@ -1,0 +1,45 @@
+<!-- Add Tag Form -->
+<details>
+  <summary role="button">Add New Tag</summary>
+  <div>
+    <form [formGroup]="addTagForm" (ngSubmit)="addTag()">
+      <div class="form-row">
+        <input type="text" formControlName="name" placeholder="Tag name" required />
+        <input type="color" formControlName="color" />
+      </div>
+      <button type="submit">Add Tag</button>
+    </form>
+  </div>
+</details>
+
+<!-- Tags List -->
+@for (tag of tags; track tag.id) {
+  <div class="list-item">
+    @if (!tag.editing) {
+      <div style="flex: 1">
+        <span class="tag" [style.background-color]="tag.color">{{ tag.name }}</span>
+        @if (tag.tasks) {
+          <span class="tag info">{{ tag.tasks.length }} task(s)</span>
+        }
+      </div>
+    }
+
+    @if (tag.editing) {
+      <div style="flex: 1">
+        <input type="text" [(ngModel)]="tag.editName" />
+        <input type="color" [(ngModel)]="tag.editColor" />
+        <div class="edit-actions">
+          <button (click)="saveTag(tag)" class="contrast">Save</button>
+          <button (click)="cancelEdit(tag)" class="secondary">Cancel</button>
+        </div>
+      </div>
+    }
+
+    <div class="item-actions">
+      @if (!tag.editing) {
+        <button (click)="editTag(tag)">Edit</button>
+        <button (click)="deleteTag(tag.id)" class="secondary">Delete</button>
+      }
+    </div>
+  </div>
+}

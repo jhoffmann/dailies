@@ -1,6 +1,9 @@
 [vars]
 project = "dailies"
 
+[env]
+CHROME_BIN = "/usr/bin/chromium"
+
 [tasks.run]
 description = "Run the application"
 run = "go run ."
@@ -11,20 +14,16 @@ run = "cd demo && vhs demo.tape"
 
 [tasks.clean]
 description = "Clean build and test artifacts"
-run = [
-  "rm -rf build/ web/static/dist",
-  "rm -f *.out *.html",
-  "go clean -testcache",
-]
+run = ["rm -rf build", "rm -f *.out *.html *.db", "go clean -testcache"]
 
 [tasks.dev]
 description = "Standard development workflow"
-depends = ["dependencies", "swagger", "format", "analysis", "test"]
+depends = ["dependencies", "format", "analysis", "test"]
 alias = "d"
 
 [tasks.swagger]
 description = "Generate Swagger documentation"
-run = "swag init -g cmd/server/main.go -o internal/api/docs"
+run = "swag init -o swagger"
 quiet = true
 
 [tasks.webpack]
@@ -54,21 +53,7 @@ description = "Run tests"
 run = "go test -tags=coverage ./... -cover"
 
 [tasks.build]
-run = [
-  "go build -o build/server cmd/server/*.go",
-  "go build -o build/dailies-mcp cmd/mcp/*.go",
-]
-
-[tasks.build-container]
-quiet = true
-run = "podman build -t {{vars.project}}:latest ."
-description = "Build the container image"
-alias = "bc"
-
-[tasks.run-container]
-run = "podman run --rm -p 8080:8080 {{vars.project}}:latest"
-description = "Run the container image"
-alias = "rc"
+run = ["go build -o build/api"]
 
 [tasks.coverage]
 description = "Run tests with coverage report"
@@ -81,4 +66,4 @@ run = [
 
 [tasks.sloc]
 description = "Count lines of code"
-run = "tokei -e '*_test.go'"
+run = "tokei -C -e '*_test.go' -e '*-lock.json'"

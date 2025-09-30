@@ -1,5 +1,5 @@
 # Build stage for Go application
-FROM golang:1.24.6-alpine as go-builder
+FROM golang:1.25.1-alpine as go-builder
 RUN apk update && \
   apk upgrade --no-cache && \
   apk add --no-cache binutils ca-certificates gcc musl-dev sqlite-dev
@@ -12,19 +12,15 @@ COPY . .
 
 ENV CGO_ENABLED=1
 ENV GOOS=linux
-RUN go build -o server cmd/server/main.go
+RUN go build -o api
 
 # Production stage
 FROM alpine:latest
-RUN apk --no-cache add ca-certificates sqlite
+RUN apk --no-cache add ca-certificates sqlite tzdata
 WORKDIR /root/
 
 # Copy the built application
-COPY --from=go-builder /app/server .
-
-# Copy templates and static files
-COPY assets/web/static/dist ./assets/web/static/dist/
-COPY assets/web/templates ./assets/web/templates/
+COPY --from=go-builder /app/api .
 
 # Create directory for SQLite database
 RUN mkdir -p /data
@@ -36,4 +32,4 @@ EXPOSE 8080
 ENV DB_PATH=/data/dailies.db
 
 # Run the application
-CMD ["sh", "-c", "./server --address :8080 --db ${DB_PATH}"]
+CMD ["sh", "-c", "./api -port 8080 -db-path ${DB_PATH}"]

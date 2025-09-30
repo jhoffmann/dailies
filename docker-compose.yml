@@ -2,11 +2,13 @@ services:
   api:
     build: .
     ports:
-      - "9001:8080"
+      - "9002:8080"
     volumes:
-      - ~/dailies.db:/data/dailies.db
+      - ~/dailies-v3.db:/data/tasks.db
     environment:
-      - DB_PATH=/data/dailies.db
+      - GIN_MODE=release
+      - DB_PATH=/data/tasks.db
+      - DB_TIMEZONE=MST7MDT
     restart: unless-stopped
     healthcheck:
       test:
@@ -16,7 +18,26 @@ services:
           "--no-verbose",
           "--tries=1",
           "--spider",
-          "http://localhost:8080/healthz",
+          "http://api:8080/health",
+        ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+  web:
+    build: frontends/web
+    ports:
+      - "9003:80"
+    restart: unless-stopped
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "wget",
+          "--no-verbose",
+          "--tries=1",
+          "--spider",
+          "http://web:80",
         ]
       interval: 30s
       timeout: 10s

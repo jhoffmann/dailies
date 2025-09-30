@@ -1,0 +1,9 @@
+/* Frequencies component inherits from global styles */
+
+.timezone-info {
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  background-color: var(--color-bg-secondary);
+  border-radius: 0.25rem;
+  border-left: 3px solid var(--color-primary);
+}

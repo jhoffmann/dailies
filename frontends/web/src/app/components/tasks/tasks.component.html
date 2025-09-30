@@ -1,0 +1,166 @@
+<!-- Add Task Form -->
+<details>
+  <summary role="button">Add New Task</summary>
+  <div>
+    <form [formGroup]="addTaskForm" (ngSubmit)="addTask()">
+      <div class="form-row">
+        <input type="text" formControlName="name" placeholder="Task name" required />
+        <input type="text" formControlName="description" placeholder="Description" />
+      </div>
+      <div class="form-row">
+        <select formControlName="priority">
+          <option value="">Select Priority</option>
+          <option value="1">1 - Highest</option>
+          <option value="2">2 - High</option>
+          <option value="3">3 - Medium</option>
+          <option value="4">4 - Low</option>
+          <option value="5">5 - Lowest</option>
+        </select>
+        <select formControlName="frequency_id">
+          <option value="">No Frequency</option>
+          @for (freq of frequencies; track freq.id) {
+            <option [value]="freq.id">{{ freq.name }}</option>
+          }
+        </select>
+      </div>
+      <div>
+        <label>Tags:</label>
+        <div class="tags-container" formArrayName="selectedTags">
+          @for (tag of tags; track tag.id; let i = $index) {
+            <label>
+              <input type="checkbox" [formControlName]="i" />
+              <span class="tag" [style.background-color]="tag.color">{{ tag.name }}</span>
+            </label>
+          }
+        </div>
+      </div>
+      <button type="submit">Add Task</button>
+    </form>
+  </div>
+</details>
+
+<!-- Task Filters -->
+<div class="grid">
+  <div>
+    <input
+      type="text"
+      [(ngModel)]="filters.name"
+      (ngModelChange)="updateFilters('name', $event)"
+      placeholder="Search tasks..."
+    />
+  </div>
+  <div>
+    <select [(ngModel)]="filters.completed" (ngModelChange)="updateFilters('completed', $event)">
+      <option value="">All Tasks</option>
+      <option value="false">Incomplete</option>
+      <option value="true">Completed</option>
+    </select>
+  </div>
+  <div>
+    <select [(ngModel)]="filters.tag" (ngModelChange)="updateFilters('tag', $event)">
+      <option value="">All Tags</option>
+      @for (tag of tags; track tag.id) {
+        <option [value]="tag.id">{{ tag.name }}</option>
+      }
+    </select>
+  </div>
+  <div>
+    <select [(ngModel)]="filters.sort" (ngModelChange)="updateFilters('sort', $event)">
+      <option value="">Default Sort</option>
+      <option value="name">Sort by Name</option>
+      <option value="priority">Sort by Priority</option>
+      <option value="completed">Sort by Completion</option>
+    </select>
+  </div>
+</div>
+
+<!-- Tasks List -->
+@for (task of filteredTasks; track task.id) {
+  <div
+    class="list-item"
+    [class.task-completed]="task.completed"
+    [class]="'priority-' + task.priority"
+  >
+    @if (!task.editing) {
+      <div style="flex: 1">
+        <h4 [innerHTML]="convertLinksToSafeHtml(task.name)"></h4>
+        @if (task.description) {
+          <p [innerHTML]="convertLinksToSafeHtml(task.description)"></p>
+        }
+        @if (task.frequency || (task.tags && task.tags.length > 0)) {
+          <div>
+            @for (tag of task.tags; track tag.id) {
+              <span class="tag" [style.background-color]="tag.color">{{ tag.name }}</span>
+            }
+            @if (task.frequency) {
+              <span class="tag">{{ task.frequency.name }}</span>
+            }
+          </div>
+        }
+      </div>
+    }
+
+    @if (task.editing) {
+      <div style="flex: 1">
+        <input type="text" [(ngModel)]="task.editName" />
+        <input type="text" [(ngModel)]="task.editDescription" placeholder="Description" />
+        <div class="form-row">
+          <select [(ngModel)]="task.editPriority">
+            <option value="">No Priority</option>
+            <option value="1">1 - Highest</option>
+            <option value="2">2 - High</option>
+            <option value="3">3 - Medium</option>
+            <option value="4">4 - Low</option>
+            <option value="5">5 - Lowest</option>
+          </select>
+          <select [(ngModel)]="task.editFrequencyId">
+            <option value="">No Frequency</option>
+            @for (freq of frequencies; track freq.id) {
+              <option [value]="freq.id">{{ freq.name }}</option>
+            }
+          </select>
+        </div>
+        <div>
+          <label>Tags:</label>
+          <div class="tags-container">
+            @for (tag of tags; track tag.id) {
+              <label>
+                <input type="checkbox" [(ngModel)]="task.editSelectedTags![tag.id]" />
+                <span class="tag" [style.background-color]="tag.color">{{ tag.name }}</span>
+              </label>
+            }
+          </div>
+        </div>
+        <div class="edit-actions">
+          <button (click)="saveTask(task)" class="contrast">Save</button>
+          <button (click)="cancelEdit(task)" class="secondary">Cancel</button>
+        </div>
+      </div>
+    }
+
+    <div class="item-actions">
+      @if (!task.editing) {
+        <input
+          name="completed"
+          type="checkbox"
+          role="switch"
+          [(ngModel)]="task.completed"
+          (change)="toggleCompleted(task)"
+        />
+        <button (click)="editTask(task)">Edit</button>
+        <button (click)="deleteTask(task.id)" class="secondary">Delete</button>
+      }
+    </div>
+  </div>
+}
+
+<!-- Frequency Timers -->
+@if (timers.length > 0) {
+  <div class="timers">
+    @for (timer of timers; track timer.name) {
+      <span class="seperated">
+        <strong>{{ timer.name }}</strong> in {{ timer.time_until_reset }}
+      </span>
+    }
+  </div>
+}

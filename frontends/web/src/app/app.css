@@ -1,0 +1,11 @@
+nav ul li img {
+  height: 1.2em;
+  width: auto;
+  vertical-align: middle;
+  margin-right: 0.2rem;
+  margin-bottom: 0.12rem;
+}
+
+main.container {
+  padding-bottom: 4rem;
+}

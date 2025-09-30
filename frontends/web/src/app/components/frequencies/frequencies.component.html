@@ -1,0 +1,66 @@
+<!-- Add Frequency Form -->
+<details>
+  <summary role="button">Add New Frequency</summary>
+  <div>
+    <form [formGroup]="addFrequencyForm" (ngSubmit)="addFrequency()">
+      <div class="form-row">
+        <input type="text" formControlName="name" placeholder="Frequency name" required />
+        <input
+          type="text"
+          formControlName="period"
+          placeholder="Cron expression (e.g., 0 0 0 * * *)"
+          required
+        />
+      </div>
+      <button type="submit">Add Frequency</button>
+    </form>
+  </div>
+</details>
+
+<!-- Timezone Information -->
+@if (timezoneInfo) {
+  <div class="timezone-info">
+    <small>
+      <strong>Scheduler Timezone:</strong> {{ timezoneInfo.timezone }} ({{ timezoneInfo.name }},
+      {{ timezoneInfo.offset }})
+    </small>
+  </div>
+}
+
+<!-- Frequencies List -->
+@for (frequency of frequencies; track frequency.id) {
+  <div class="list-item">
+    @if (!frequency.editing) {
+      <div style="flex: 1">
+        <h4>{{ frequency.name }}</h4>
+        <p>
+          <code>{{ frequency.period }}</code>
+          @if (frequency.tasks) {
+            <span class="tag info">{{ frequency.tasks.length }} task(s)</span>
+          }
+        </p>
+        <p>
+          <span class="tag">{{ getHumanReadableCron(frequency.period) }}</span>
+        </p>
+      </div>
+    }
+
+    @if (frequency.editing) {
+      <div style="flex: 1">
+        <input type="text" [(ngModel)]="frequency.editName" />
+        <input type="text" [(ngModel)]="frequency.editPeriod" />
+        <div class="edit-actions">
+          <button (click)="saveFrequency(frequency)" class="contrast">Save</button>
+          <button (click)="cancelEdit(frequency)" class="secondary">Cancel</button>
+        </div>
+      </div>
+    }
+
+    <div class="item-actions">
+      @if (!frequency.editing) {
+        <button (click)="editFrequency(frequency)">Edit</button>
+        <button (click)="deleteFrequency(frequency.id)" class="secondary">Delete</button>
+      }
+    </div>
+  </div>
+}

@@ -1,0 +1,36 @@
+<main class="container">
+  <nav>
+    <ul>
+      <li>
+        <img src="favicon.svg" />
+        <strong>{{ title }}</strong>
+      </li>
+    </ul>
+    <ul>
+      <li>
+        <a routerLink="/tasks" routerLinkActive="contrast">Tasks</a>
+      </li>
+      <li>
+        <a routerLink="/tags" routerLinkActive="contrast">Tags</a>
+      </li>
+      <li>
+        <a routerLink="/frequencies" routerLinkActive="contrast">Frequencies</a>
+      </li>
+      <li>
+        <input
+          name="scheme"
+          type="checkbox"
+          role="switch"
+          [checked]="isDarkMode"
+          (change)="onThemeToggle()"
+        />
+      </li>
+    </ul>
+  </nav>
+
+  <router-outlet />
+
+  <app-toast-notification></app-toast-notification>
+</main>
+
+<app-footer></app-footer>
