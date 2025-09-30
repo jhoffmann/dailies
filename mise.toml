@@ -8,10 +8,6 @@ CHROME_BIN = "/usr/bin/chromium"
 description = "Run the application"
 run = "go run ."
 
-[tasks.demo]
-description = "Regenerate the demo recording"
-run = "cd demo && vhs demo.tape"
-
 [tasks.clean]
 description = "Clean build and test artifacts"
 run = ["rm -rf build", "rm -f *.out *.html *.db", "go clean -testcache"]
@@ -20,15 +16,6 @@ run = ["rm -rf build", "rm -f *.out *.html *.db", "go clean -testcache"]
 description = "Standard development workflow"
 depends = ["dependencies", "format", "analysis", "test"]
 alias = "d"
-
-[tasks.swagger]
-description = "Generate Swagger documentation"
-run = "swag init -o swagger"
-quiet = true
-
-[tasks.webpack]
-description = "Run webpack to bundle frontend assets"
-run = "bun run build"
 
 [tasks.dependencies]
 description = "Install dependencies"
