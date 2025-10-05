@@ -38,7 +38,6 @@ export class TasksComponent implements OnInit, OnDestroy {
 
   addTaskForm: FormGroup;
   filters: TaskFilters = {};
-  selectedTags: { [key: string]: boolean } = {};
 
   constructor(
     private apiService: ApiService,
@@ -52,6 +51,7 @@ export class TasksComponent implements OnInit, OnDestroy {
       description: [''],
       priority: [''],
       frequency_id: [''],
+      selectedTags: this.fb.array([]),
     });
   }
 
@@ -199,11 +199,19 @@ export class TasksComponent implements OnInit, OnDestroy {
 
   private updateTagCheckboxes() {
     const tagArray = this.addTaskForm.get('selectedTags') as FormArray;
-    tagArray.clear();
-
-    this.tags.forEach((tag) => {
-      tagArray.push(this.fb.control(false));
-    });
+    
+    // If the array length doesn't match tags length, rebuild it
+    if (tagArray.length !== this.tags.length) {
+      tagArray.clear();
+      this.tags.forEach(() => {
+        tagArray.push(this.fb.control(false));
+      });
+    } else {
+      // Otherwise just reset all values to false
+      tagArray.controls.forEach(control => {
+        control.setValue(false);
+      });
+    }
   }
 
   private updateFilteredTasks() {
@@ -239,10 +247,12 @@ export class TasksComponent implements OnInit, OnDestroy {
     if (!formValue.name) return;
 
     const selectedTagIds: string[] = [];
+    const tagArray = this.addTaskForm.get('selectedTags') as FormArray;
 
-    Object.keys(this.selectedTags).forEach((tagId) => {
-      if (this.selectedTags[tagId]) {
-        selectedTagIds.push(tagId);
+    // Get the selected tag IDs from the FormArray
+    tagArray.controls.forEach((control, index) => {
+      if (control.value === true) {
+        selectedTagIds.push(this.tags[index].id);
       }
     });
 
@@ -260,8 +270,13 @@ export class TasksComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => {
           this.loadTasks();
+          // Reset the entire form including the FormArray
           this.addTaskForm.reset();
-          this.selectedTags = {};
+          // Reinitialize tag checkboxes to false
+          const tagArray = this.addTaskForm.get('selectedTags') as FormArray;
+          tagArray.controls.forEach(control => {
+            control.setValue(false);
+          });
         },
         error: (error) => {
           console.error('Error adding task:', error);
