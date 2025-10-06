@@ -155,3 +155,52 @@ func TestDeleteTaskNotFound(t *testing.T) {
 		t.Errorf("Expected status %d, got %d", http.StatusNotFound, w.Code)
 	}
 }
+
+func TestUpdateTaskRemoveFrequency(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	db := setupTestHandlerDB(t)
+
+	frequency := models.Frequency{
+		Name:   "Daily",
+		Period: "0 0 * * *",
+	}
+	db.Create(&frequency)
+
+	task := models.Task{
+		Name:        "Test Task",
+		FrequencyID: &frequency.ID,
+	}
+	db.Create(&task)
+
+	var createdTask models.Task
+	db.Preload("Frequency").First(&createdTask, "id = ?", task.ID)
+	if createdTask.FrequencyID == nil || *createdTask.FrequencyID != frequency.ID {
+		t.Fatal("Task should have frequency assigned")
+	}
+
+	updateData := map[string]any{
+		"frequency_id": "",
+	}
+	jsonData, _ := json.Marshal(updateData)
+
+	req, _ := http.NewRequest("PUT", "/api/tasks/"+task.ID, bytes.NewBuffer(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	r := gin.New()
+	r.PUT("/api/tasks/:id", UpdateTask(db))
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected status code %d, got %d. Body: %s", http.StatusOK, w.Code, w.Body.String())
+	}
+
+	var updatedTask models.Task
+	db.Preload("Frequency").First(&updatedTask, "id = ?", task.ID)
+	if updatedTask.FrequencyID != nil {
+		t.Errorf("Expected frequency_id to be nil, got %v", *updatedTask.FrequencyID)
+	}
+	if updatedTask.Frequency != nil {
+		t.Error("Expected frequency to be nil")
+	}
+}

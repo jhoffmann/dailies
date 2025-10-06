@@ -213,8 +213,14 @@ func UpdateTask(db *gorm.DB, wsManager ...any) gin.HandlerFunc {
 			return
 		}
 
-		// Validate frequency exists if provided
-		if req.FrequencyID != nil {
+		// Handle empty string frequency ID (treat as removal)
+		removeFrequency := false
+		if req.FrequencyID != nil && *req.FrequencyID == "" {
+			removeFrequency = true
+		}
+
+		// Validate frequency exists if provided and not empty
+		if req.FrequencyID != nil && *req.FrequencyID != "" {
 			var frequency models.Frequency
 			if err := db.First(&frequency, "id = ?", *req.FrequencyID).Error; err != nil {
 				if err == gorm.ErrRecordNotFound {
@@ -241,7 +247,10 @@ func UpdateTask(db *gorm.DB, wsManager ...any) gin.HandlerFunc {
 		if req.Priority != nil {
 			updates["priority"] = *req.Priority
 		}
-		if req.FrequencyID != nil {
+		// Handle frequency_id: set to nil to remove, or set to ID value
+		if removeFrequency {
+			updates["frequency_id"] = nil
+		} else if req.FrequencyID != nil {
 			updates["frequency_id"] = *req.FrequencyID
 		}
 

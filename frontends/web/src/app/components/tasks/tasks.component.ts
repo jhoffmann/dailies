@@ -199,7 +199,7 @@ export class TasksComponent implements OnInit, OnDestroy {
 
   private updateTagCheckboxes() {
     const tagArray = this.addTaskForm.get('selectedTags') as FormArray;
-    
+
     // If the array length doesn't match tags length, rebuild it
     if (tagArray.length !== this.tags.length) {
       tagArray.clear();
@@ -208,7 +208,7 @@ export class TasksComponent implements OnInit, OnDestroy {
       });
     } else {
       // Otherwise just reset all values to false
-      tagArray.controls.forEach(control => {
+      tagArray.controls.forEach((control) => {
         control.setValue(false);
       });
     }
@@ -274,7 +274,7 @@ export class TasksComponent implements OnInit, OnDestroy {
           this.addTaskForm.reset();
           // Reinitialize tag checkboxes to false
           const tagArray = this.addTaskForm.get('selectedTags') as FormArray;
-          tagArray.controls.forEach(control => {
+          tagArray.controls.forEach((control) => {
             control.setValue(false);
           });
         },
