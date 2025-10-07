@@ -331,7 +331,7 @@ export class TasksComponent implements OnInit, OnDestroy {
       name: task.editName,
       description: task.editDescription,
       priority: task.editPriority ? parseInt(task.editPriority) : undefined,
-      frequency_id: task.editFrequencyId || undefined,
+      frequency_id: task.editFrequencyId || '',
       tag_ids: selectedTagIds,
     };
 
