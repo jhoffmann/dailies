@@ -204,3 +204,99 @@ func TestUpdateTaskRemoveFrequency(t *testing.T) {
 		t.Error("Expected frequency to be nil")
 	}
 }
+
+func TestUpdateTaskRemovePriority(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	db := setupTestHandlerDB(t)
+
+	priority := 3
+	task := models.Task{
+		Name:     "Test Task",
+		Priority: &priority,
+	}
+	db.Create(&task)
+
+	var createdTask models.Task
+	db.First(&createdTask, "id = ?", task.ID)
+	if createdTask.Priority == nil || *createdTask.Priority != 3 {
+		t.Fatal("Task should have priority assigned")
+	}
+
+	updateData := map[string]any{
+		"priority": 0,
+	}
+	jsonData, _ := json.Marshal(updateData)
+
+	req, _ := http.NewRequest("PUT", "/api/tasks/"+task.ID, bytes.NewBuffer(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+	w := httptest.NewRecorder()
+
+	r := gin.New()
+	r.PUT("/api/tasks/:id", UpdateTask(db))
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected status code %d, got %d. Body: %s", http.StatusOK, w.Code, w.Body.String())
+	}
+
+	var updatedTask models.Task
+	db.First(&updatedTask, "id = ?", task.ID)
+	if updatedTask.Priority != nil {
+		t.Errorf("Expected priority to be nil, got %v", *updatedTask.Priority)
+	}
+}
+
+func TestGetTasksFilterByTagNames(t *testing.T) {
+	gin.SetMode(gin.TestMode)
+	db := setupTestHandlerDB(t)
+
+	tag1 := models.Tag{Name: "warframe", Color: "#ff0000"}
+	tag2 := models.Tag{Name: "games", Color: "#00ff00"}
+	tag3 := models.Tag{Name: "work", Color: "#0000ff"}
+	db.Create(&tag1)
+	db.Create(&tag2)
+	db.Create(&tag3)
+
+	task1 := models.Task{Name: "Task 1"}
+	task2 := models.Task{Name: "Task 2"}
+	task3 := models.Task{Name: "Task 3"}
+	db.Create(&task1)
+	db.Create(&task2)
+	db.Create(&task3)
+
+	db.Model(&task1).Association("Tags").Append(&tag1)
+	db.Model(&task2).Association("Tags").Append(&tag2)
+	db.Model(&task3).Association("Tags").Append(&tag3)
+
+	r := gin.New()
+	r.GET("/tasks", GetTasks(db))
+
+	// Test single tag name
+	w := httptest.NewRecorder()
+	req, _ := http.NewRequest("GET", "/tasks?tag=warframe", nil)
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected status %d, got %d", http.StatusOK, w.Code)
+	}
+
+	var tasks []models.Task
+	json.Unmarshal(w.Body.Bytes(), &tasks)
+	if len(tasks) != 1 || tasks[0].Name != "Task 1" {
+		t.Errorf("Expected 1 task with name 'Task 1', got %d tasks", len(tasks))
+	}
+
+	// Test multiple tag names
+	w = httptest.NewRecorder()
+	req, _ = http.NewRequest("GET", "/tasks?tag=warframe,games", nil)
+	r.ServeHTTP(w, req)
+
+	if w.Code != http.StatusOK {
+		t.Errorf("Expected status %d, got %d", http.StatusOK, w.Code)
+	}
+
+	json.Unmarshal(w.Body.Bytes(), &tasks)
+	if len(tasks) != 2 {
+		t.Errorf("Expected 2 tasks, got %d", len(tasks))
+	}
+}

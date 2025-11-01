@@ -14,8 +14,12 @@ run = ["rm -rf build", "rm -f *.out *.html *.db", "go clean -testcache"]
 
 [tasks.dev]
 description = "Standard development workflow"
-depends = ["dependencies", "format", "analysis", "test"]
+depends = ["dependencies", "format", "analysis", "test", "ctags"]
 alias = "d"
+
+[tasks.ctags]
+description = "Generate ctags for the project"
+run = ["ctags -R -a --quiet"]
 
 [tasks.dependencies]
 description = "Install dependencies"

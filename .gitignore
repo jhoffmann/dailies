@@ -32,6 +32,7 @@ dist/
 .idea/
 *.swp
 *.swo
+/tags
 
 # OS generated files
 .DS_Store

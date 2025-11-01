@@ -38,17 +38,26 @@ func GetTasks(db *gorm.DB) gin.HandlerFunc {
 				Distinct()
 		}
 
+		// Filter by tag names
+		if tagNames := c.Query("tag"); tagNames != "" {
+			names := strings.Split(tagNames, ",")
+			query = query.Joins("JOIN task_tags ON tasks.id = task_tags.task_id").
+				Joins("JOIN tags ON task_tags.tag_id = tags.id").
+				Where("tags.name IN ?", names).
+				Distinct()
+		}
+
 		// Sorting
 		sort := c.DefaultQuery("sort", "created_at")
 		switch sort {
 		case "completed":
-			query = query.Order("completed ASC, priority ASC")
+			query = query.Order("tasks.completed ASC, tasks.priority ASC")
 		case "priority":
-			query = query.Order("priority ASC")
+			query = query.Order("tasks.priority ASC")
 		case "name":
-			query = query.Order("name")
+			query = query.Order("tasks.name")
 		default:
-			query = query.Order("created_at ASC")
+			query = query.Order("tasks.created_at ASC")
 		}
 
 		if err := query.Find(&tasks).Error; err != nil {
@@ -207,10 +216,15 @@ func UpdateTask(db *gorm.DB, wsManager ...any) gin.HandlerFunc {
 			return
 		}
 
-		// Validate priority range
-		if req.Priority != nil && (*req.Priority < 1 || *req.Priority > 5) {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Priority must be between 1 and 5"})
-			return
+		// Handle priority: 0 means remove, 1-5 means set, anything else is invalid
+		removePriority := false
+		if req.Priority != nil {
+			if *req.Priority == 0 {
+				removePriority = true
+			} else if *req.Priority < 1 || *req.Priority > 5 {
+				c.JSON(http.StatusBadRequest, gin.H{"error": "Priority must be between 1 and 5"})
+				return
+			}
 		}
 
 		// Handle empty string frequency ID (treat as removal)
@@ -244,7 +258,10 @@ func UpdateTask(db *gorm.DB, wsManager ...any) gin.HandlerFunc {
 		if req.Completed != nil {
 			updates["completed"] = *req.Completed
 		}
-		if req.Priority != nil {
+		// Handle priority: set to nil to remove, or set to value (1-5)
+		if removePriority {
+			updates["priority"] = nil
+		} else if req.Priority != nil {
 			updates["priority"] = *req.Priority
 		}
 		// Handle frequency_id: set to nil to remove, or set to ID value
