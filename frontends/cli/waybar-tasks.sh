@@ -15,7 +15,7 @@ while getopts "t:" opt; do
 done
 
 # Build API URL
-API_URL="http://localhost:9002/api/tasks?completed=false"
+API_URL="http://localhost:9002/api/tasks?sort=priority&completed=false"
 if [ -n "$TAGS" ]; then
   API_URL="${API_URL}&tag=${TAGS}"
 fi
@@ -41,7 +41,7 @@ fi
 TOOLTIP=$(echo "$RESPONSE" | jq -r '.[] | 
   (.updated_at | sub("\\.[0-9]+(Z|[+-][0-9]{2}:[0-9]{2})$"; "Z") | fromdateiso8601) as $updated |
   ((now - $updated) / 3600 | floor) as $hours |
-  "\(.name) (\($hours)h)"' | paste -sd '\n')
+  "\(.name): P\(.priority) (\($hours)h)"' | paste -sd '\n')
 
 # Generate JSON output using jo
 jo text=" ${TASK_COUNT}" tooltip="${TOOLTIP}" class="[]" percentage=100
